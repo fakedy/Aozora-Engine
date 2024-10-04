@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Imgui">
+      <UniqueIdentifier>{E087650D-4C9C-8DBE-151E-311E81F189EF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{56EB95D1-428D-C0A7-2B48-D4FB178947F8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Systems">
+      <UniqueIdentifier>{5D37F96B-4905-ED71-3299-5D981E06C9D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Systems\ECS">
+      <UniqueIdentifier>{27926AAA-1376-2B00-7CD6-255368D91582}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Systems\ECS\Components">
+      <UniqueIdentifier>{DC70ABB1-4889-92DB-1136-22757D0D2775}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Systems\Layers">
+      <UniqueIdentifier>{7C43D8EC-E8AF-93E7-B1A3-2B451DCFB54F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Systems\Renderers">
+      <UniqueIdentifier>{7688CB1C-62AD-1A9D-8BF8-FF2C777C19BB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Systems\ResourceManager">
+      <UniqueIdentifier>{6F3A9146-5B60-5BAD-44A6-E078306B8079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Systems\Windows">
+      <UniqueIdentifier>{97EE82E8-83E8-AB3A-6C55-424B58EE11A7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Application.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\ECS\Components\CameraComponent.h">
+      <Filter>Source\Systems\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\ECS\Components\MeshComponent.h">
+      <Filter>Source\Systems\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\ECS\Components\RigidBodyComponent.h">
+      <Filter>Source\Systems\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\ECS\Components\ScriptComponent.h">
+      <Filter>Source\Systems\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\ECS\Components\TransformComponent.h">
+      <Filter>Source\Systems\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Layers\ImguiLayer.h">
+      <Filter>Source\Systems\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Layers\Layer.h">
+      <Filter>Source\Systems\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Layers\LayerStack.h">
+      <Filter>Source\Systems\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Mesh.h">
+      <Filter>Source\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Renderers\OpenGL.h">
+      <Filter>Source\Systems\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Renderers\Renderer.h">
+      <Filter>Source\Systems\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\ResourceManager\ResourceManager.h">
+      <Filter>Source\Systems\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Windows\Window.h">
+      <Filter>Source\Systems\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Windows\WindowsWindow.h">
+      <Filter>Source\Systems\Windows</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Application.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\Layers\ImguiLayer.cpp">
+      <Filter>Source\Systems\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\Layers\Layer.cpp">
+      <Filter>Source\Systems\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\Layers\LayerStack.cpp">
+      <Filter>Source\Systems\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\Mesh.cpp">
+      <Filter>Source\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp">
+      <Filter>Source\Systems\Renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\ResourceManager\ResourceManager.cpp">
+      <Filter>Source\Systems\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\Windows\WindowsWindow.cpp">
+      <Filter>Source\Systems\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\glad.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Vendor\include\imgui\imgui.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Vendor\include\imgui\imgui_draw.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Vendor\include\imgui\imgui_impl_glfw.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Vendor\include\imgui\imgui_impl_opengl3.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Vendor\include\imgui\imgui_tables.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Vendor\include\imgui\imgui_widgets.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
