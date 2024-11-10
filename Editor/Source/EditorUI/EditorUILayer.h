@@ -4,7 +4,8 @@
 #include "imgui/imgui_internal.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
-
+#include "glad/glad.h"
+#include <iostream>
 
 class EditorUILayer : public Aozora::Layer {
 public:
@@ -23,15 +24,28 @@ public:
 
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init();
+
+		createTextures();
+		m_framebuffer = std::make_shared<Aozora::OpenglFrameBuffer>();
+		m_framebuffer.get()->create();
+		m_framebuffer.get()->bufferTexture(m_editTextureID);
+
+
+
 	}
 
 	void onUpdate() override;
 
+
 private:
+
+	void createTextures();
+
 
 	void sceneGraph();
 	std::shared_ptr<entt::registry> m_registry;
-
-
+	unsigned int m_editTextureID;
+	unsigned int m_gameTextureID;
+	std::shared_ptr<Aozora::FrameBuffer> m_framebuffer;
 
 };

@@ -22,6 +22,9 @@
     <Filter Include="Source\Systems\Renderers">
       <UniqueIdentifier>{7688CB1C-62AD-1A9D-8BF8-FF2C777C19BB}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Systems\Renderers\Opengl">
+      <UniqueIdentifier>{2A55372C-9638-466C-9F3B-74A80B9E0CBD}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Systems\ResourceManager">
       <UniqueIdentifier>{6F3A9146-5B60-5BAD-44A6-E078306B8079}</UniqueIdentifier>
     </Filter>
@@ -63,8 +66,14 @@
     <ClInclude Include="Source\Systems\Mesh.h">
       <Filter>Source\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\Renderers\FrameBuffer.h">
+      <Filter>Source\Systems\Renderers</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\Renderers\OpenGL.h">
       <Filter>Source\Systems\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Renderers\Opengl\OpenglFrameBuffer.h">
+      <Filter>Source\Systems\Renderers\Opengl</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Renderers\Renderer.h">
       <Filter>Source\Systems\Renderers</Filter>
@@ -100,6 +109,9 @@
     </ClCompile>
     <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp">
       <Filter>Source\Systems\Renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglFrameBuffer.cpp">
+      <Filter>Source\Systems\Renderers\Opengl</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\ResourceManager\ResourceManager.cpp">
       <Filter>Source\Systems\ResourceManager</Filter>

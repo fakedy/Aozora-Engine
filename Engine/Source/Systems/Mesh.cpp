@@ -7,8 +7,6 @@ namespace Aozora {
 
     Mesh::Mesh()
     {
-
-
 	    // fuck it, temporary
         ResourceManager source;
         ResourceManager::MeshData data = source.loadModel("Resources/cube/cube.obj");

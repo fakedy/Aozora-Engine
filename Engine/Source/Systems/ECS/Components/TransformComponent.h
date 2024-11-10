@@ -4,6 +4,7 @@
 namespace Aozora {
 
 	struct Transform {
+		// can prob just use a matrix :)
 		glm::vec3 position;
 		glm::vec3 rotation;
 		glm::vec3 scale;

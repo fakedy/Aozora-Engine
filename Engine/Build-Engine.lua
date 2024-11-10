@@ -31,6 +31,7 @@ project "Engine"
    
    vpaths {
       ["Systems/Renderers"] = { "Systems/renderers/*.cpp", "Systems/renderers/*.h" },
+	  ["Systems/Renderers/Opengl"] = { "Systems/renderers/Opengl/*.cpp", "Systems/renderers/Opengl/*.h" },
 	  ["Systems/Events"] = { "Systems/Events/*.cpp", "Systems/Events/*.h" },
       ["Systems/Windows"] = { "Systems/windows/*.cpp", "Systems/windows/*.h" },
 	  ["Systems/ECS"] = { "Systems/ECS/*.cpp", "Systems/ECS/*.h" },

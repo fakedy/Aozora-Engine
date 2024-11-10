@@ -22,12 +22,12 @@ void EditorUILayer::onUpdate(){
 
 	// editor window
 	ImGui::Begin("Editor", NULL); // textureid
-	ImGui::Image((void*)(intptr_t)0, ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image((void*)(intptr_t)m_editTextureID, ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 
 	// game window
 	ImGui::Begin("Game", NULL); // textureid
-	ImGui::Image((void*)(intptr_t)0, ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image((void*)(intptr_t)m_editTextureID, ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 
 	ImGui::PopStyleVar();
@@ -40,10 +40,25 @@ void EditorUILayer::onUpdate(){
 	ImGui::Begin("properties");
 	ImGui::End();
 
-
+	m_framebuffer.get()->unbind();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	m_framebuffer.get()->bind();
 }
+
+void EditorUILayer::createTextures()
+{ 
+	// dumb idea
+	// create textures for the editor/game window
+
+	glGenTextures(1, &m_editTextureID);
+	glBindTexture(GL_TEXTURE_2D, m_editTextureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+}
+
 
 
 void EditorUILayer::sceneGraph()

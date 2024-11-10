@@ -83,6 +83,7 @@
       <AdditionalOptions>/EHsc /Zc:preprocessor /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,7 +162,9 @@
     <ClInclude Include="Source\Systems\Layers\Layer.h" />
     <ClInclude Include="Source\Systems\Layers\LayerStack.h" />
     <ClInclude Include="Source\Systems\Mesh.h" />
+    <ClInclude Include="Source\Systems\Renderers\FrameBuffer.h" />
     <ClInclude Include="Source\Systems\Renderers\OpenGL.h" />
+    <ClInclude Include="Source\Systems\Renderers\Opengl\OpenglFrameBuffer.h" />
     <ClInclude Include="Source\Systems\Renderers\Renderer.h" />
     <ClInclude Include="Source\Systems\ResourceManager\ResourceManager.h" />
     <ClInclude Include="Source\Systems\Windows\Window.h" />
@@ -175,6 +178,7 @@
     <ClCompile Include="Source\Systems\Layers\LayerStack.cpp" />
     <ClCompile Include="Source\Systems\Mesh.cpp" />
     <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp" />
+    <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglFrameBuffer.cpp" />
     <ClCompile Include="Source\Systems\ResourceManager\ResourceManager.cpp" />
     <ClCompile Include="Source\Systems\Windows\WindowsWindow.cpp" />
     <ClCompile Include="Source\glad.c" />
