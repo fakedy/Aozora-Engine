@@ -7,9 +7,8 @@ namespace Aozora {
 
     Mesh::Mesh()
     {
-	    // fuck it, temporary
         ResourceManager source;
-        ResourceManager::MeshData data = source.loadModel("Resources/cube/cube.obj");
+        ModelLoader::MeshData data = source.loadModel("Resources/cube/cube.obj"); // temp default object
 
         indicesSize = data.indices.size();
 
@@ -21,7 +20,7 @@ namespace Aozora {
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-        glBufferData(GL_ARRAY_BUFFER, data.vertices.size() * sizeof(ResourceManager::Vertex), &data.vertices[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.vertices.size() * sizeof(ModelLoader::Vertex), &data.vertices[0], GL_STATIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.indices.size() * sizeof(unsigned int),
@@ -29,13 +28,13 @@ namespace Aozora {
 
         // vertex positions
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ResourceManager::Vertex), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ModelLoader::Vertex), (void*)0);
         // vertex normals
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(ResourceManager::Vertex), (void*)offsetof(ResourceManager::Vertex, Normal));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(ModelLoader::Vertex), (void*)offsetof(ModelLoader::Vertex, Normal));
         // vertex texture coords
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(ResourceManager::Vertex), (void*)offsetof(ResourceManager::Vertex, TexCoords));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(ModelLoader::Vertex), (void*)offsetof(ModelLoader::Vertex, TexCoords));
 
         glBindVertexArray(0);
 

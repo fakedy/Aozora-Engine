@@ -5,6 +5,7 @@
 #include "Systems/Renderers/Renderer.h"
 #include "Systems/Layers/LayerStack.h"
 #include "Systems/Layers/ImguiLayer.h"
+#include "Systems/ResourceManager/ResourceManager.h"
 
 namespace Aozora {
 
@@ -33,6 +34,7 @@ namespace Aozora {
 
 		Window* m_window;
 		Renderer* m_renderer;
+		ResourceManager* m_resourceManager;
 
 	};
 

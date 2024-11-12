@@ -87,6 +87,9 @@
     <ClInclude Include="Source\Systems\Windows\WindowsWindow.h">
       <Filter>Source\Systems\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\ResourceManager\ModelLoader.h">
+      <Filter>Source\Systems\ResourceManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -139,6 +142,9 @@
     </ClCompile>
     <ClCompile Include="Vendor\include\imgui\imgui_widgets.cpp">
       <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\ResourceManager\ModelLoader.cpp">
+      <Filter>Source\Systems\ResourceManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,9 +1,5 @@
 #pragma once
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h> 
-#include <vector>
-#include <glm/glm.hpp>
+#include "ModelLoader.h"
 
 
 namespace Aozora {
@@ -11,25 +7,16 @@ namespace Aozora {
 	class ResourceManager {
 	public:
 
-		struct Vertex {
-			glm::vec3 Position;
-			glm::vec3 Normal;
-			glm::vec2 TexCoords;
-		};
+		ResourceManager();
 
-		struct MeshData {
-			std::vector<Vertex> vertices;
-			std::vector<uint32_t> indices;
-		};
-		const aiScene* importFile(const std::string& file);
 
-		void processFile(const aiScene* scene);
-
-		MeshData loadModel(const std::string& file);
+		const ModelLoader::MeshData loadModel(const std::string& file);
 
 	private:
 
-	
+		static ResourceManager* m_resourceManager;
+
+		ModelLoader* m_modelLoader;
 
 	};
 }
