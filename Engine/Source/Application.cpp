@@ -21,10 +21,7 @@ namespace Aozora {
 		m_renderer = Renderer::create(registry);
 		m_resourceManager = new ResourceManager();
 
-
 		layerStack = new LayerStack();
-
-
 
 	}
 	void Application::run()
@@ -39,8 +36,6 @@ namespace Aozora {
 				layer->onUpdate(); // update layers
 			}
 			m_window->onUpdate(); // swap buffer
-
-
 
 		}
 	}

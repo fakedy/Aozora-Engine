@@ -4,6 +4,7 @@
 #include <assimp/postprocess.h> 
 #include <vector>
 #include <glm/glm.hpp>
+#include <memory>
 
 namespace Aozora {
 
@@ -24,7 +25,7 @@ namespace Aozora {
 		};
 
 		const aiScene* importFile(const std::string& file);
-		MeshData loadModel(const std::string& file);
+		std::unique_ptr<MeshData> loadModel(const std::string& file);
 
 
 	private:

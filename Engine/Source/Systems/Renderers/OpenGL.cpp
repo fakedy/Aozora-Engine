@@ -2,36 +2,13 @@
 #include <iostream>
 #include "Systems/ECS/Components/TransformComponent.h"
 #include "Systems/ECS/Components/MeshComponent.h"
-
+#include "Opengl/OpenglShader.h"
 
 namespace Aozora {
-
-
-	const char* vertexShaderSource = "#version 330 core\n"
-		"layout (location = 0) in vec3 aPos;\n"
-		"layout (location = 1) in vec3 aNormal;\n"
-		"out vec3 normalCoord;\n"
-		"void main()\n"
-		"{\n"
-		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-		"	normalCoord = aNormal;\n"
-		"}\0";
-	const char* fragmentShaderSource = "#version 330 core\n"
-		"out vec4 FragColor;\n"
-		"in vec3 normalCoord;\n"
-		"void main()\n"
-		"{\n"
-		"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-		"   FragColor = vec4(normalCoord.x, normalCoord.y, normalCoord.z, 1.0f);\n"
-		"}\n\0";
-
 
 	Renderer* Renderer::create(std::shared_ptr<entt::registry> registry) {
 		return new OpenGL(registry);
 	}
-
-
-
 
 	OpenGL::OpenGL(std::shared_ptr<entt::registry> registry)
 	{
@@ -41,35 +18,13 @@ namespace Aozora {
 
 	void OpenGL::init() {
 
-		unsigned int vertexShader;
-		vertexShader = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-		glCompileShader(vertexShader);
-
-		unsigned int fragmentShader;
-		fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-		glCompileShader(fragmentShader);
-
-		unsigned int shaderProgram;
-		shaderProgram = glCreateProgram();
-
-		glAttachShader(shaderProgram, vertexShader);
-		glAttachShader(shaderProgram, fragmentShader);
-		glLinkProgram(shaderProgram);
-		glUseProgram(shaderProgram);
-		glDeleteShader(vertexShader);
-		glDeleteShader(fragmentShader);
-
-		
-
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
 	}
 
 
 	void OpenGL::render()
 	{
-
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
@@ -78,10 +33,20 @@ namespace Aozora {
 		for (const auto entity : view) {
 			auto& mesh = view.get<meshComponent>(entity);
 			glBindVertexArray(mesh.mesh->VAO);
+
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.shaderProgram, "model"), 1, GL_FALSE,  &model[0][0]);
+			glm::mat4 view = glm::mat4(1.0f);
+			view = glm::translate(view, glm::vec3(-1.0f, -1.0f, -3.0f));
+			glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
+			glm::mat4 proj = glm::mat4(1.0f);
+			proj = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
+			glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.shaderProgram, "proj"), 1, GL_FALSE, &proj[0][0]);
+
 			glDrawElements(GL_TRIANGLES, mesh.mesh->indicesSize, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 		}
-
 
 	}
 

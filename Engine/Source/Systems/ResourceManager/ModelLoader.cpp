@@ -31,7 +31,7 @@ namespace Aozora {
 
     }
 
-    ModelLoader::MeshData ModelLoader::loadModel(const std::string& file)
+    std::unique_ptr<ModelLoader::MeshData> ModelLoader::loadModel(const std::string& file)
     {
         const aiScene* scene = importFile(file);
         MeshData data;
@@ -74,6 +74,6 @@ namespace Aozora {
         }
 
 
-        return data;
+        return std::make_unique<ModelLoader::MeshData>(data);
     }
 }

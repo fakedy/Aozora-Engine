@@ -8,7 +8,8 @@ project "Engine"
    files { "Source/**.h",
    "Source/**.cpp",
    "Source/**.c",
-   "Vendor/include/imgui/*.cpp"}
+   "Vendor/include/imgui/*.cpp",
+   "Resources/Shaders/*"}
 
    includedirs
    {
@@ -39,6 +40,7 @@ project "Engine"
 	  ["Systems/Layers"] = { "Systems/Layers/*.cpp", "Systems/Layers/*.h" },
 	  ["Imgui"] = { "Vendor/include/imgui/*.cpp"},
       ["Engine"] = { "Engine/*.cpp", "Engine/*.h" },
+	  ["Resources"] = { "Resources/*"}
 	  }
 
 
