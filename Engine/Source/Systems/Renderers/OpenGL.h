@@ -11,15 +11,15 @@ namespace Aozora {
 	{
 	public:
 
-		OpenGL(std::shared_ptr<entt::registry> registry);
+		OpenGL(std::shared_ptr<Scene> scene, Window::WindowProps props);
 
 		void render() override;
+		virtual void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
 
 	private:
+	
 		void init();
-		std::shared_ptr<entt::registry> m_registry;
-
 		OpenglShader m_defaultShader{ OpenglShader("Resources/Shaders/v_default.glsl", "Resources/Shaders/f_default.glsl") };
 	};
 }

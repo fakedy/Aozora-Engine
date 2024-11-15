@@ -1,7 +1,4 @@
 #include "EditorUILayer.h"
-#include "Systems/ECS/Components/TransformComponent.h"
-#include "EditorEntityWindow.h"
-
 
 void EditorUILayer::onUpdate(){
 
@@ -20,10 +17,14 @@ void EditorUILayer::onUpdate(){
 	ImGui::DockSpace(dockspace_id, ImVec2(0, 0), ImGuiDockNodeFlags_PassthruCentralNode);
 	ImGui::End();
 
+
+
 	// editor window
 	ImGui::Begin("Editor", NULL); // textureid
-	ImGui::Image((void*)(intptr_t)m_editTextureID, ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y), ImVec2(0, 1), ImVec2(1, 0));
+	ImVec2 contentRegion = ImGui::GetContentRegionAvail();
+	ImGui::Image((void*)(intptr_t)m_editTextureID, ImVec2(contentRegion.x, contentRegion.y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
+
 
 	// game window
 	ImGui::Begin("Game", NULL); // textureid
@@ -34,16 +35,19 @@ void EditorUILayer::onUpdate(){
 
 	sceneGraph(); // the list of entities in the scene
 
-	ImGui::Begin("workspace");
+	ImGui::Begin("workspace"); // file browser
 	ImGui::End();
 
-	ImGui::Begin("properties");
-	ImGui::End();
+
+
+	componentsView();
+
 
 	m_framebuffer.get()->unbind();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	m_framebuffer.get()->bind();
+
 }
 
 void EditorUILayer::createTextures()
@@ -53,7 +57,7 @@ void EditorUILayer::createTextures()
 
 	glGenTextures(1, &m_editTextureID);
 	glBindTexture(GL_TEXTURE_2D, m_editTextureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_framebufferSizeX, m_framebufferSizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -61,9 +65,24 @@ void EditorUILayer::createTextures()
 
 
 
+
 void EditorUILayer::sceneGraph()
 {
-	EditorEntityWindow window(m_registry);
-	window.draw();
-	
+	m_editorEntityWindow->draw();
+}
+
+void EditorUILayer::componentsView()
+{
+	m_componentsViewWindow->draw();
+}
+
+void EditorUILayer::resizeFramebuffer(int x, int y)
+{
+	// move to framebuffer
+	m_framebufferSizeX = x;
+	m_framebufferSizeY = y;
+	glBindTexture(GL_TEXTURE_2D, m_editTextureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_framebufferSizeX, m_framebufferSizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	m_framebuffer.get()->bufferTexture(m_editTextureID);
+	std::cout << "x: " << x << " y: " << y << std::endl;
 }

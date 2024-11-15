@@ -154,6 +154,7 @@
     <ClInclude Include="Source\Engine.h" />
     <ClInclude Include="Source\Systems\ECS\Components\CameraComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\MeshComponent.h" />
+    <ClInclude Include="Source\Systems\ECS\Components\NameComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\RigidBodyComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\ScriptComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\TransformComponent.h" />
@@ -161,6 +162,8 @@
     <ClInclude Include="Source\Systems\Layers\Layer.h" />
     <ClInclude Include="Source\Systems\Layers\LayerStack.h" />
     <ClInclude Include="Source\Systems\Mesh.h" />
+    <ClInclude Include="Source\Systems\Project\Project.h" />
+    <ClInclude Include="Source\Systems\Renderers\Camera.h" />
     <ClInclude Include="Source\Systems\Renderers\FrameBuffer.h" />
     <ClInclude Include="Source\Systems\Renderers\OpenGL.h" />
     <ClInclude Include="Source\Systems\Renderers\Opengl\OpenglFrameBuffer.h" />
@@ -169,6 +172,7 @@
     <ClInclude Include="Source\Systems\Renderers\Shader.h" />
     <ClInclude Include="Source\Systems\ResourceManager\ModelLoader.h" />
     <ClInclude Include="Source\Systems\ResourceManager\ResourceManager.h" />
+    <ClInclude Include="Source\Systems\Scene\Scene.h" />
     <ClInclude Include="Source\Systems\Windows\Window.h" />
     <ClInclude Include="Source\Systems\Windows\WindowsWindow.h" />
   </ItemGroup>
@@ -179,6 +183,7 @@
     <ClCompile Include="Source\Systems\Layers\Layer.cpp" />
     <ClCompile Include="Source\Systems\Layers\LayerStack.cpp" />
     <ClCompile Include="Source\Systems\Mesh.cpp" />
+    <ClCompile Include="Source\Systems\Renderers\Camera.cpp" />
     <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglFrameBuffer.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglShader.cpp" />

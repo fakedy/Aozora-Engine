@@ -6,12 +6,18 @@
 #include "imgui/imgui_impl_opengl3.h"
 #include "glad/glad.h"
 #include <iostream>
+#include "EditorEntityWindow.h"
+#include "ComponentsView.h"
 
 class EditorUILayer : public Aozora::Layer {
 public:
-	EditorUILayer(std::shared_ptr<entt::registry> registry) {
+	EditorUILayer(std::shared_ptr<Scene> scene) : m_currentScene(scene) {
 
-		m_registry = registry;
+		m_currentScene = scene;
+		m_componentsViewWindow = std::make_shared<ComponentsView>();
+		m_editorEntityWindow = std::make_shared<EditorEntityWindow>(scene->registry, m_componentsViewWindow);
+
+		
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
@@ -25,11 +31,11 @@ public:
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init();
 
-		createTextures();
 		m_framebuffer = std::make_shared<Aozora::OpenglFrameBuffer>();
 		m_framebuffer.get()->create();
+		createTextures();
 		m_framebuffer.get()->bufferTexture(m_editTextureID);
-
+		
 
 
 	}
@@ -40,12 +46,17 @@ public:
 private:
 
 	void createTextures();
-
-
+	std::shared_ptr<EditorEntityWindow> m_editorEntityWindow;
+	std::shared_ptr<ComponentsView> m_componentsViewWindow;
 	void sceneGraph();
-	std::shared_ptr<entt::registry> m_registry;
+	void componentsView();
+	std::shared_ptr<Scene> m_currentScene;
 	unsigned int m_editTextureID;
 	unsigned int m_gameTextureID;
 	std::shared_ptr<Aozora::FrameBuffer> m_framebuffer;
+	int m_framebufferSizeX = 1920;
+	int m_framebufferSizeY = 1080;
+
+	void resizeFramebuffer(int x, int y);
 
 };

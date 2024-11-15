@@ -6,6 +6,7 @@
 #include "Systems/Layers/LayerStack.h"
 #include "Systems/Layers/ImguiLayer.h"
 #include "Systems/ResourceManager/ResourceManager.h"
+#include "Systems/Scene/Scene.h"
 
 namespace Aozora {
 
@@ -26,8 +27,7 @@ namespace Aozora {
 
 		inline Window& getWindow() { return *m_window; }
 
-		// ECS SYSTEM
-		std::shared_ptr<entt::registry> registry;
+		std::shared_ptr<Scene> m_currentScene;
 
 	private:
 		static Application* m_appInstance;
@@ -35,6 +35,7 @@ namespace Aozora {
 		Window* m_window;
 		Renderer* m_renderer;
 		ResourceManager* m_resourceManager;
+		
 
 	};
 

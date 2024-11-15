@@ -37,7 +37,8 @@ project "Engine"
       ["Systems/Windows"] = { "Systems/windows/*.cpp", "Systems/windows/*.h" },
 	  ["Systems/ECS"] = { "Systems/ECS/*.cpp", "Systems/ECS/*.h" },
 	  ["Systems/ECS/Components"] = { "Systems/ECS/Components/*.cpp", "Systems/ECS/Components/*.h" },
-	  ["Systems/Layers"] = { "Systems/Layers/*.cpp", "Systems/Layers/*.h" },
+	  ["Systems/Project"] = { "Systems/Project/*.cpp", "Systems/Project/*.h" },
+	  ["Systems/Scene"] = { "Systems/Scene/*.cpp", "Systems/Scene/*.h" },
 	  ["Imgui"] = { "Vendor/include/imgui/*.cpp"},
       ["Engine"] = { "Engine/*.cpp", "Engine/*.h" },
 	  ["Resources"] = { "Resources/*"}

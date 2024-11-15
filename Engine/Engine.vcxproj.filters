@@ -19,6 +19,9 @@
     <Filter Include="Source\Systems\Layers">
       <UniqueIdentifier>{7C43D8EC-E8AF-93E7-B1A3-2B451DCFB54F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Systems\Project">
+      <UniqueIdentifier>{A3E8BEE2-8FE2-E734-784F-7E4564E84DA1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Systems\Renderers">
       <UniqueIdentifier>{7688CB1C-62AD-1A9D-8BF8-FF2C777C19BB}</UniqueIdentifier>
     </Filter>
@@ -27,6 +30,9 @@
     </Filter>
     <Filter Include="Source\Systems\ResourceManager">
       <UniqueIdentifier>{6F3A9146-5B60-5BAD-44A6-E078306B8079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Systems\Scene">
+      <UniqueIdentifier>{3AF666F0-2685-F0B9-CFA3-04B5BB110160}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Systems\Windows">
       <UniqueIdentifier>{97EE82E8-83E8-AB3A-6C55-424B58EE11A7}</UniqueIdentifier>
@@ -66,6 +72,12 @@
     <ClInclude Include="Source\Systems\Mesh.h">
       <Filter>Source\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\Project\Project.h">
+      <Filter>Source\Systems\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Renderers\Camera.h">
+      <Filter>Source\Systems\Renderers</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\Renderers\FrameBuffer.h">
       <Filter>Source\Systems\Renderers</Filter>
     </ClInclude>
@@ -90,11 +102,17 @@
     <ClInclude Include="Source\Systems\ResourceManager\ResourceManager.h">
       <Filter>Source\Systems\ResourceManager</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\Scene\Scene.h">
+      <Filter>Source\Systems\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\Windows\Window.h">
       <Filter>Source\Systems\Windows</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Windows\WindowsWindow.h">
       <Filter>Source\Systems\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\ECS\Components\NameComponent.h">
+      <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +133,9 @@
     </ClCompile>
     <ClCompile Include="Source\Systems\Mesh.cpp">
       <Filter>Source\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\Renderers\Camera.cpp">
+      <Filter>Source\Systems\Renderers</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp">
       <Filter>Source\Systems\Renderers</Filter>

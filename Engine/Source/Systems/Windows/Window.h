@@ -14,10 +14,12 @@ namespace Aozora {
 			unsigned int width, height;
 			bool vSync;
 
+			WindowProps() : title("Window"), width(1920), height(1080) {}
 			WindowProps(const std::string& title, unsigned int width, unsigned int height) {
 				this->title = title;
 				this->width = width;
 				this->height = height;
+
 			}
 		};
 
