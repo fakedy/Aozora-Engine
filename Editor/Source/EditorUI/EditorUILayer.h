@@ -14,7 +14,7 @@ public:
 	EditorUILayer(std::shared_ptr<Scene> scene) : m_currentScene(scene) {
 
 		m_currentScene = scene;
-		m_componentsViewWindow = std::make_shared<ComponentsView>();
+		m_componentsViewWindow = std::make_shared<ComponentsView>(scene->registry);
 		m_editorEntityWindow = std::make_shared<EditorEntityWindow>(scene->registry, m_componentsViewWindow);
 
 		

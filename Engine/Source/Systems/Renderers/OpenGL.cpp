@@ -32,11 +32,11 @@ namespace Aozora {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-		auto view = m_registry->view<const meshComponent, Transform>(); // register of all mesh components
+		auto view = m_registry->view<const meshComponent, TransformComponent>(); // register of all mesh components
 
 		for (const auto entity : view) {
 			auto& mesh = view.get<meshComponent>(entity);
-			auto& transform = view.get<Transform>(entity);
+			auto& transform = view.get<TransformComponent>(entity);
 
 			glBindVertexArray(mesh.mesh->VAO);
 

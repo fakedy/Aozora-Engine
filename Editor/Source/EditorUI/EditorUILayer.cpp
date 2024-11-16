@@ -38,9 +38,10 @@ void EditorUILayer::onUpdate(){
 	ImGui::Begin("workspace"); // file browser
 	ImGui::End();
 
-
-
 	componentsView();
+
+	ImGui::Begin("Console");
+	ImGui::End();
 
 
 	m_framebuffer.get()->unbind();

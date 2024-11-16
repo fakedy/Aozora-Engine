@@ -13,10 +13,11 @@ void EditorEntityWindow::draw()
 	if (ImGui::Button("Create entity")) {
 		const auto entity = m_registry->create();
 		m_registry->emplace<Aozora::NameComponent>(entity).name = "Entity";
-		m_registry->emplace<Aozora::Transform>(entity);
+		m_registry->emplace<Aozora::TransformComponent>(entity);
 		m_registry->emplace<Aozora::meshComponent>(entity);
 	}
 
+	int i = 0;
 	for (const auto entity : view) {
 		auto& nameComponent = view.get<Aozora::NameComponent>(entity);
 		if (ImGui::Selectable(nameComponent.name)) {

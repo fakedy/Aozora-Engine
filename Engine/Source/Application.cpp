@@ -40,11 +40,13 @@ namespace Aozora {
 			m_renderer->render(); // render call
 
 			// temp stuff
-			auto view = m_currentScene.get()->registry->view<Transform>(); // register of all mesh components
+			auto view = m_currentScene.get()->registry->view<TransformComponent>(); // register of all mesh components
 			for (const auto entity : view) {
-				auto& transform = view.get<Transform>(entity);
-				transform.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.0f, -4.0f));
-				transform.model = glm::rotate(transform.model, (float)glfwGetTime() * glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+				auto& transform = view.get<TransformComponent>(entity);
+				glm::mat4 model = glm::mat4(1.0f);
+				model = glm::translate(glm::mat4(1.0f), transform.pos);
+				model = glm::rotate(model, (float)glfwGetTime() * glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+				transform.model = model;
 			}
 
 			// TODO render after updated layers
