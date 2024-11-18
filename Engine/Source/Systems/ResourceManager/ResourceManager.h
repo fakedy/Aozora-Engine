@@ -10,7 +10,7 @@ namespace Aozora {
 		ResourceManager();
 
 
-		const std::unique_ptr<ModelLoader::MeshData> loadModel(const std::string& file);
+		const std::vector<Mesh> loadModel(const std::string& file);
 
 	private:
 

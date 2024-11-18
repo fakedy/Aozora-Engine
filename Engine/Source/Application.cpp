@@ -45,7 +45,11 @@ namespace Aozora {
 				auto& transform = view.get<TransformComponent>(entity);
 				glm::mat4 model = glm::mat4(1.0f);
 				model = glm::translate(glm::mat4(1.0f), transform.pos);
-				model = glm::rotate(model, (float)glfwGetTime() * glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+				// solving rotation for now
+				model = glm::rotate(model, glm::radians(transform.rot.x), glm::vec3(1.0f, 0.0f, 0.0f));
+				model = glm::rotate(model, glm::radians(transform.rot.y), glm::vec3(0.0f, 1.0f, 0.0f));
+				model = glm::rotate(model, glm::radians(transform.rot.z), glm::vec3(0.0f, 0.0f, 1.0f));
+				model = glm::scale(model, transform.scale);
 				transform.model = model;
 			}
 

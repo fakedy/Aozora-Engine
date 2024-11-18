@@ -13,7 +13,7 @@ namespace Aozora {
 
 		virtual unsigned int create() override;
 
-		virtual void bufferTexture(unsigned int textureID) override;
+		virtual void bufferTexture(unsigned int colorTextureID, unsigned int depthTextureID) override;
 
 	private:
 

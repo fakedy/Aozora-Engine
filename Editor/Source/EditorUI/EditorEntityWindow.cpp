@@ -14,16 +14,19 @@ void EditorEntityWindow::draw()
 		const auto entity = m_registry->create();
 		m_registry->emplace<Aozora::NameComponent>(entity).name = "Entity";
 		m_registry->emplace<Aozora::TransformComponent>(entity);
-		m_registry->emplace<Aozora::meshComponent>(entity);
+		m_registry->emplace<Aozora::ModelComponent>(entity);
+		
 	}
 
 	int i = 0;
 	for (const auto entity : view) {
 		auto& nameComponent = view.get<Aozora::NameComponent>(entity);
-		if (ImGui::Selectable(nameComponent.name)) {
+		std::string blabla = nameComponent.name + std::to_string(i);
+
+		if (ImGui::Selectable(blabla.c_str())) {
 			m_componentsView->setSelectedEntity(entity);
 		}
-		
+		i++;
 	}
 
 	ImGui::End();

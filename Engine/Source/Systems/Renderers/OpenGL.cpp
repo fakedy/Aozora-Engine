@@ -1,7 +1,7 @@
 #include "OpenGL.h"
 #include <iostream>
 #include "Systems/ECS/Components/TransformComponent.h"
-#include "Systems/ECS/Components/MeshComponent.h"
+#include "Systems/ECS/Components/ModelComponent.h"
 #include "Opengl/OpenglShader.h"
 #include <GLFW/glfw3.h>
 #include "Systems/Windows/Window.h"
@@ -24,6 +24,7 @@ namespace Aozora {
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
+		glEnable(GL_BLEND);
 	}
 
 
@@ -32,13 +33,12 @@ namespace Aozora {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-		auto view = m_registry->view<const meshComponent, TransformComponent>(); // register of all mesh components
+		auto view = m_registry->view<const ModelComponent, TransformComponent>(); // register of all mesh components
 
 		for (const auto entity : view) {
-			auto& mesh = view.get<meshComponent>(entity);
+			auto& renderModel = view.get<ModelComponent>(entity);
 			auto& transform = view.get<TransformComponent>(entity);
 
-			glBindVertexArray(mesh.mesh->VAO);
 
 			glm::mat4 model(1.0f);
 			model = transform.model;
@@ -46,11 +46,11 @@ namespace Aozora {
 			glm::mat4 view = glm::mat4(1.0f);
 			glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
 			glm::mat4 proj = glm::mat4(1.0f);
-			proj = glm::perspective(glm::radians(45.0f), (float)m_props.width / (float)m_props.height, 0.1f, 100.0f);
+			proj = glm::perspective(glm::radians(45.0f), (float)m_props.width / (float)m_props.height, 0.1f, 1000.0f);
 			glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.shaderProgram, "proj"), 1, GL_FALSE, &proj[0][0]);
 
-			glDrawElements(GL_TRIANGLES, mesh.mesh->indicesSize, GL_UNSIGNED_INT, 0);
-			glBindVertexArray(0);
+			
+			renderModel.model->draw();
 		}
 
 	}

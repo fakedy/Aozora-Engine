@@ -2,7 +2,7 @@
 #include "Engine.h"
 #include "ComponentsView.h"
 #include "Systems/ECS/Components/TransformComponent.h"
-#include "Systems/ECS/Components/meshComponent.h"
+#include "Systems/ECS/Components/modelComponent.h"
 #include "Systems/ECS/Components/NameComponent.h"
 
 

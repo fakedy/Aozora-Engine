@@ -5,7 +5,6 @@ layout(location = 2) in vec3 aTextureCoords;
 
 out vec3 textureCoords;
 out vec3 normal;
-out vec3 fragPos;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -18,6 +17,5 @@ void main() {
 	gl_Position = proj * view * model * vec4(aPos, 1.0);
 	textureCoords = aTextureCoords;
 	normal = aNormal;
-	fragPos = vec3(model * vec4(aPos - plyPos, 1.0));
 
 }

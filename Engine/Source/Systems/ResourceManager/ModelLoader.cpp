@@ -18,10 +18,9 @@ namespace Aozora {
     {
 
         const aiScene* scene = m_importer.ReadFile(file,
-            aiProcess_CalcTangentSpace |
             aiProcess_Triangulate |
-            aiProcess_JoinIdenticalVertices |
-            aiProcess_SortByPType);
+            aiProcess_GenSmoothNormals |
+            aiProcess_FlipUVs);
 
         if (scene == nullptr) {
             std::cout << "assimp import fail\n";
@@ -31,49 +30,66 @@ namespace Aozora {
 
     }
 
-    std::unique_ptr<ModelLoader::MeshData> ModelLoader::loadModel(const std::string& file)
-    {
-        const aiScene* scene = importFile(file);
-        MeshData data;
-        for (uint32_t i = 0; i < scene->mNumMeshes; i++) {
-            aiMesh* mesh = scene->mMeshes[i];
-            for (uint32_t v = 0; v < mesh->mNumVertices; v++) {
+    void ModelLoader::processNode(aiNode* node, const aiScene* scene, std::vector<Mesh>* meshVector) {
 
-                Vertex vertex;
 
-                glm::vec3 position;
-                position.x = mesh->mVertices[v].x;
-                position.y = mesh->mVertices[v].y;
-                position.z = mesh->mVertices[v].z;
-                vertex.Position = position;
+        for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+            meshVector->push_back(processMesh(mesh, scene));
+        }
 
-                glm::vec3 normal;
-                if (mesh->HasNormals()) {
-                    normal.x = mesh->mNormals[v].x;
-                    normal.y = mesh->mNormals[v].y;
-                    normal.z = mesh->mNormals[v].z;
-                    vertex.Normal = normal;
-                }
-                else {
-                    normal = glm::vec3(0.0f);
-                    vertex.Normal = normal;
-                }
-
-                glm::vec3 texcoord;
-                // implement texture coords
-                data.vertices.push_back(vertex);
-
-            }
-
-            // fix indices
-            for (uint32_t k = 0; k < scene->mMeshes[i]->mNumFaces; k++) {
-                aiFace face = scene->mMeshes[i]->mFaces[k];
-                for (uint32_t j = 0; j < face.mNumIndices; j++)
-                    data.indices.push_back(face.mIndices[j]);
-            }
+        for (unsigned int i = 0; i < node->mNumChildren; i++) {
+            processNode(node->mChildren[i], scene, meshVector);
         }
 
 
-        return std::make_unique<ModelLoader::MeshData>(data);
+    }
+
+    Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene)
+    {
+        Mesh createdmesh;
+
+        for (uint32_t v = 0; v < mesh->mNumVertices; v++) {
+
+            Mesh::Vertex vertex;
+
+            glm::vec3 position;
+            position.x = mesh->mVertices[v].x;
+            position.y = mesh->mVertices[v].y;
+            position.z = mesh->mVertices[v].z;
+            vertex.Position = position;
+
+            glm::vec3 normal;
+            if (mesh->HasNormals()) {
+                normal.x = mesh->mNormals[v].x;
+                normal.y = mesh->mNormals[v].y;
+                normal.z = mesh->mNormals[v].z;
+                vertex.Normal = normal;
+            }
+
+            glm::vec3 texcoord;
+            // implement texture coords
+            createdmesh.meshData.vertices.push_back(vertex);
+
+        }
+
+        // fix indices
+        for (unsigned int f = 0; f < mesh->mNumFaces; f++) { // for every face in mesh i
+
+            aiFace face = mesh->mFaces[f]; // grab the face f in mesh i
+            for (unsigned int j = 0; j < face.mNumIndices; j++) // for every indice in face
+                createdmesh.meshData.indices.push_back(face.mIndices[j]);
+        }
+        createdmesh.bufferData();
+        return createdmesh;
+    }
+
+    std::vector<Mesh> ModelLoader::loadModel(const std::string& file)
+    {
+        const aiScene* scene = importFile(file);
+        std::vector<Mesh> meshVector;
+        processNode(scene->mRootNode, scene, &meshVector);
+        
+        return meshVector;
     }
 }

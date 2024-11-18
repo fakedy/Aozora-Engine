@@ -13,7 +13,7 @@ namespace Aozora {
         m_modelLoader = new ModelLoader();
     }
 
-    const std::unique_ptr<ModelLoader::MeshData> ResourceManager::loadModel(const std::string& file)
+    const std::vector<Mesh> ResourceManager::loadModel(const std::string& file)
     {
 
         // I think a system that will check if the model is already loaded is good here.

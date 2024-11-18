@@ -6,25 +6,25 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\EditorUI\ComponentsView.h">
+      <Filter>EditorUI</Filter>
+    </ClInclude>
     <ClInclude Include="Source\EditorUI\EditorEntityWindow.h">
       <Filter>EditorUI</Filter>
     </ClInclude>
     <ClInclude Include="Source\EditorUI\EditorUILayer.h">
       <Filter>EditorUI</Filter>
     </ClInclude>
-    <ClInclude Include="Source\EditorUI\ComponentsView.h">
-      <Filter>EditorUI</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Editor.cpp" />
+    <ClCompile Include="Source\EditorUI\ComponentsView.cpp">
+      <Filter>EditorUI</Filter>
+    </ClCompile>
     <ClCompile Include="Source\EditorUI\EditorEntityWindow.cpp">
       <Filter>EditorUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\EditorUI\EditorUILayer.cpp">
-      <Filter>EditorUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\EditorUI\ComponentsView.cpp">
       <Filter>EditorUI</Filter>
     </ClCompile>
   </ItemGroup>

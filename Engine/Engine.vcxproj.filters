@@ -48,7 +48,10 @@
     <ClInclude Include="Source\Systems\ECS\Components\CameraComponent.h">
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Systems\ECS\Components\MeshComponent.h">
+    <ClInclude Include="Source\Systems\ECS\Components\ModelComponent.h">
+      <Filter>Source\Systems\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\ECS\Components\NameComponent.h">
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\ECS\Components\RigidBodyComponent.h">
@@ -70,6 +73,9 @@
       <Filter>Source\Systems\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Mesh.h">
+      <Filter>Source\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Model.h">
       <Filter>Source\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Project\Project.h">
@@ -111,9 +117,6 @@
     <ClInclude Include="Source\Systems\Windows\WindowsWindow.h">
       <Filter>Source\Systems\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Systems\ECS\Components\NameComponent.h">
-      <Filter>Source\Systems\ECS\Components</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -132,6 +135,9 @@
       <Filter>Source\Systems\Layers</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Mesh.cpp">
+      <Filter>Source\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\Model.cpp">
       <Filter>Source\Systems</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Renderers\Camera.cpp">

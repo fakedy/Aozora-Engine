@@ -26,14 +26,6 @@ void ComponentsView::draw() {
 
 		}
 		
-
-
-
-
-
-
-
-
 	}
 	ImGui::End();
 }

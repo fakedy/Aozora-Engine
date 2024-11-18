@@ -3,7 +3,9 @@ workspace "Aozora Engine"
    architecture "x64"
    configurations { "Debug", "Release", "Dist" }
    startproject "Editor"
-
+   
+   filter "action:vs*"
+      buildoptions { "/MP" } -- Enable multicore builds
    -- Workspace-wide build options for MSVC
    filter "system:windows"
       buildoptions { "/EHsc", "/Zc:preprocessor", "/Zc:__cplusplus" }

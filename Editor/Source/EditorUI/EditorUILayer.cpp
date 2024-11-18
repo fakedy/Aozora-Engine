@@ -22,13 +22,13 @@ void EditorUILayer::onUpdate(){
 	// editor window
 	ImGui::Begin("Editor", NULL); // textureid
 	ImVec2 contentRegion = ImGui::GetContentRegionAvail();
-	ImGui::Image((void*)(intptr_t)m_editTextureID, ImVec2(contentRegion.x, contentRegion.y), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image((void*)(intptr_t)m_editColorTextureID, ImVec2(contentRegion.x, contentRegion.y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 
 
 	// game window
 	ImGui::Begin("Game", NULL); // textureid
-	ImGui::Image((void*)(intptr_t)m_editTextureID, ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image((void*)(intptr_t)m_editColorTextureID, ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 
 	ImGui::PopStyleVar();
@@ -56,11 +56,23 @@ void EditorUILayer::createTextures()
 	// dumb idea
 	// create textures for the editor/game window
 
-	glGenTextures(1, &m_editTextureID);
-	glBindTexture(GL_TEXTURE_2D, m_editTextureID);
+	glGenTextures(1, &m_editColorTextureID);
+	glBindTexture(GL_TEXTURE_2D, m_editColorTextureID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_framebufferSizeX, m_framebufferSizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glGenTextures(1, &m_editDepthTextureID);
+	glBindTexture(GL_TEXTURE_2D, m_editDepthTextureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_framebufferSizeX, m_framebufferSizeY, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 }
 
@@ -82,8 +94,13 @@ void EditorUILayer::resizeFramebuffer(int x, int y)
 	// move to framebuffer
 	m_framebufferSizeX = x;
 	m_framebufferSizeY = y;
-	glBindTexture(GL_TEXTURE_2D, m_editTextureID);
+	glBindTexture(GL_TEXTURE_2D, m_editColorTextureID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_framebufferSizeX, m_framebufferSizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	m_framebuffer.get()->bufferTexture(m_editTextureID);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindTexture(GL_TEXTURE_2D, m_editDepthTextureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_framebufferSizeX, m_framebufferSizeY, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	m_framebuffer.get()->bufferTexture(m_editColorTextureID, m_editDepthTextureID);
 	std::cout << "x: " << x << " y: " << y << std::endl;
 }

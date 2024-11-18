@@ -34,7 +34,7 @@ public:
 		m_framebuffer = std::make_shared<Aozora::OpenglFrameBuffer>();
 		m_framebuffer.get()->create();
 		createTextures();
-		m_framebuffer.get()->bufferTexture(m_editTextureID);
+		m_framebuffer.get()->bufferTexture(m_editColorTextureID, m_editDepthTextureID);
 		
 
 
@@ -51,8 +51,8 @@ private:
 	void sceneGraph();
 	void componentsView();
 	std::shared_ptr<Scene> m_currentScene;
-	unsigned int m_editTextureID;
-	unsigned int m_gameTextureID;
+	unsigned int m_editColorTextureID;
+	unsigned int m_editDepthTextureID;
 	std::shared_ptr<Aozora::FrameBuffer> m_framebuffer;
 	int m_framebufferSizeX = 1920;
 	int m_framebufferSizeY = 1080;

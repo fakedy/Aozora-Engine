@@ -5,6 +5,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <memory>
+#include "Systems/Mesh.h"
 
 namespace Aozora {
 
@@ -12,24 +13,14 @@ namespace Aozora {
 	public:
 		ModelLoader();
 
-
-		struct Vertex {
-			glm::vec3 Position;
-			glm::vec3 Normal;
-			glm::vec2 TexCoords;
-		};
-
-		struct MeshData {
-			std::vector<Vertex> vertices;
-			std::vector<uint32_t> indices;
-		};
-
 		const aiScene* importFile(const std::string& file);
-		std::unique_ptr<MeshData> loadModel(const std::string& file);
+		std::vector<Mesh> loadModel(const std::string& file);
 
 
 	private:
 
+		void processNode(aiNode* node, const aiScene* scene, std::vector<Mesh>* meshVector);
+		Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 		static ModelLoader* m_modelLoader;
 		Assimp::Importer m_importer;
 
