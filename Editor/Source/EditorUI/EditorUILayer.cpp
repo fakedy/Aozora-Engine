@@ -22,6 +22,9 @@ void EditorUILayer::onUpdate(){
 	// editor window
 	ImGui::Begin("Editor", NULL); // textureid
 	ImVec2 contentRegion = ImGui::GetContentRegionAvail();
+	m_editorCamera->m_viewPortX = contentRegion.x;
+	m_editorCamera->m_viewPortY = contentRegion.y;
+	m_editorCamera->calcProjection();
 	ImGui::Image((void*)(intptr_t)m_editColorTextureID, ImVec2(contentRegion.x, contentRegion.y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 
@@ -44,10 +47,12 @@ void EditorUILayer::onUpdate(){
 	ImGui::End();
 
 
+	// temporary really. right now we have to unbind because we default to rendering to framebuffer
 	m_framebuffer.get()->unbind();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	m_framebuffer.get()->bind();
+	m_currentScene->editorUpdate(m_editorCamera);
 
 }
 
@@ -55,6 +60,7 @@ void EditorUILayer::createTextures()
 { 
 	// dumb idea
 	// create textures for the editor/game window
+	// move to framebuffer
 
 	glGenTextures(1, &m_editColorTextureID);
 	glBindTexture(GL_TEXTURE_2D, m_editColorTextureID);

@@ -22,10 +22,10 @@ namespace Aozora {
 
 		m_window = Window::create(props);
 
-		m_currentScene = std::make_shared<Scene>();
+		m_renderer = std::shared_ptr<Renderer>(Renderer::create(props));
+		m_currentScene = std::make_shared<Scene>(m_renderer);
 
 
-		m_renderer = Renderer::create(m_currentScene, props);
 		m_resourceManager = new ResourceManager();
 
 		layerStack = new LayerStack();
@@ -37,10 +37,8 @@ namespace Aozora {
 
 		while (!m_window->windowShouldClose()) {
 
-			m_renderer->render(); // render call
-
 			// temp stuff
-			auto view = m_currentScene.get()->registry->view<TransformComponent>(); // register of all mesh components
+			auto view = m_currentScene.get()->m_registry->view<TransformComponent>(); // register of all mesh components
 			for (const auto entity : view) {
 				auto& transform = view.get<TransformComponent>(entity);
 				glm::mat4 model = glm::mat4(1.0f);

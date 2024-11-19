@@ -165,6 +165,7 @@
     <ClInclude Include="Source\Systems\Model.h" />
     <ClInclude Include="Source\Systems\Project\Project.h" />
     <ClInclude Include="Source\Systems\Renderers\Camera.h" />
+    <ClInclude Include="Source\Systems\Renderers\EditorCamera.h" />
     <ClInclude Include="Source\Systems\Renderers\FrameBuffer.h" />
     <ClInclude Include="Source\Systems\Renderers\OpenGL.h" />
     <ClInclude Include="Source\Systems\Renderers\Opengl\OpenglFrameBuffer.h" />
@@ -186,11 +187,13 @@
     <ClCompile Include="Source\Systems\Mesh.cpp" />
     <ClCompile Include="Source\Systems\Model.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Camera.cpp" />
+    <ClCompile Include="Source\Systems\Renderers\EditorCamera.cpp" />
     <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglFrameBuffer.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglShader.cpp" />
     <ClCompile Include="Source\Systems\ResourceManager\ModelLoader.cpp" />
     <ClCompile Include="Source\Systems\ResourceManager\ResourceManager.cpp" />
+    <ClCompile Include="Source\Systems\Scene\Scene.cpp" />
     <ClCompile Include="Source\Systems\Windows\WindowsWindow.cpp" />
     <ClCompile Include="Source\glad.c" />
     <ClCompile Include="Vendor\include\imgui\imgui.cpp" />

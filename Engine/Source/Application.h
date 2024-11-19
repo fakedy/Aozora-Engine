@@ -33,7 +33,7 @@ namespace Aozora {
 		static Application* m_appInstance;
 
 		Window* m_window;
-		Renderer* m_renderer;
+		std::shared_ptr<Renderer> m_renderer;
 		ResourceManager* m_resourceManager;
 		
 

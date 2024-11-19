@@ -8,14 +8,15 @@
 #include <iostream>
 #include "EditorEntityWindow.h"
 #include "ComponentsView.h"
+#include "Systems/Renderers/EditorCamera.h"
 
 class EditorUILayer : public Aozora::Layer {
 public:
-	EditorUILayer(std::shared_ptr<Scene> scene) : m_currentScene(scene) {
+	EditorUILayer(std::shared_ptr<Aozora::Scene> scene) : m_currentScene(scene) {
 
 		m_currentScene = scene;
-		m_componentsViewWindow = std::make_shared<ComponentsView>(scene->registry);
-		m_editorEntityWindow = std::make_shared<EditorEntityWindow>(scene->registry, m_componentsViewWindow);
+		m_componentsViewWindow = std::make_shared<ComponentsView>(scene->m_registry);
+		m_editorEntityWindow = std::make_shared<EditorEntityWindow>(scene->m_registry, m_componentsViewWindow);
 
 		
 		IMGUI_CHECKVERSION();
@@ -35,6 +36,8 @@ public:
 		m_framebuffer.get()->create();
 		createTextures();
 		m_framebuffer.get()->bufferTexture(m_editColorTextureID, m_editDepthTextureID);
+
+		m_editorCamera = std::make_shared<EditorCamera>();
 		
 
 
@@ -50,12 +53,13 @@ private:
 	std::shared_ptr<ComponentsView> m_componentsViewWindow;
 	void sceneGraph();
 	void componentsView();
-	std::shared_ptr<Scene> m_currentScene;
+	std::shared_ptr<Aozora::Scene> m_currentScene;
 	unsigned int m_editColorTextureID;
 	unsigned int m_editDepthTextureID;
 	std::shared_ptr<Aozora::FrameBuffer> m_framebuffer;
 	int m_framebufferSizeX = 1920;
 	int m_framebufferSizeY = 1080;
+	std::shared_ptr<EditorCamera> m_editorCamera;
 
 	void resizeFramebuffer(int x, int y);
 

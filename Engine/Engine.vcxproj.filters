@@ -117,6 +117,9 @@
     <ClInclude Include="Source\Systems\Windows\WindowsWindow.h">
       <Filter>Source\Systems\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\Renderers\EditorCamera.h">
+      <Filter>Source\Systems\Renderers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -181,6 +184,12 @@
     </ClCompile>
     <ClCompile Include="Vendor\include\imgui\imgui_widgets.cpp">
       <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\Renderers\EditorCamera.cpp">
+      <Filter>Source\Systems\Renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\Scene\Scene.cpp">
+      <Filter>Source\Systems\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

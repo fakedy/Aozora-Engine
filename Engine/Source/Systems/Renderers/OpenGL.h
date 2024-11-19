@@ -11,9 +11,9 @@ namespace Aozora {
 	{
 	public:
 
-		OpenGL(std::shared_ptr<Scene> scene, Window::WindowProps props);
+		OpenGL(Window::WindowProps props);
 
-		void render() override;
+		void render(glm::mat4 model, glm::mat4 view, glm::mat4 proj) override;
 		virtual void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
 
