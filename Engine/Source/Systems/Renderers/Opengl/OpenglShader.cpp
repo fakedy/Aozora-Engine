@@ -67,11 +67,11 @@ Aozora::OpenglShader::OpenglShader(const char* vertexPath, const char* fragmentP
 	}
 
 	// create the shader program
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	glUseProgram(shaderProgram);
+	ID = glCreateProgram();
+	glAttachShader(ID, vertexShader);
+	glAttachShader(ID, fragmentShader);
+	glLinkProgram(ID);
+	glUseProgram(ID);
 
 	// delete the shaders as we have the program
 	glDeleteShader(vertexShader);

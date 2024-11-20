@@ -26,10 +26,10 @@ public:
 
 		ImGui::StyleColorsDark();
 
-		Aozora::Application& app = Aozora::Application::getApplication();
-		GLFWwindow* window = static_cast<GLFWwindow*>(app.getWindow().getNativeWindow());
+		Aozora::Application& m_app = Aozora::Application::getApplication();
+		GLFWwindow* m_window = static_cast<GLFWwindow*>(m_app.getWindow().getNativeWindow());
 
-		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplGlfw_InitForOpenGL(m_window, true);
 		ImGui_ImplOpenGL3_Init();
 
 		m_framebuffer = std::make_shared<Aozora::OpenglFrameBuffer>();
@@ -47,7 +47,6 @@ public:
 
 
 private:
-
 	void createTextures();
 	std::shared_ptr<EditorEntityWindow> m_editorEntityWindow;
 	std::shared_ptr<ComponentsView> m_componentsViewWindow;

@@ -1,18 +1,14 @@
 #include "ModelLoader.h"
 #include <iostream>
+#include <iostream>
+#include <fstream>
+#include <glad/glad.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
 namespace Aozora {
 
-
-    ModelLoader* ModelLoader::m_modelLoader = nullptr;
-
-    ModelLoader::ModelLoader()
-    {
-	    if (m_modelLoader == nullptr) {
-		    m_modelLoader = this;
-	    }
-    }
 
     const aiScene* ModelLoader::importFile(const std::string& file)
     {
@@ -23,7 +19,7 @@ namespace Aozora {
             aiProcess_FlipUVs);
 
         if (scene == nullptr) {
-            std::cout << "assimp import fail\n";
+            std::cerr << "Error importing file: " << m_importer.GetErrorString() << std::endl;
         }
 
         return scene;
@@ -36,6 +32,7 @@ namespace Aozora {
         for (unsigned int i = 0; i < node->mNumMeshes; i++) {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
             meshVector->push_back(processMesh(mesh, scene));
+            
         }
 
         for (unsigned int i = 0; i < node->mNumChildren; i++) {
@@ -48,6 +45,23 @@ namespace Aozora {
     Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene)
     {
         Mesh createdmesh;
+
+        if(mesh->mMaterialIndex >= 0){
+            aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
+            std::vector<Mesh::Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+            createdmesh.textures.insert(createdmesh.textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
+            std::vector<Mesh::Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+            createdmesh.textures.insert(createdmesh.textures.end(), specularMaps.begin(), specularMaps.end());
+
+            //std::vector<Mesh::Texture> normalMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_normal");
+            //createdmesh.textures.insert(createdmesh.textures.end(), normalMaps.begin(), normalMaps.end());
+
+            //std::vector<Mesh::Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+            //createdmesh.textures.insert(createdmesh.textures.end(), heightMaps.begin(), heightMaps.end());
+            
+        }
 
         for (uint32_t v = 0; v < mesh->mNumVertices; v++) {
 
@@ -67,9 +81,19 @@ namespace Aozora {
                 vertex.Normal = normal;
             }
 
-            glm::vec3 texcoord;
+            glm::vec2 texcoord;
+            if (mesh->mTextureCoords[0]) {
+                texcoord.x = mesh->mTextureCoords[0][v].x;
+                texcoord.y = mesh->mTextureCoords[0][v].y;
+                vertex.TexCoords = texcoord;
+            }
+            else {
+                vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+            }
+
             // implement texture coords
             createdmesh.meshData.vertices.push_back(vertex);
+
 
         }
 
@@ -84,9 +108,67 @@ namespace Aozora {
         return createdmesh;
     }
 
+
+
+    std::vector<Mesh::Texture> ModelLoader::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName) {
+        std::vector<Mesh::Texture> textures;
+        for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
+            aiString str;
+            mat->GetTexture(type, i, &str);
+            Mesh::Texture texture;
+            texture.id = loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+            texture.type = typeName;
+            texture.path = str.C_Str();
+            textures.push_back(texture);
+        }
+        return textures;
+    }
+
+    unsigned int ModelLoader::loadTexture(const std::string path, const std::string& directory) // TODO move to separate and separate opengl implementation
+    {
+        std::string filename = std::string(path);
+        filename = directory + "/" + filename;
+
+        unsigned int texture;
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        int width, height, nrChannels;
+
+        unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
+        if (data) {
+            if (nrChannels == 4) {
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+                glGenerateMipmap(GL_TEXTURE_2D);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            }
+            else {
+
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+                glGenerateMipmap(GL_TEXTURE_2D);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            }
+        }
+        else {
+            std::cerr << "texture load failed\n";
+        }
+        stbi_image_free(data);
+
+        return texture;
+    }
+
+
+
+
     std::vector<Mesh> ModelLoader::loadModel(const std::string& file)
     {
         const aiScene* scene = importFile(file);
+        m_directory = file.substr(0, file.find_last_of('/'));
         std::vector<Mesh> meshVector;
         processNode(scene->mRootNode, scene, &meshVector);
         

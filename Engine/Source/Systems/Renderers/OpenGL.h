@@ -13,14 +13,14 @@ namespace Aozora {
 
 		OpenGL(Window::WindowProps props);
 
-		void render(glm::mat4 model, glm::mat4 view, glm::mat4 proj) override;
+		void render(Shader& shader, glm::mat4 model, glm::mat4 view, glm::mat4 proj) override;
+		void clear() override;
 		virtual void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
 
 	private:
 	
 		void init();
-		OpenglShader m_defaultShader{ OpenglShader("Resources/Shaders/v_default.glsl", "Resources/Shaders/f_default.glsl") };
 	};
 }
 

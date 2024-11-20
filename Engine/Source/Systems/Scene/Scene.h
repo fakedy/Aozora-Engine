@@ -6,6 +6,8 @@
 #include "Systems/Renderers/Renderer.h"
 #include "Systems/ECS/Components/ModelComponent.h"
 #include "Systems/ECS/Components/TransformComponent.h"
+#include "Systems/ECS/Components/CameraComponent.h"
+#include "Systems/Renderers/Opengl/OpenglShader.h"
 
 namespace Aozora {
 
@@ -26,6 +28,7 @@ namespace Aozora {
 		void renderScene(std::shared_ptr<EditorCamera> camera);
 		void editorUpdate(std::shared_ptr<EditorCamera> camera);
 
+		OpenglShader m_defaultShader{ OpenglShader("Resources/Shaders/v_default.glsl", "Resources/Shaders/f_default.glsl") };
 	private:
 
 

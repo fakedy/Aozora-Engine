@@ -10,7 +10,7 @@ namespace Aozora {
 	public:
 
 		Model();
-		void draw();
+		void draw(Shader& shader);
 
 	private:
 

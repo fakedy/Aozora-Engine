@@ -11,7 +11,7 @@ namespace Aozora {
 
 	Application* Application::m_appInstance = nullptr;
 
-	Aozora::Application::Application(const char* title)
+	Aozora::Application::Application(const char* title) : m_resourceManager(ResourceManager::getResourceManager())
 	{
 		// singleton
 		assert(m_appInstance == nullptr);
@@ -25,8 +25,6 @@ namespace Aozora {
 		m_renderer = std::shared_ptr<Renderer>(Renderer::create(props));
 		m_currentScene = std::make_shared<Scene>(m_renderer);
 
-
-		m_resourceManager = new ResourceManager();
 
 		layerStack = new LayerStack();
 
@@ -47,6 +45,7 @@ namespace Aozora {
 				model = glm::rotate(model, glm::radians(transform.rot.x), glm::vec3(1.0f, 0.0f, 0.0f));
 				model = glm::rotate(model, glm::radians(transform.rot.y), glm::vec3(0.0f, 1.0f, 0.0f));
 				model = glm::rotate(model, glm::radians(transform.rot.z), glm::vec3(0.0f, 0.0f, 1.0f));
+				//model = glm::rotate(model, glm::radians(20.0f)* (float)glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
 				model = glm::scale(model, transform.scale);
 				transform.model = model;
 			}

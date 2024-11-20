@@ -1,6 +1,7 @@
 #pragma once
 #include "Systems/Windows/Window.h"
 #include <glm/glm.hpp>
+#include "Shader.h"
 
 namespace Aozora {
 
@@ -9,7 +10,8 @@ namespace Aozora {
 	public:
 
 
-		virtual void render(glm::mat4 model, glm::mat4 view, glm::mat4 proj) = 0;
+		virtual void render(Shader& shader, glm::mat4 model, glm::mat4 view, glm::mat4 proj) = 0;
+		virtual void clear() = 0;
 
 		static Renderer* create(Window::WindowProps props);
 

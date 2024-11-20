@@ -1,17 +1,8 @@
 #include "ResourceManager.h"
-#include <iostream>
+
 
 namespace Aozora {
 
-    ResourceManager* ResourceManager::m_resourceManager = nullptr;
-
-    ResourceManager::ResourceManager()
-    {
-        if (m_resourceManager == nullptr) {
-            m_resourceManager = this;
-        }
-        m_modelLoader = new ModelLoader();
-    }
 
     const std::vector<Mesh> ResourceManager::loadModel(const std::string& file)
     {
@@ -21,9 +12,17 @@ namespace Aozora {
 
         // TODO store model into memory
 
-        return m_modelLoader->loadModel(file);
+        return m_modelLoader.loadModel(file);
 
     }
+
+    unsigned int ResourceManager::loadTexture(const char* path)
+    {
+
+        return 0;
+    }
+
+
 }
 
 

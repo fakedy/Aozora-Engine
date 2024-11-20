@@ -84,6 +84,9 @@
     <ClInclude Include="Source\Systems\Renderers\Camera.h">
       <Filter>Source\Systems\Renderers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\Renderers\EditorCamera.h">
+      <Filter>Source\Systems\Renderers</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\Renderers\FrameBuffer.h">
       <Filter>Source\Systems\Renderers</Filter>
     </ClInclude>
@@ -108,6 +111,9 @@
     <ClInclude Include="Source\Systems\ResourceManager\ResourceManager.h">
       <Filter>Source\Systems\ResourceManager</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\ResourceManager\TextureLoader.h">
+      <Filter>Source\Systems\ResourceManager</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\Scene\Scene.h">
       <Filter>Source\Systems\Scene</Filter>
     </ClInclude>
@@ -116,9 +122,6 @@
     </ClInclude>
     <ClInclude Include="Source\Systems\Windows\WindowsWindow.h">
       <Filter>Source\Systems\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Systems\Renderers\EditorCamera.h">
-      <Filter>Source\Systems\Renderers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -146,6 +149,9 @@
     <ClCompile Include="Source\Systems\Renderers\Camera.cpp">
       <Filter>Source\Systems\Renderers</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Systems\Renderers\EditorCamera.cpp">
+      <Filter>Source\Systems\Renderers</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp">
       <Filter>Source\Systems\Renderers</Filter>
     </ClCompile>
@@ -160,6 +166,12 @@
     </ClCompile>
     <ClCompile Include="Source\Systems\ResourceManager\ResourceManager.cpp">
       <Filter>Source\Systems\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\ResourceManager\TextureLoader.cpp">
+      <Filter>Source\Systems\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\Scene\Scene.cpp">
+      <Filter>Source\Systems\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Windows\WindowsWindow.cpp">
       <Filter>Source\Systems\Windows</Filter>
@@ -184,12 +196,6 @@
     </ClCompile>
     <ClCompile Include="Vendor\include\imgui\imgui_widgets.cpp">
       <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Systems\Renderers\EditorCamera.cpp">
-      <Filter>Source\Systems\Renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Systems\Scene\Scene.cpp">
-      <Filter>Source\Systems\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

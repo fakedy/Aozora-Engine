@@ -34,7 +34,7 @@ namespace Aozora {
 
 		Window* m_window;
 		std::shared_ptr<Renderer> m_renderer;
-		ResourceManager* m_resourceManager;
+		ResourceManager& m_resourceManager;
 		
 
 	};

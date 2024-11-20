@@ -24,16 +24,18 @@ namespace Aozora {
 	}
 
 
-	void OpenGL::render(glm::mat4 model, glm::mat4 view, glm::mat4 proj)
+	void OpenGL::render(Shader& shader, glm::mat4 model, glm::mat4 view, glm::mat4 proj)
 	{
+
+		glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, &model[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(shader.ID, "view"), 1, GL_FALSE, &view[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(shader.ID, "proj"), 1, GL_FALSE, &proj[0][0]);
+
+	}
+
+	void OpenGL::clear() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-
-
-		glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
-		glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
-		glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.shaderProgram, "proj"), 1, GL_FALSE, &proj[0][0]);
-
 	}
 
 	void OpenGL::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)

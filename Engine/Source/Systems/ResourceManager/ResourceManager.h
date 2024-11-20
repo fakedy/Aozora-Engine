@@ -1,5 +1,6 @@
 #pragma once
 #include "ModelLoader.h"
+#include "TextureLoader.h"
 
 
 namespace Aozora {
@@ -7,16 +8,27 @@ namespace Aozora {
 	class ResourceManager {
 	public:
 
-		ResourceManager();
+
+		
+		static ResourceManager& getResourceManager() {
+			static ResourceManager instance;
+			return instance;
+		}
+
+		ResourceManager(ResourceManager const&) = delete;
+		void operator =(ResourceManager const&) = delete;
 
 
 		const std::vector<Mesh> loadModel(const std::string& file);
 
+		unsigned int loadTexture(const char* path);
+
 	private:
 
-		static ResourceManager* m_resourceManager;
+		ResourceManager() = default;
 
-		ModelLoader* m_modelLoader;
+		TextureLoader m_textureLoader = TextureLoader();
+		ModelLoader m_modelLoader = ModelLoader();
 
 	};
 }

@@ -46,6 +46,9 @@ void EditorUILayer::onUpdate(){
 	ImGui::Begin("Console");
 	ImGui::End();
 
+	ImGui::Begin("Stats");
+	ImGui::End();
+
 
 	// temporary really. right now we have to unbind because we default to rendering to framebuffer
 	m_framebuffer.get()->unbind();

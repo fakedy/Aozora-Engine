@@ -11,7 +11,7 @@ namespace Aozora {
 
 	class ModelLoader {
 	public:
-		ModelLoader();
+		ModelLoader() {};
 
 		const aiScene* importFile(const std::string& file);
 		std::vector<Mesh> loadModel(const std::string& file);
@@ -21,8 +21,10 @@ namespace Aozora {
 
 		void processNode(aiNode* node, const aiScene* scene, std::vector<Mesh>* meshVector);
 		Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-		static ModelLoader* m_modelLoader;
+		unsigned int loadTexture(const std::string path, const std::string& directory);
+		std::vector<Mesh::Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 		Assimp::Importer m_importer;
+		std::string m_directory;
 
 	};
 }

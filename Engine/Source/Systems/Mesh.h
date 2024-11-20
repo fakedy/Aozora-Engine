@@ -2,6 +2,7 @@
 #include "Systems/Renderers/Shader.h"
 #include "glm/glm.hpp"
 #include <vector>
+#include <string>
 
 namespace Aozora {
 
@@ -21,21 +22,21 @@ namespace Aozora {
 			std::vector<unsigned int> indices;
 		};
 
+		struct Texture {
+			unsigned int id;
+			std::string type;
+			std::string path;
+		};
+
 		unsigned int VAO;
 		unsigned int VBO;
 		unsigned int EBO;
-		
+		std::vector<Texture> textures;
 
 		MeshData meshData;
 		void bufferData();
-		void draw();
+		void draw(Shader& shader);
 	private:
-
-
-
-
-
-
 
 	};
 }
