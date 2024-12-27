@@ -6,6 +6,8 @@
 
 namespace Aozora {
 
+	static int temp = 0;
+
 	class Model {
 	public:
 
@@ -14,7 +16,6 @@ namespace Aozora {
 
 	private:
 
-		
 		
 		std::vector<Mesh> m_meshes;
 

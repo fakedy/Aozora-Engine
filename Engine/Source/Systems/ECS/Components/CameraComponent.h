@@ -5,7 +5,7 @@ namespace Aozora {
 
 	struct CameraComponent {
 
-		std::shared_ptr<Camera> camera = std::make_shared<Camera>();
+		std::shared_ptr<Camera> camera = std::make_shared<Camera>(); // replace so its only data?
 	};
 
 

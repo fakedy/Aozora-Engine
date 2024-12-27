@@ -3,7 +3,8 @@
 
 namespace Aozora {
 
-
+	struct RigidBodyComponent {
+	};
 
 
 

@@ -28,6 +28,7 @@ namespace Aozora {
 		inline Window& getWindow() { return *m_window; }
 
 		std::shared_ptr<Scene> m_currentScene;
+		
 
 	private:
 		static Application* m_appInstance;

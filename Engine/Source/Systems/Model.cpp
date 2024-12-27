@@ -8,12 +8,19 @@ namespace Aozora {
     Model::Model()
     {
         ResourceManager& source = ResourceManager::getResourceManager(); // singleton
-        //m_meshes = source.loadModel("Resources/Zhu-yuan/source/Zhu-yuan.fbx"); // temp default object
-        //m_meshes = source.loadModel("Resources/hintze-hall-vr-tour/source/hintze-hall_UV_pack01.fbx"); // temp default object
+        //m_meshes = source.loadModel("Resources/hintze-hall-vr-tour/source/hintze-hall_UV_pack01.fbx");
         //m_meshes = source.loadModel("Resources/survival-guitar-backpack/source/Survival_BackPack_2.fbx");
+        
         //m_meshes = source.loadModel("Resources/sponza/sponza.obj");
         //m_meshes = source.loadModel("Resources/cube/cube.obj");
-        m_meshes = source.loadModel("Resources/DamagedHelmet/DamagedHelmet.gltf");
+        //m_meshes = source.loadModel("Resources/DamagedHelmet/DamagedHelmet.gltf");
+        if (temp == 0) {
+            m_meshes = source.loadModel("Resources/cube/cube.obj");
+            temp++;
+        }
+        else {
+            m_meshes = source.loadModel("Resources/cube/cube.obj");
+        }
 
 
     }

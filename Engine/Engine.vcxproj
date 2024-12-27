@@ -158,6 +158,7 @@
     <ClInclude Include="Source\Systems\ECS\Components\RigidBodyComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\ScriptComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\TransformComponent.h" />
+    <ClInclude Include="Source\Systems\Input.h" />
     <ClInclude Include="Source\Systems\Layers\ImguiLayer.h" />
     <ClInclude Include="Source\Systems\Layers\Layer.h" />
     <ClInclude Include="Source\Systems\Layers\LayerStack.h" />
@@ -176,12 +177,13 @@
     <ClInclude Include="Source\Systems\ResourceManager\ResourceManager.h" />
     <ClInclude Include="Source\Systems\ResourceManager\TextureLoader.h" />
     <ClInclude Include="Source\Systems\Scene\Scene.h" />
+    <ClInclude Include="Source\Systems\Time.h" />
     <ClInclude Include="Source\Systems\Windows\Window.h" />
     <ClInclude Include="Source\Systems\Windows\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
-    <ClCompile Include="Source\Engine.cpp" />
+    <ClCompile Include="Source\Systems\Input.cpp" />
     <ClCompile Include="Source\Systems\Layers\ImguiLayer.cpp" />
     <ClCompile Include="Source\Systems\Layers\Layer.cpp" />
     <ClCompile Include="Source\Systems\Layers\LayerStack.cpp" />

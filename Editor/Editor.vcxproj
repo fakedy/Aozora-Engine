@@ -144,12 +144,14 @@
     <ClInclude Include="Source\EditorUI\ComponentsView.h" />
     <ClInclude Include="Source\EditorUI\EditorEntityWindow.h" />
     <ClInclude Include="Source\EditorUI\EditorUILayer.h" />
+    <ClInclude Include="Source\EditorUI\StatsView.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Editor.cpp" />
     <ClCompile Include="Source\EditorUI\ComponentsView.cpp" />
     <ClCompile Include="Source\EditorUI\EditorEntityWindow.cpp" />
     <ClCompile Include="Source\EditorUI\EditorUILayer.cpp" />
+    <ClCompile Include="Source\EditorUI\StatsView.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">

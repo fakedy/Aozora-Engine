@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include "Systems/Time.h"
+#include <chrono>
 
 
 namespace Aozora {
@@ -34,27 +36,21 @@ namespace Aozora {
 	{
 
 		while (!m_window->windowShouldClose()) {
+			auto start = std::chrono::high_resolution_clock::now();
 
-			// temp stuff
-			auto view = m_currentScene.get()->m_registry->view<TransformComponent>(); // register of all mesh components
-			for (const auto entity : view) {
-				auto& transform = view.get<TransformComponent>(entity);
-				glm::mat4 model = glm::mat4(1.0f);
-				model = glm::translate(glm::mat4(1.0f), transform.pos);
-				// solving rotation for now
-				model = glm::rotate(model, glm::radians(transform.rot.x), glm::vec3(1.0f, 0.0f, 0.0f));
-				model = glm::rotate(model, glm::radians(transform.rot.y), glm::vec3(0.0f, 1.0f, 0.0f));
-				model = glm::rotate(model, glm::radians(transform.rot.z), glm::vec3(0.0f, 0.0f, 1.0f));
-				//model = glm::rotate(model, glm::radians(20.0f)* (float)glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
-				model = glm::scale(model, transform.scale);
-				transform.model = model;
-			}
 
 			// TODO render after updated layers
 			for (Layer* layer : *layerStack) {
 				layer->onUpdate(); // update layers
 			}
+
+			//m_currentScene->renderScene();
 			m_window->onUpdate(); // swap buffer
+
+
+			auto end = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<float> elapsed = end - start;
+			Time::deltaTime = elapsed.count();
 
 		}
 	}

@@ -25,13 +25,18 @@ void EditorUILayer::onUpdate(){
 	m_editorCamera->m_viewPortX = contentRegion.x;
 	m_editorCamera->m_viewPortY = contentRegion.y;
 	m_editorCamera->calcProjection();
-	ImGui::Image((void*)(intptr_t)m_editColorTextureID, ImVec2(contentRegion.x, contentRegion.y), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image((void*)(intptr_t)m_editorFramebuffer->m_colorTextureID, ImVec2(contentRegion.x, contentRegion.y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 
 
 	// game window
 	ImGui::Begin("Game", NULL); // textureid
-	ImGui::Image((void*)(intptr_t)m_editColorTextureID, ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y), ImVec2(0, 1), ImVec2(1, 0));
+	ImVec2 contentRegionGame = ImGui::GetContentRegionAvail();
+	if (m_currentScene->m_activeCamera != nullptr) {
+		m_currentScene->m_activeCamera->m_viewPortX = contentRegionGame.x;
+		m_currentScene->m_activeCamera->m_viewPortY = contentRegionGame.y;
+	}
+	ImGui::Image((void*)(intptr_t)m_gameFramebuffer->m_colorTextureID, ImVec2(contentRegionGame.x, contentRegionGame.y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 
 	ImGui::PopStyleVar();
@@ -46,46 +51,23 @@ void EditorUILayer::onUpdate(){
 	ImGui::Begin("Console");
 	ImGui::End();
 
-	ImGui::Begin("Stats");
-	ImGui::End();
+	statsView();
 
 
 	// temporary really. right now we have to unbind because we default to rendering to framebuffer
-	m_framebuffer.get()->unbind();
+	m_editorFramebuffer->unbind();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	m_framebuffer.get()->bind();
+
+	m_editorFramebuffer->bind();
 	m_currentScene->editorUpdate(m_editorCamera);
+	m_editorFramebuffer->unbind();
+
+	m_gameFramebuffer->bind();
+	m_currentScene->renderScene();
+	m_gameFramebuffer->unbind();
 
 }
-
-void EditorUILayer::createTextures()
-{ 
-	// dumb idea
-	// create textures for the editor/game window
-	// move to framebuffer
-
-	glGenTextures(1, &m_editColorTextureID);
-	glBindTexture(GL_TEXTURE_2D, m_editColorTextureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_framebufferSizeX, m_framebufferSizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	glGenTextures(1, &m_editDepthTextureID);
-	glBindTexture(GL_TEXTURE_2D, m_editDepthTextureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_framebufferSizeX, m_framebufferSizeY, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-}
-
-
 
 
 void EditorUILayer::sceneGraph()
@@ -98,8 +80,14 @@ void EditorUILayer::componentsView()
 	m_componentsViewWindow->draw();
 }
 
+void EditorUILayer::statsView()
+{
+	m_statsViewWindow->draw();
+}
+
 void EditorUILayer::resizeFramebuffer(int x, int y)
 {
+	/*
 	// move to framebuffer
 	m_framebufferSizeX = x;
 	m_framebufferSizeY = y;
@@ -110,6 +98,7 @@ void EditorUILayer::resizeFramebuffer(int x, int y)
 	glBindTexture(GL_TEXTURE_2D, m_editDepthTextureID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_framebufferSizeX, m_framebufferSizeY, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	m_framebuffer.get()->bufferTexture(m_editColorTextureID, m_editDepthTextureID);
+	m_editorFramebuffer.get()->bufferTexture(m_editColorTextureID, m_editDepthTextureID);
 	std::cout << "x: " << x << " y: " << y << std::endl;
+	*/
 }

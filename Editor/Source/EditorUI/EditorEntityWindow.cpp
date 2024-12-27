@@ -18,15 +18,13 @@ void EditorEntityWindow::draw()
 		
 	}
 
-	int i = 0;
-	for (const auto entity : view) {
-		auto& nameComponent = view.get<Aozora::NameComponent>(entity);
-		std::string blabla = nameComponent.name + std::to_string(i);
+	for (int i = view.size(); i > 0; i--) {
+		auto& nameComponent = view.get<Aozora::NameComponent>(view[i-1]);
+		std::string blabla = nameComponent.name + std::to_string(view.size() - i);
 
 		if (ImGui::Selectable(blabla.c_str())) {
-			m_componentsView->setSelectedEntity(entity);
+			m_componentsView->setSelectedEntity(view[i-1]);
 		}
-		i++;
 	}
 
 	ImGui::End();

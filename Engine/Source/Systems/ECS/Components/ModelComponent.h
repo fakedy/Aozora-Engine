@@ -5,7 +5,7 @@
 namespace Aozora {
 
 	struct ModelComponent {
-		std::unique_ptr<Model> model = std::make_unique<Model>();
+		std::unique_ptr<Model> model = std::make_unique<Model>(); // replace so its only data?
 	};
 
 }

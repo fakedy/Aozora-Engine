@@ -15,6 +15,9 @@
     <ClInclude Include="Source\EditorUI\EditorUILayer.h">
       <Filter>EditorUI</Filter>
     </ClInclude>
+    <ClInclude Include="Source\EditorUI\StatsView.h">
+      <Filter>EditorUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Editor.cpp" />
@@ -25,6 +28,9 @@
       <Filter>EditorUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\EditorUI\EditorUILayer.cpp">
+      <Filter>EditorUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EditorUI\StatsView.cpp">
       <Filter>EditorUI</Filter>
     </ClCompile>
   </ItemGroup>

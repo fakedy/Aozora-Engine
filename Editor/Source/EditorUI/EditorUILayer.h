@@ -8,6 +8,7 @@
 #include <iostream>
 #include "EditorEntityWindow.h"
 #include "ComponentsView.h"
+#include "StatsView.h"
 #include "Systems/Renderers/EditorCamera.h"
 
 class EditorUILayer : public Aozora::Layer {
@@ -32,10 +33,15 @@ public:
 		ImGui_ImplGlfw_InitForOpenGL(m_window, true);
 		ImGui_ImplOpenGL3_Init();
 
-		m_framebuffer = std::make_shared<Aozora::OpenglFrameBuffer>();
-		m_framebuffer.get()->create();
-		createTextures();
-		m_framebuffer.get()->bufferTexture(m_editColorTextureID, m_editDepthTextureID);
+		m_editorFramebuffer = std::make_shared<Aozora::OpenglFrameBuffer>();
+		m_editorFramebuffer.get()->create();
+		m_editorFramebuffer.get()->createTextures(m_framebufferSizeX, m_framebufferSizeY);
+		m_editorFramebuffer.get()->bufferTexture();
+
+		m_gameFramebuffer = std::make_shared<Aozora::OpenglFrameBuffer>();
+		m_gameFramebuffer.get()->create();
+		m_gameFramebuffer.get()->createTextures(m_framebufferSizeX, m_framebufferSizeY);
+		m_gameFramebuffer.get()->bufferTexture();
 
 		m_editorCamera = std::make_shared<EditorCamera>();
 		
@@ -47,15 +53,16 @@ public:
 
 
 private:
-	void createTextures();
 	std::shared_ptr<EditorEntityWindow> m_editorEntityWindow;
 	std::shared_ptr<ComponentsView> m_componentsViewWindow;
+	std::shared_ptr<StatsView> m_statsViewWindow;
 	void sceneGraph();
 	void componentsView();
+	void statsView();
 	std::shared_ptr<Aozora::Scene> m_currentScene;
-	unsigned int m_editColorTextureID;
-	unsigned int m_editDepthTextureID;
-	std::shared_ptr<Aozora::FrameBuffer> m_framebuffer;
+
+	std::shared_ptr<Aozora::FrameBuffer> m_editorFramebuffer;
+	std::shared_ptr<Aozora::FrameBuffer> m_gameFramebuffer;
 	int m_framebufferSizeX = 1920;
 	int m_framebufferSizeY = 1080;
 	std::shared_ptr<EditorCamera> m_editorCamera;

@@ -63,6 +63,9 @@
     <ClInclude Include="Source\Systems\ECS\Components\TransformComponent.h">
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\Input.h">
+      <Filter>Source\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\Layers\ImguiLayer.h">
       <Filter>Source\Systems\Layers</Filter>
     </ClInclude>
@@ -117,6 +120,9 @@
     <ClInclude Include="Source\Systems\Scene\Scene.h">
       <Filter>Source\Systems\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\Time.h">
+      <Filter>Source\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\Windows\Window.h">
       <Filter>Source\Systems\Windows</Filter>
     </ClInclude>
@@ -128,8 +134,8 @@
     <ClCompile Include="Source\Application.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine.cpp">
-      <Filter>Source</Filter>
+    <ClCompile Include="Source\Systems\Input.cpp">
+      <Filter>Source\Systems</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Layers\ImguiLayer.cpp">
       <Filter>Source\Systems\Layers</Filter>

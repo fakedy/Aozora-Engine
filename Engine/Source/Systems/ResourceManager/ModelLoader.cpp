@@ -52,14 +52,20 @@ namespace Aozora {
             std::vector<Mesh::Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
             createdmesh.textures.insert(createdmesh.textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-            std::vector<Mesh::Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-            createdmesh.textures.insert(createdmesh.textures.end(), specularMaps.begin(), specularMaps.end());
+            std::vector<Mesh::Texture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
+            createdmesh.textures.insert(createdmesh.textures.end(), normalMaps.begin(), normalMaps.end());
 
-            //std::vector<Mesh::Texture> normalMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_normal");
-            //createdmesh.textures.insert(createdmesh.textures.end(), normalMaps.begin(), normalMaps.end());
+            std::vector<Mesh::Texture> emissiveMaps = loadMaterialTextures(material, aiTextureType_EMISSIVE, "texture_emissive");
+            createdmesh.textures.insert(createdmesh.textures.end(), emissiveMaps.begin(), emissiveMaps.end());
 
-            //std::vector<Mesh::Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-            //createdmesh.textures.insert(createdmesh.textures.end(), heightMaps.begin(), heightMaps.end());
+            std::vector<Mesh::Texture> ambientMaps = loadMaterialTextures(material, aiTextureType_AMBIENT_OCCLUSION, "texture_ao");
+            createdmesh.textures.insert(createdmesh.textures.end(), ambientMaps.begin(), ambientMaps.end());
+
+            std::vector<Mesh::Texture> metallicMaps = loadMaterialTextures(material, aiTextureType_METALNESS, "texture_metallic");
+            createdmesh.textures.insert(createdmesh.textures.end(), metallicMaps.begin(), metallicMaps.end());
+
+            std::vector<Mesh::Texture> roughnessMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE_ROUGHNESS, "texture_roughness");
+            createdmesh.textures.insert(createdmesh.textures.end(), roughnessMaps.begin(), roughnessMaps.end());
             
         }
 
@@ -128,7 +134,7 @@ namespace Aozora {
     {
         std::string filename = std::string(path);
         filename = directory + "/" + filename;
-
+        std::cout << "Loading Texture: " << filename << "\n";
         unsigned int texture;
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);

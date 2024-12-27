@@ -2,6 +2,12 @@
 
 glm::mat4 Camera::getProjection()
 {
-	proj = glm::perspective(glm::radians(45.0f), (float)1920 / 1080, 0.1f, 100.0f);
-	return proj;
+	m_proj = glm::perspective(glm::radians(m_fovY), (float)m_viewPortX / m_viewPortY, 0.1f, 1000.0f);
+	return m_proj;
+}
+
+glm::mat4 Camera::getView()
+{
+
+	return glm::translate(m_view, m_pos);
 }

@@ -1,5 +1,6 @@
 #include "WindowsWindow.h"
 #include <iostream>
+#include "Systems/Input.h"
 
 // no logger implemented yet
 
@@ -61,6 +62,8 @@ namespace Aozora {
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 			std::cout << "Glad failed to load\n";
 		}
+
+		glfwSetKeyCallback(m_window, Input::keyCallback);
 
 	}
 }

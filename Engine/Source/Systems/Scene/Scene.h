@@ -21,12 +21,13 @@ namespace Aozora {
 		std::shared_ptr<Renderer> m_renderer;
 
 		const char* m_sceneName{ "New Scene" };
-
+		std::shared_ptr<Camera> m_activeCamera;
 
 		void update();
 
-		void renderScene(std::shared_ptr<EditorCamera> camera);
-		void editorUpdate(std::shared_ptr<EditorCamera> camera);
+		void renderScene();
+		void renderEditorScene(std::shared_ptr<EditorCamera> editorCamera);
+		void editorUpdate(std::shared_ptr<EditorCamera> editorCamera);
 
 		OpenglShader m_defaultShader{ OpenglShader("Resources/Shaders/v_default.glsl", "Resources/Shaders/f_default.glsl") };
 	private:
