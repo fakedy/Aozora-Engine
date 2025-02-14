@@ -8,7 +8,7 @@ namespace Aozora {
 
 	public:
 
-		unsigned int ID;
+		unsigned int ID{};
 
 	private:
 

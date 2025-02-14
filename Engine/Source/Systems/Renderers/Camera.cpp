@@ -11,3 +11,8 @@ glm::mat4 Camera::getView()
 
 	return glm::translate(m_view, m_pos);
 }
+
+glm::vec3 Camera::getPos()
+{
+	return m_pos;
+}

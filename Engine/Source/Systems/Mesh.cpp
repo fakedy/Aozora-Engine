@@ -38,43 +38,64 @@ namespace Aozora {
     }
     void Mesh::draw(Shader &shader)
     {
-        unsigned int diffuseNr = 1;
-        unsigned int normalNr = 1;
-        unsigned int heightNr = 1;
-        unsigned int emissiveNr = 1;
-        unsigned int aoNr = 1;
-        unsigned int metallicNr = 1;
-        unsigned int roughnessNr = 1;
+        unsigned int diffuseNr = 0;
+        unsigned int normalNr = 0;
+        unsigned int heightNr = 0;
+        unsigned int emissiveNr = 0;
+        unsigned int aoNr = 0;
+        unsigned int metallicNr = 0;
+        unsigned int roughnessNr = 0;
 
-        for (unsigned int i = 0; i < textures.size(); i++) {
+        for (unsigned int i = 0; i < material->activeTextures.size(); i++) {
             glActiveTexture(GL_TEXTURE0 + i);
             std::string number;
-            std::string name = textures[i].type;
-            if (name == "texture_diffuse")
-                number = std::to_string(diffuseNr++);
-            else if (name == "texture_normal")
-                number = std::to_string(normalNr++);
-            else if (name == "texture_emissive")
-                number = std::to_string(emissiveNr++);
-            else if (name == "texture_ao")
-                number = std::to_string(aoNr++);
-            else if (name == "texture_metallic")
-                number = std::to_string(metallicNr++);
-            else if (name == "texture_roughness")
-                number = std::to_string(roughnessNr++);
+            unsigned int num = 0;
+            std::string name = material->activeTextures[i].type;
+            if (name == "texture_diffuse") {
+                diffuseNr++;
+				num = diffuseNr;
+                number = std::to_string(num);
+            }
+            else if (name == "texture_normal") {
+                normalNr++;
+                num = normalNr;
+                number = std::to_string(num);
+            }
+            else if (name == "texture_emissive") {
+                emissiveNr++;
+                num = emissiveNr;
+                number = std::to_string(num);
+            }
+            else if (name == "texture_ao") {
+                aoNr++;
+                num = aoNr;
+                number = std::to_string(num);
+            }
+            else if (name == "texture_metallic") {
+                metallicNr++;
+                num = metallicNr;
+                number = std::to_string(num);
+            }
+            else if (name == "texture_roughness") {
+                roughnessNr++;
+                num = roughnessNr;
+                number = std::to_string(num);
+            }
 
+            glUniform1i(glGetUniformLocation(shader.ID, ("has_" + name + number).c_str()), num);
             glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
-            glBindTexture(GL_TEXTURE_2D, textures[i].id);
+            glBindTexture(GL_TEXTURE_2D, material->activeTextures[i].id);
         }
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, meshData.indices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
-        for (unsigned int i = 0; i < textures.size(); i++) {
+        for (unsigned int i = 0; i < material->activeTextures.size(); i++) {
             glActiveTexture(GL_TEXTURE0 + i);
             glBindTexture(GL_TEXTURE_2D, 0);
         }
+        
 
     }
 }

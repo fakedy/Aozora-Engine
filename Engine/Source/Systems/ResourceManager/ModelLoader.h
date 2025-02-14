@@ -22,7 +22,7 @@ namespace Aozora {
 		void processNode(aiNode* node, const aiScene* scene, std::vector<Mesh>* meshVector);
 		Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 		unsigned int loadTexture(const std::string path, const std::string& directory);
-		std::vector<Mesh::Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
+		void loadMaterialTextures(Material& material, aiMaterial* mat, aiTextureType type, std::string typeName);
 		Assimp::Importer m_importer;
 		std::string m_directory;
 

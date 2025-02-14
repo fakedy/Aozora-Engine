@@ -1,8 +1,10 @@
 #pragma once
 #include "Systems/Renderers/Shader.h"
+#include "Material.h"
 #include "glm/glm.hpp"
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace Aozora {
 
@@ -12,9 +14,9 @@ namespace Aozora {
 		Mesh();
 
 		struct Vertex {
-			glm::vec3 Position;
-			glm::vec3 Normal;
-			glm::vec2 TexCoords;
+			glm::vec3 Position{};
+			glm::vec3 Normal{};
+			glm::vec2 TexCoords{};
 		};
 
 		struct MeshData {
@@ -23,15 +25,16 @@ namespace Aozora {
 		};
 
 		struct Texture {
-			unsigned int id;
-			std::string type;
-			std::string path;
+			unsigned int id{};
+			std::string type{};
+			std::string path{};
 		};
 
-		unsigned int VAO;
-		unsigned int VBO;
-		unsigned int EBO;
-		std::vector<Texture> textures;
+		std::shared_ptr<Material> material;
+
+		unsigned int VAO{};
+		unsigned int VBO{};
+		unsigned int EBO{};
 
 		MeshData meshData;
 		void bufferData();

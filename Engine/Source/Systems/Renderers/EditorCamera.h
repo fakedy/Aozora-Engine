@@ -15,6 +15,6 @@ public:
 	void update();
 
 private:
-	float movspeed = 10.0f;
+	float movspeed{10.0f};
 
 };

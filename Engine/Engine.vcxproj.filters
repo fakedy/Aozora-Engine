@@ -75,6 +75,9 @@
     <ClInclude Include="Source\Systems\Layers\LayerStack.h">
       <Filter>Source\Systems\Layers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\Material.h">
+      <Filter>Source\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\Mesh.h">
       <Filter>Source\Systems</Filter>
     </ClInclude>

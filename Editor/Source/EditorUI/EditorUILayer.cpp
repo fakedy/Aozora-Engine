@@ -13,6 +13,33 @@ void EditorUILayer::onUpdate(){
 	ImGui::Begin("DockSpace", NULL, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
 		ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus);
+
+	if (ImGui::BeginMenuBar()) {
+		if (ImGui::BeginMenu("File")) {
+			if (ImGui::BeginMenu("New")) {
+				if (ImGui::MenuItem("Project")) {
+				}
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Open")) {
+				if (ImGui::MenuItem("Project")) {
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Edit")) {
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Window")) {
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Help")) {
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+
 	ImGuiID dockspace_id = ImGui::GetID("dockspace");
 	ImGui::DockSpace(dockspace_id, ImVec2(0, 0), ImGuiDockNodeFlags_PassthruCentralNode);
 	ImGui::End();

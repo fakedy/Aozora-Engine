@@ -132,28 +132,46 @@ public:
         RIGHT_CONTROL = GLFW_KEY_RIGHT_CONTROL,
         RIGHT_ALT = GLFW_KEY_RIGHT_ALT,
         RIGHT_SUPER = GLFW_KEY_RIGHT_SUPER,
-        MENU = GLFW_KEY_MENU
+        MENU = GLFW_KEY_MENU,
+
+        // Mouse keys
+        MOUSE_BUTTON_1 = GLFW_MOUSE_BUTTON_1,
+        MOUSE_BUTTON_2 = GLFW_MOUSE_BUTTON_2,
+        MOUSE_BUTTON_3 = GLFW_MOUSE_BUTTON_3,
+        MOUSE_BUTTON_4 = GLFW_MOUSE_BUTTON_4,
+        MOUSE_BUTTON_5 = GLFW_MOUSE_BUTTON_5,
+        MOUSE_BUTTON_6 = GLFW_MOUSE_BUTTON_6,
+        MOUSE_BUTTON_7 = GLFW_MOUSE_BUTTON_7,
+        MOUSE_BUTTON_8 = GLFW_MOUSE_BUTTON_8,
+        MOUSE_BUTTON_LAST = GLFW_MOUSE_BUTTON_LAST,
+        MOUSE_BUTTON_LEFT = GLFW_MOUSE_BUTTON_LEFT,
+        MOUSE_BUTTON_RIGHT = GLFW_MOUSE_BUTTON_RIGHT,
+        MOUSE_BUTTON_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE
     };
 
-    static Input& getInput() {
-        static Input instance;
-        return instance;
-    }
+	struct MouseData {
+		double x;
+		double y;
+	};
 
-    Input(Input const&) = delete;
-    void operator =(Input const&) = delete;
 
 	static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+    static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 
     static bool getKeyDown(Key key);
 
     static bool getKeyPressed(Key key);
+
+	static MouseData getMousePos();
 
 private:
 
     Input() = default;
     static std::unordered_map<int, bool> keyMap;
 
+
+    static MouseData mouseData;
 
 
 };

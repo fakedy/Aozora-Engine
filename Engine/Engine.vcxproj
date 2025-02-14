@@ -162,6 +162,7 @@
     <ClInclude Include="Source\Systems\Layers\ImguiLayer.h" />
     <ClInclude Include="Source\Systems\Layers\Layer.h" />
     <ClInclude Include="Source\Systems\Layers\LayerStack.h" />
+    <ClInclude Include="Source\Systems\Material.h" />
     <ClInclude Include="Source\Systems\Mesh.h" />
     <ClInclude Include="Source\Systems\Model.h" />
     <ClInclude Include="Source\Systems\Project\Project.h" />

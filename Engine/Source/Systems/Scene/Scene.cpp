@@ -34,7 +34,7 @@ namespace Aozora {
 		auto view = m_registry->view<const ModelComponent, TransformComponent>(); // register of all mesh components
 
 		auto cameraView = m_registry->view<const CameraComponent>();
-		for (const auto entity : cameraView) {
+		for (const auto entity : cameraView) { // change this we are currently rendering multiple cameras
 			m_activeCamera = cameraView.get<CameraComponent>(entity).camera;
 			for (const auto entity : view) {
 				auto& renderModel = view.get<ModelComponent>(entity);
@@ -57,6 +57,7 @@ namespace Aozora {
 			auto& transform = view.get<TransformComponent>(entity);
 
 			m_renderer->render(m_defaultShader, transform.model, editorCamera->getView(), editorCamera->getProjection());
+			glUniform3fv(glGetUniformLocation(m_defaultShader.ID, "cameraPos"), 1, &editorCamera->getPos()[0]);
 
 			renderModel.model->draw(m_defaultShader); // temp af
 		}

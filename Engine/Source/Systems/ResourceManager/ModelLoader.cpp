@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <glad/glad.h>
+#include "Systems/Material.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
@@ -45,28 +46,24 @@ namespace Aozora {
     Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene)
     {
         Mesh createdmesh;
+        Material material;
+		std::cout << "Created material\n";
+
 
         if(mesh->mMaterialIndex >= 0){
-            aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+            aiMaterial* aimaterial = scene->mMaterials[mesh->mMaterialIndex];
 
-            std::vector<Mesh::Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-            createdmesh.textures.insert(createdmesh.textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE, "texture_diffuse");
 
-            std::vector<Mesh::Texture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
-            createdmesh.textures.insert(createdmesh.textures.end(), normalMaps.begin(), normalMaps.end());
+            loadMaterialTextures(material, aimaterial, aiTextureType_NORMALS, "texture_normal");
 
-            std::vector<Mesh::Texture> emissiveMaps = loadMaterialTextures(material, aiTextureType_EMISSIVE, "texture_emissive");
-            createdmesh.textures.insert(createdmesh.textures.end(), emissiveMaps.begin(), emissiveMaps.end());
+            loadMaterialTextures(material, aimaterial, aiTextureType_EMISSIVE, "texture_emissive");
 
-            std::vector<Mesh::Texture> ambientMaps = loadMaterialTextures(material, aiTextureType_AMBIENT_OCCLUSION, "texture_ao");
-            createdmesh.textures.insert(createdmesh.textures.end(), ambientMaps.begin(), ambientMaps.end());
+            loadMaterialTextures(material, aimaterial, aiTextureType_AMBIENT_OCCLUSION, "texture_ao");
 
-            std::vector<Mesh::Texture> metallicMaps = loadMaterialTextures(material, aiTextureType_METALNESS, "texture_metallic");
-            createdmesh.textures.insert(createdmesh.textures.end(), metallicMaps.begin(), metallicMaps.end());
+            loadMaterialTextures(material, aimaterial, aiTextureType_METALNESS, "texture_metallic");
 
-            std::vector<Mesh::Texture> roughnessMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE_ROUGHNESS, "texture_roughness");
-            createdmesh.textures.insert(createdmesh.textures.end(), roughnessMaps.begin(), roughnessMaps.end());
-            
+            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE_ROUGHNESS, "texture_roughness");
         }
 
         for (uint32_t v = 0; v < mesh->mNumVertices; v++) {
@@ -110,24 +107,97 @@ namespace Aozora {
             for (unsigned int j = 0; j < face.mNumIndices; j++) // for every indice in face
                 createdmesh.meshData.indices.push_back(face.mIndices[j]);
         }
+		createdmesh.material = std::make_shared<Material>(material);
         createdmesh.bufferData();
         return createdmesh;
     }
 
 
 
-    std::vector<Mesh::Texture> ModelLoader::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName) {
-        std::vector<Mesh::Texture> textures;
-        for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
-            aiString str;
-            mat->GetTexture(type, i, &str);
-            Mesh::Texture texture;
-            texture.id = loadTexture(str.C_Str(), m_directory); // load texturefromfile here
-            texture.type = typeName;
-            texture.path = str.C_Str();
-            textures.push_back(texture);
+    void ModelLoader::loadMaterialTextures(Material &material, aiMaterial* mat, aiTextureType type, std::string typeName) {
+
+        // cursed if statements
+        std::cout << mat->GetName().C_Str() << " Texture count: " << mat->GetTextureCount(type) << std::endl;
+
+        if(mat->GetTextureCount(type) == 0){
+            if (type == aiTextureType_DIFFUSE) {
+                    aiColor3D color(0.f, 0.f, 0.f);
+                    mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+                    material.baseColor = glm::fvec3(color.r, color.g, color.b);
+			}
+			else if (type == aiTextureType_EMISSIVE) {
+				aiColor3D color(0.f, 0.f, 0.f);
+				mat->Get(AI_MATKEY_COLOR_EMISSIVE, color);
+				material.emissive = glm::fvec3(color.r, color.g, color.b);
+			}
+			else if (type == aiTextureType_AMBIENT_OCCLUSION) {
+				aiColor3D color(0.f, 0.f, 0.f);
+				mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
+				material.ao = color.r;
+			}
+			else if (type == aiTextureType_METALNESS) {
+				aiColor3D color(0.f, 0.f, 0.f);
+				mat->Get(AI_MATKEY_METALLIC_FACTOR, color);
+				material.metallic = color.r;
+			}
+			else if (type == aiTextureType_DIFFUSE_ROUGHNESS) {
+				aiColor3D color(0.f, 0.f, 0.f);
+				mat->Get(AI_MATKEY_ROUGHNESS_FACTOR, color);
+				material.roughness = color.r;
+			}
+			return;
         }
-        return textures;
+
+        if (type == aiTextureType_DIFFUSE) {
+            aiString str;
+            mat->GetTexture(type, 0, &str);
+            material.diffuseTexture.id = loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+            material.diffuseTexture.type = typeName;
+            material.diffuseTexture.path = str.C_Str();
+			material.activeTextures.push_back(material.diffuseTexture);
+        }
+        else if (type == aiTextureType_NORMALS) {
+            aiString str;
+            mat->GetTexture(type, 0, &str);
+            material.normalTexture.id = loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+            material.normalTexture.type = typeName;
+            material.normalTexture.path = str.C_Str();
+            material.activeTextures.push_back(material.normalTexture);
+        }
+        else if (type == aiTextureType_EMISSIVE) {
+            aiString str;
+            mat->GetTexture(type, 0, &str);
+            material.emissiveTexture.id = loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+            material.emissiveTexture.type = typeName;
+            material.emissiveTexture.path = str.C_Str();
+            material.activeTextures.push_back(material.emissiveTexture);
+        }
+        else if (type == aiTextureType_AMBIENT_OCCLUSION) {
+            aiString str;
+            mat->GetTexture(type, 0, &str);
+            material.aoTexture.id = loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+            material.aoTexture.type = typeName;
+            material.aoTexture.path = str.C_Str();
+            material.activeTextures.push_back(material.aoTexture);
+        }
+        else if (type == aiTextureType_METALNESS) {
+            aiString str;
+            mat->GetTexture(type, 0, &str);
+            material.metallicTexture.id = loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+            material.metallicTexture.type = typeName;
+            material.metallicTexture.path = str.C_Str();
+            material.activeTextures.push_back(material.metallicTexture);
+        }
+        else if (type == aiTextureType_DIFFUSE_ROUGHNESS) {
+            aiString str;
+            mat->GetTexture(type, 0, &str);
+            material.roughnessTexture.id = loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+            material.roughnessTexture.type = typeName;
+            material.roughnessTexture.path = str.C_Str();
+            material.activeTextures.push_back(material.roughnessTexture);
+        }
+        return;
+        
     }
 
     unsigned int ModelLoader::loadTexture(const std::string path, const std::string& directory) // TODO move to separate and separate opengl implementation

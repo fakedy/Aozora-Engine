@@ -1,6 +1,7 @@
 #include "EditorCamera.h"
 #include "Systems/Input.h"
 #include "Systems/Time.h"
+#include <iostream>
 
 
 glm::mat4 EditorCamera::getProjection()
@@ -11,7 +12,12 @@ glm::mat4 EditorCamera::getProjection()
 glm::mat4 EditorCamera::getView()
 {
 
-	return glm::translate(m_view, m_pos);
+	m_right = glm::normalize(glm::cross(m_forward, m_up));
+
+	m_view = glm::lookAt(m_pos, m_pos + m_forward, m_up);
+	glm::translate(m_view, m_pos);
+
+	return m_view;
 }
 
 void EditorCamera::calcProjection()
@@ -22,34 +28,67 @@ void EditorCamera::calcProjection()
 void EditorCamera::update()
 {
 
-	if (Input::getKeyDown(Input::Key::W)) {
-		m_pos = m_pos + glm::vec3(0.0f, 0.0f, 1.0f) * movspeed * Time::deltaTime;
-	}
-	else
-		if (Input::getKeyDown(Input::Key::S)) {
-			m_pos = m_pos + glm::vec3(0.0f, 0.0f, -1.0f) * movspeed * Time::deltaTime;
+
+	if (Input::getKeyDown(Input::Key::MOUSE_BUTTON_RIGHT)) {
+
+		if (Input::getKeyDown(Input::Key::W)) {
+			m_pos += m_forward * movspeed * Time::deltaTime;
+		}
+		else
+			if (Input::getKeyDown(Input::Key::S)) {
+				m_pos -= m_forward * movspeed * Time::deltaTime;
+			}
+
+		if (Input::getKeyDown(Input::Key::D)) {
+			m_pos += m_right * movspeed * Time::deltaTime;
+		}
+		else
+			if (Input::getKeyDown(Input::Key::A)) {
+				m_pos -= m_right * movspeed * Time::deltaTime;
+			}
+
+		if (Input::getKeyDown(Input::Key::SPACE)) {
+			m_pos += m_up * movspeed * Time::deltaTime;
+		}
+		else
+			if (Input::getKeyDown(Input::Key::LEFT_CONTROL)) {
+				m_pos -= m_up * movspeed * Time::deltaTime;
+			}
+
+		if (Input::getKeyPressed(Input::Key::E)) {
+			movspeed = movspeed + 10.0f;
+		}
+		else if (Input::getKeyPressed(Input::Key::Q)) {
+			movspeed = movspeed - 10.0f;
 		}
 
-	if (Input::getKeyDown(Input::Key::D)) {
-		m_pos = m_pos + glm::vec3(-1.0f, 0.0f, 0.0f) * movspeed * Time::deltaTime;
-	}
-	else
-		if (Input::getKeyDown(Input::Key::A)) {
-			m_pos = m_pos + glm::vec3(1.0f, 0.0f, 0.0f) * movspeed * Time::deltaTime;
-		}
 
-	if (Input::getKeyDown(Input::Key::SPACE)) {
-		m_pos = m_pos + glm::vec3(0.0f, -1.0f, 0.0f) * movspeed * Time::deltaTime;
-	}
-	else
-		if (Input::getKeyDown(Input::Key::LEFT_CONTROL)) {
-			m_pos = m_pos + glm::vec3(0.0f, 1.0f, 0.0f) * movspeed * Time::deltaTime;
-		}
+		Input::MouseData data = Input::getMousePos();
 
-	if (Input::getKeyPressed(Input::Key::E)) {
-		movspeed = movspeed + 10.0f;
+		const float sensitivity = 0.1f;
+
+
+		float xOffset = data.x - lastX;
+		float yOffset = lastY - data.y;
+		lastX = data.x;
+		lastY = data.y;
+
+		xOffset *= sensitivity;
+		yOffset *= sensitivity;
+
+		yaw += xOffset;
+		pitch += yOffset;
+
+
+		m_forward.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+		m_forward.y = sin(glm::radians(pitch));
+		m_forward.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
+
+		m_forward = glm::normalize(m_forward);
 	}
-	else if (Input::getKeyPressed(Input::Key::Q)) {
-		movspeed = movspeed - 10.0f;
-	}
+
+
+
+
 }

@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 
 out vec4 fragColor;
 in vec2 textureCoord;
@@ -14,93 +14,127 @@ uniform sampler2D texture_metallic1;
 uniform sampler2D texture_roughness1;
 uniform sampler2D texture_normal1;
 
-const float PI = 3.14159265359;
+uniform bool has_texture_diffuse1;
+uniform bool has_texture_emissive1;
+uniform bool has_texture_ao1;
+uniform bool has_texture_metallic1;
+uniform bool has_texture_roughness1;
+uniform bool has_texture_normal1;
 
+uniform vec3 cameraPos;
 
-vec3 fresnelSchlick(float cosTheta, vec3 F0){ // calculate ratio between specular and diffuse reflection
-	return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
-}
+struct Material{
+	vec3 albedo;
+	float metallic;
+	float roughness;
+	float ao;
+	vec3 emissive;
+	vec3 normal;
+};
 
-float distributionGGX(vec3 norm, vec3 h, float roughness){
+uniform Material material;
+
+Material usedMaterial = material;
+
+const float pi = 3.1415926535f;
+
+float ndf(vec3 n, vec3 h, float roughness){
+
 	float a = roughness*roughness;
 	float a2 = a*a;
-	float normDotH = max(dot(norm,h), 0.0);
-	float NdotH2 = normDotH*normDotH;
 
-	float num = a2;
-	float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-	denom = PI * denom * denom;
+	float NdotH = max(dot(n,h), 0.0);
+	float NdotH2 = NdotH * NdotH;
 
-	return num / denom;
+	float calc = ( (NdotH2) * (a2 - 1.0) + 1.0);
+
+	float ndf = a2 / (pi * (calc*calc));
+
+	return ndf;
 }
 
-float GeometrySchlickGGX(float normdotV, float roughness)
-{
-    float r = (roughness + 1.0);
-    float k = (r*r) / 8.0;
+vec3 f(vec3 h, vec3 v, vec3 f_0){ // fresnelSchlick
 
-    float num   = normdotV;
-    float denom = normdotV * (1.0 - k) + k;
-	
-    return num / denom;
+	vec3 f = f_0 + (1-f_0)*pow(clamp(1 - (dot(h,v)), 0.0f, 1.0f), 5.0f);
+
+	return f;
 }
 
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
-{
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-    float ggx2  = GeometrySchlickGGX(NdotV, roughness);
-    float ggx1  = GeometrySchlickGGX(NdotL, roughness);
-	
-    return ggx1 * ggx2;
-}
+float g(vec3 n, vec3 v, float roughness){
 
+	float k = pow(roughness+1, 2.0f)/8.0f;
+
+	float NdotV = max(dot(n,v), 0.0);
+
+	float g = NdotV / (NdotV * (1.0 - k) + k);
+
+	return g;
+}
 
 void main() {
 
-	vec3 albedo = texture(texture_diffuse1, textureCoord).rgb;
-	float metallic = texture(texture_metallic1, textureCoord).b;
-	float roughness = texture(texture_roughness1, textureCoord).g;
-	float ao = texture(texture_ao1, textureCoord).r;
-	vec3 emissive = texture(texture_emissive1, textureCoord).rgb;
+	if(has_texture_diffuse1){
+		usedMaterial.albedo = texture(texture_diffuse1, textureCoord).rgb;
+	}
 
-	vec3 lightPos = vec3(20, 10, 10);
-	vec3 lightColor = vec3(1.0, 1.0, 1.0);
-	vec3 lightDir = normalize(lightPos - fragPos);
+	if( has_texture_metallic1){
+		usedMaterial.metallic = texture(texture_metallic1, textureCoord).b;
+	}
 
-	vec3 norm = normalize(normal);
-	vec3 v = normalize(vec3(0,0,0) - fragPos); // view vector
-	vec3 h = normalize(v + lightDir); // halfway vector
-	float distance = length(lightPos - fragPos);
-	float attenuation = 1.0 / (distance*distance);
-	vec3 radiance = lightColor;
+	if( has_texture_roughness1){
+		usedMaterial.roughness = texture(texture_roughness1, textureCoord).g; // or g i dont know
+	}
 
-	// calculate Cook-Torrance specular BRDF term
-	vec3 F0 = vec3(0.04); // surface reflection at zero incidence
-	F0 = mix(F0, albedo, metallic);
-	vec3 F = fresnelSchlick(max(dot(h,v), 0.0), F0);
+	if( has_texture_ao1){
+		usedMaterial.ao = texture(texture_ao1, textureCoord).r;
+	}
 
-	// Calculate NDF
-	float NDF = distributionGGX(norm, h, roughness);
-	// Calculate G
-	float G = GeometrySmith(norm, v, lightDir, roughness);
+	if( has_texture_emissive1){
+		usedMaterial.emissive = texture(texture_emissive1, textureCoord).rgb;
+	}
 
-	vec3 numerator = NDF * G * F;
-	float denominator = 4.0 * max(dot(norm, v), 0.0) * max(dot(norm, lightDir), 0.0) + 0.0001;
-	vec3 specular = numerator / denominator;
+	if (has_texture_normal1) {
+    	vec3 tangentNormal = texture(texture_normal1, textureCoord).rgb * 2.0 - 1.0;
+    	usedMaterial.normal = normalize(tangentNormal); 
+	} else {
+		usedMaterial.normal = normal;
+	}
 
-	vec3 kS = F; // energy reflected
-	vec3 kD = vec3(1.0) - kS; // refracted light
-	kD *= 1.0 - metallic;
-	
-	float normDotL = max(dot(norm, lightDir), 0.0);
-	vec3 Lo = vec3(0.0);
-	Lo += (kD * albedo / PI + specular) * radiance * normDotL;
+	usedMaterial.normal = normal;
 
-	vec3 ambient = 0.03 * albedo * ao;
-	vec3 color = ambient + Lo + emissive;
-	//color = color / (color + vec3(1.0));
-    //color = pow(color, vec3(1.0/2.2));
+	float intensity = 2.0f;
+	vec3 lightPos = vec3(0.8, 1.0, 0.3);
+	vec3 lightColor = vec3(1.0, 0.98, 0.92) * intensity; ;
+	vec3 lightDir = normalize(lightPos);
+
+	float lightFactor = max(dot(usedMaterial.normal, lightDir), 0.0);
+
+
+	vec3 viewDir = normalize(cameraPos - fragPos);
+
+	vec3 h = normalize(lightDir + viewDir);
+	vec3 f_0 = mix(vec3(0.04f), usedMaterial.albedo, usedMaterial.metallic);
+	float d = ndf(usedMaterial.normal, h, usedMaterial.roughness);
+	vec3 f = f(h, viewDir, f_0); // fresnelSchlick
+	float g = g(usedMaterial.normal, viewDir, usedMaterial.roughness) * g(usedMaterial.normal, lightDir, usedMaterial.roughness); // GeometrySmith
+
+	vec3 dfg = d*f*g;
+	float NdotV = max(dot(viewDir, usedMaterial.normal), 0.0);
+	float NdotL = max(dot(lightDir, usedMaterial.normal), 0.0);
+	vec3 specular = dfg / ((4.0 * NdotV * NdotL) + 0.0001); // Cook-Torrance BRDF equation, specular
+
+	vec3 k_s = f; 
+	vec3 k_d = (vec3(1.0f) - k_s) * (1.0 - usedMaterial.metallic);
+
+	vec3 diffuse = (k_d * usedMaterial.albedo / pi) + specular; // reflective distribution function
+
+	vec3 light = diffuse * lightFactor * lightColor;
+
+
+	vec3 emission = usedMaterial.emissive;
+
+	vec3 ambient = vec3(0.5) * usedMaterial.albedo * usedMaterial.ao;
+	vec3 color = ambient + light + emission;
 
 	fragColor = vec4(color, 1.0);
 
