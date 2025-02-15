@@ -18,7 +18,7 @@ private:
 protected:
 	glm::mat4 m_proj = glm::mat4(1.0f);
 	glm::mat4 m_view = glm::mat4(1.0f);
-	glm::vec3 m_pos = glm::vec3(0.0f);
+	glm::vec3 m_pos = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	glm::vec3 m_up = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 m_right = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -29,5 +29,7 @@ protected:
 
 	float yaw = -90.0f; // rotate
 	float pitch = 0.0f; // up and down
+
+	float sensitivity = 0.3f;
 
 };

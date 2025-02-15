@@ -5,7 +5,7 @@
 namespace Aozora {
 
 	struct TransformComponent {
-		// can prob just use a matrix :)
+		// can prob just use one matrix :)
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::vec3 pos = glm::vec3(0.0f);
 		glm::vec3 rot = glm::vec3(0.0f);

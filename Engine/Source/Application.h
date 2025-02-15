@@ -7,6 +7,7 @@
 #include "Systems/Layers/ImguiLayer.h"
 #include "Systems/ResourceManager/ResourceManager.h"
 #include "Systems/Scene/Scene.h"
+#include "Systems/CameraSystem.h"
 
 namespace Aozora {
 
@@ -36,6 +37,9 @@ namespace Aozora {
 		Window* m_window;
 		std::shared_ptr<Renderer> m_renderer;
 		ResourceManager& m_resourceManager;
+		
+		std::unique_ptr<CameraSystem> m_cameraSystem;
+		std::shared_ptr<entt::registry> m_registry;
 		
 
 	};

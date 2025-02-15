@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Engine.h" />
+    <ClInclude Include="Source\Systems\CameraSystem.h" />
     <ClInclude Include="Source\Systems\ECS\Components\CameraComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\ModelComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\NameComponent.h" />
@@ -184,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
+    <ClCompile Include="Source\Systems\CameraSystem.cpp" />
     <ClCompile Include="Source\Systems\Input.cpp" />
     <ClCompile Include="Source\Systems\Layers\ImguiLayer.cpp" />
     <ClCompile Include="Source\Systems\Layers\Layer.cpp" />

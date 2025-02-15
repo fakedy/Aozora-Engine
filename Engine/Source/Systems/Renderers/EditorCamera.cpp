@@ -20,6 +20,11 @@ glm::mat4 EditorCamera::getView()
 	return m_view;
 }
 
+glm::vec3 EditorCamera::getPos()
+{
+	return m_pos;
+}
+
 void EditorCamera::calcProjection()
 {
 	m_proj = glm::perspective(glm::radians(m_fovY), (float)m_viewPortX / m_viewPortY, 0.1f, 1000.0f);
@@ -62,22 +67,33 @@ void EditorCamera::update()
 			movspeed = movspeed - 10.0f;
 		}
 
-
 		Input::MouseData data = Input::getMousePos();
-
-		const float sensitivity = 0.1f;
-
-
 		float xOffset = data.x - lastX;
 		float yOffset = lastY - data.y;
 		lastX = data.x;
 		lastY = data.y;
+		
+		if (!mouseHeld) { // make sure we dont get sudden camera movement
+
+			xOffset = 0;
+			yOffset = 0;
+
+		}
 
 		xOffset *= sensitivity;
 		yOffset *= sensitivity;
 
 		yaw += xOffset;
 		pitch += yOffset;
+
+		if (pitch > 89.9f) {
+			pitch = 89.9f;
+		}
+		if (pitch < -89.9f) {
+			pitch = -89.9f;
+		}
+
+		mouseHeld = true;
 
 
 		m_forward.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -86,6 +102,10 @@ void EditorCamera::update()
 
 
 		m_forward = glm::normalize(m_forward);
+	}
+	else {
+
+		mouseHeld = false;
 	}
 
 

@@ -1,6 +1,9 @@
 #pragma once
 #include "ModelLoader.h"
 #include "TextureLoader.h"
+#include "unordered_map"
+#include "..\Renderers\Camera.h"
+#include <memory>
 
 
 namespace Aozora {
@@ -23,12 +26,14 @@ namespace Aozora {
 
 		unsigned int loadTexture(const char* path);
 
+
 	private:
 
 		ResourceManager() = default;
 
 		TextureLoader m_textureLoader = TextureLoader();
 		ModelLoader m_modelLoader = ModelLoader();
+
 
 	};
 }

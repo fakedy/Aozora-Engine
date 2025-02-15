@@ -8,20 +8,21 @@
 #include "Systems/ECS/Components/TransformComponent.h"
 #include "Systems/ECS/Components/CameraComponent.h"
 #include "Systems/Renderers/Opengl/OpenglShader.h"
+#include "..\ResourceManager\ResourceManager.h"
 
 namespace Aozora {
 
 	class Scene {
 	public:
 	
-		Scene(std::shared_ptr<Renderer> renderer);
+		Scene(std::shared_ptr<Renderer> renderer, std::shared_ptr<entt::registry> registry);
 
 		// ECS SYSTEM
 		std::shared_ptr<entt::registry> m_registry;
 		std::shared_ptr<Renderer> m_renderer;
 
 		const char* m_sceneName{ "New Scene" };
-		std::shared_ptr<Camera> m_activeCamera;
+		std::shared_ptr<CameraComponent> m_activeCamera;
 
 		void update();
 
@@ -32,6 +33,6 @@ namespace Aozora {
 		OpenglShader m_defaultShader{ OpenglShader("Resources/Shaders/v_default.glsl", "Resources/Shaders/f_default.glsl") };
 	private:
 
-
+		
 	};
 }

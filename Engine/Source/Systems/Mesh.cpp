@@ -46,6 +46,13 @@ namespace Aozora {
         unsigned int metallicNr = 0;
         unsigned int roughnessNr = 0;
 
+        glUniform3fv(glGetUniformLocation(shader.ID, "albedo"), 1, &material->baseColor[0]);
+        glUniform1f(glGetUniformLocation(shader.ID, "metallic"), material->metallic);
+        glUniform1f(glGetUniformLocation(shader.ID, "roughness"), material->roughness);
+        glUniform1f(glGetUniformLocation(shader.ID, "ao"), material->ao);
+        glUniform3fv(glGetUniformLocation(shader.ID, "emissive"), 1, &material->emissive[0]);
+
+
         for (unsigned int i = 0; i < material->activeTextures.size(); i++) {
             glActiveTexture(GL_TEXTURE0 + i);
             std::string number;

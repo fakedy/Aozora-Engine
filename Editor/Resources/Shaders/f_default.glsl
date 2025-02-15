@@ -14,12 +14,12 @@ uniform sampler2D texture_metallic1;
 uniform sampler2D texture_roughness1;
 uniform sampler2D texture_normal1;
 
-uniform bool has_texture_diffuse1;
-uniform bool has_texture_emissive1;
-uniform bool has_texture_ao1;
-uniform bool has_texture_metallic1;
-uniform bool has_texture_roughness1;
-uniform bool has_texture_normal1;
+uniform bool has_texture_diffuse1 = false;
+uniform bool has_texture_emissive1 = false;
+uniform bool has_texture_ao1 = false;
+uniform bool has_texture_metallic1 = false;
+uniform bool has_texture_roughness1 = false;
+uniform bool has_texture_normal1 = false;
 
 uniform vec3 cameraPos;
 
@@ -32,9 +32,14 @@ struct Material{
 	vec3 normal;
 };
 
-uniform Material material;
+// temporary, might move this to an UBO/SSBO
+uniform vec3 albedo;
+uniform float metallic;
+uniform float roughness;
+uniform float ao;
+uniform vec3 emissive;
 
-Material usedMaterial = material;
+Material usedMaterial;
 
 const float pi = 3.1415926535f;
 
@@ -73,25 +78,40 @@ float g(vec3 n, vec3 v, float roughness){
 
 void main() {
 
+
 	if(has_texture_diffuse1){
 		usedMaterial.albedo = texture(texture_diffuse1, textureCoord).rgb;
+	} else {
+		usedMaterial.albedo = albedo;
 	}
 
 	if( has_texture_metallic1){
 		usedMaterial.metallic = texture(texture_metallic1, textureCoord).b;
+	} else {
+		usedMaterial.metallic = metallic;
 	}
+
 
 	if( has_texture_roughness1){
 		usedMaterial.roughness = texture(texture_roughness1, textureCoord).g; // or g i dont know
+	} else {
+		usedMaterial.roughness = roughness;
 	}
+
 
 	if( has_texture_ao1){
 		usedMaterial.ao = texture(texture_ao1, textureCoord).r;
+	} else {
+		usedMaterial.ao = ao;
 	}
+
 
 	if( has_texture_emissive1){
 		usedMaterial.emissive = texture(texture_emissive1, textureCoord).rgb;
+	} else {
+		usedMaterial.emissive = emissive;
 	}
+
 
 	if (has_texture_normal1) {
     	vec3 tangentNormal = texture(texture_normal1, textureCoord).rgb * 2.0 - 1.0;
@@ -99,6 +119,7 @@ void main() {
 	} else {
 		usedMaterial.normal = normal;
 	}
+
 
 	usedMaterial.normal = normal;
 
@@ -133,7 +154,7 @@ void main() {
 
 	vec3 emission = usedMaterial.emissive;
 
-	vec3 ambient = vec3(0.5) * usedMaterial.albedo * usedMaterial.ao;
+	vec3 ambient = vec3(0.3) * usedMaterial.albedo * usedMaterial.ao;
 	vec3 color = ambient + light + emission;
 
 	fragColor = vec4(color, 1.0);

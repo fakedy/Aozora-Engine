@@ -2,10 +2,10 @@
 #include <glm/glm.hpp>
 
 
+
 namespace Aozora {
-	Scene::Scene(std::shared_ptr<Renderer> renderer) : m_renderer(renderer)
+	Scene::Scene(std::shared_ptr<Renderer> renderer, std::shared_ptr<entt::registry> registry) : m_renderer(renderer), m_registry(registry)
 	{
-		m_registry = std::make_shared<entt::registry>();
 
 	}
 	void Scene::update()
@@ -34,13 +34,23 @@ namespace Aozora {
 		auto view = m_registry->view<const ModelComponent, TransformComponent>(); // register of all mesh components
 
 		auto cameraView = m_registry->view<const CameraComponent>();
-		for (const auto entity : cameraView) { // change this we are currently rendering multiple cameras
-			m_activeCamera = cameraView.get<CameraComponent>(entity).camera;
+		for (const auto cameraEntity : cameraView) { // change this we are currently rendering multiple cameras
+
 			for (const auto entity : view) {
 				auto& renderModel = view.get<ModelComponent>(entity);
 				auto& transform = view.get<TransformComponent>(entity);
+                
+				std::shared_ptr<CameraComponent> current_camera = std::make_shared<CameraComponent>(cameraView.get<CameraComponent>(cameraEntity));
 
-				m_renderer->render(m_defaultShader,transform.model, m_activeCamera->getView(), m_activeCamera->getProjection());
+				// TODO
+				/*
+				* Update the view and projection based on what type of camera it is
+				* 
+				* 
+				*/
+
+
+				m_renderer->render(m_defaultShader,transform.model, current_camera->getView(), current_camera->getProjection());
 
 				renderModel.model->draw(m_defaultShader); // temp af
 			}

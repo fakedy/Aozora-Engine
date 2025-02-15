@@ -23,9 +23,10 @@ namespace Aozora {
 		Window::WindowProps props = Window::WindowProps(title, 1920, 1080);
 
 		m_window = Window::create(props);
-
+		m_registry = std::make_shared<entt::registry>();
+		m_cameraSystem = std::make_unique<CameraSystem>(m_registry);
 		m_renderer = std::shared_ptr<Renderer>(Renderer::create(props));
-		m_currentScene = std::make_shared<Scene>(m_renderer);
+		m_currentScene = std::make_shared<Scene>(m_renderer, m_registry);
 
 
 		layerStack = new LayerStack();
@@ -44,7 +45,10 @@ namespace Aozora {
 				layer->onUpdate(); // update layers
 			}
 
-			//m_currentScene->renderScene();
+			m_cameraSystem->update(); 
+
+
+
 			m_window->onUpdate(); // swap buffer
 
 

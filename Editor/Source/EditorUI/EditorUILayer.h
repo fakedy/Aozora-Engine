@@ -10,6 +10,7 @@
 #include "ComponentsView.h"
 #include "StatsView.h"
 #include "Systems/Renderers/EditorCamera.h"
+#include "Systems/ResourceManager/ResourceManager.h"
 
 class EditorUILayer : public Aozora::Layer {
 public:

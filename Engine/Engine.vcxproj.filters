@@ -45,6 +45,9 @@
     <ClInclude Include="Source\Engine.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\CameraSystem.h">
+      <Filter>Source\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\ECS\Components\CameraComponent.h">
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
@@ -136,6 +139,9 @@
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\CameraSystem.cpp">
+      <Filter>Source\Systems</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Input.cpp">
       <Filter>Source\Systems</Filter>
