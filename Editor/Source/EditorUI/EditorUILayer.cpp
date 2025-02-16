@@ -59,10 +59,9 @@ void EditorUILayer::onUpdate(){
 	// game window
 	ImGui::Begin("Game", NULL); // textureid
 	ImVec2 contentRegionGame = ImGui::GetContentRegionAvail();
-	if (m_currentScene->m_activeCamera != nullptr) {
-		m_currentScene->m_activeCamera->m_viewPortX = contentRegionGame.x;
-		m_currentScene->m_activeCamera->m_viewPortY = contentRegionGame.y;
-	}
+	m_currentScene->m_gameViewPortX = contentRegionGame.x;
+	m_currentScene->m_gameViewPortY = contentRegionGame.y;
+
 	ImGui::Image((void*)(intptr_t)m_gameFramebuffer->m_colorTextureID, ImVec2(contentRegionGame.x, contentRegionGame.y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 

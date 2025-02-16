@@ -31,14 +31,12 @@ void Input::mouseButtonCallback(GLFWwindow* window, int button, int action, int 
     }
 }
 
-
 bool Input::getKeyDown(Key key) {
     // check if this key is pressed
     int keyInt = static_cast<int>(key);
 
     return keyMap.contains(keyInt) && keyMap[keyInt];
 }
-
 
 bool Input::getKeyPressed(Key key) {
     int keyInt = static_cast<int>(key);

@@ -63,6 +63,9 @@
     <ClInclude Include="Source\Systems\ECS\Components\ScriptComponent.h">
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\ECS\Components\TagComponent.h">
+      <Filter>Source\Systems\ECS\Components</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\ECS\Components\TransformComponent.h">
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
@@ -89,9 +92,6 @@
     </ClInclude>
     <ClInclude Include="Source\Systems\Project\Project.h">
       <Filter>Source\Systems\Project</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Systems\Renderers\Camera.h">
-      <Filter>Source\Systems\Renderers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Renderers\EditorCamera.h">
       <Filter>Source\Systems\Renderers</Filter>
@@ -160,9 +160,6 @@
     </ClCompile>
     <ClCompile Include="Source\Systems\Model.cpp">
       <Filter>Source\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Systems\Renderers\Camera.cpp">
-      <Filter>Source\Systems\Renderers</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Renderers\EditorCamera.cpp">
       <Filter>Source\Systems\Renderers</Filter>

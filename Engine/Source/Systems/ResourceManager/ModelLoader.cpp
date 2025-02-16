@@ -1,12 +1,10 @@
 #include "ModelLoader.h"
 #include <iostream>
-#include <iostream>
 #include <fstream>
 #include <glad/glad.h>
 #include "Systems/Material.h"
+#include "Systems/ResourceManager/ResourceManager.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
 
 namespace Aozora {
 
@@ -116,8 +114,7 @@ namespace Aozora {
 
     void ModelLoader::loadMaterialTextures(Material &material, aiMaterial* mat, aiTextureType type, std::string typeName) {
 
-        // cursed if statements
-        //std::cout << mat->GetName().C_Str() << " Texture count: " << mat->GetTextureCount(type) << std::endl;
+        ResourceManager& resourceManager = ResourceManager::getResourceManager();
 
         if(mat->GetTextureCount(type) == 0){
 
@@ -153,7 +150,7 @@ namespace Aozora {
             if (type == aiTextureType_DIFFUSE) {
                 aiString str;
                 mat->GetTexture(type, 0, &str);
-                material.diffuseTexture.id = loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+                material.diffuseTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory); // load texturefromfile here
                 material.diffuseTexture.type = typeName;
                 material.diffuseTexture.path = str.C_Str();
 			    material.activeTextures.push_back(material.diffuseTexture);
@@ -161,7 +158,7 @@ namespace Aozora {
             else if (type == aiTextureType_NORMALS) {
                 aiString str;
                 mat->GetTexture(type, 0, &str);
-                material.normalTexture.id = loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+                material.normalTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory); // load texturefromfile here
                 material.normalTexture.type = typeName;
                 material.normalTexture.path = str.C_Str();
                 material.activeTextures.push_back(material.normalTexture);
@@ -169,7 +166,7 @@ namespace Aozora {
             else if (type == aiTextureType_EMISSIVE) {
                 aiString str;
                 mat->GetTexture(type, 0, &str);
-                material.emissiveTexture.id = loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+                material.emissiveTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory); // load texturefromfile here
                 material.emissiveTexture.type = typeName;
                 material.emissiveTexture.path = str.C_Str();
                 material.activeTextures.push_back(material.emissiveTexture);
@@ -177,7 +174,7 @@ namespace Aozora {
             else if (type == aiTextureType_AMBIENT_OCCLUSION) {
                 aiString str;
                 mat->GetTexture(type, 0, &str);
-                material.aoTexture.id = loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+                material.aoTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory); // load texturefromfile here
                 material.aoTexture.type = typeName;
                 material.aoTexture.path = str.C_Str();
                 material.activeTextures.push_back(material.aoTexture);
@@ -185,7 +182,7 @@ namespace Aozora {
             else if (type == aiTextureType_METALNESS) {
                 aiString str;
                 mat->GetTexture(type, 0, &str);
-                material.metallicTexture.id = loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+                material.metallicTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory); // load texturefromfile here
                 material.metallicTexture.type = typeName;
                 material.metallicTexture.path = str.C_Str();
                 material.activeTextures.push_back(material.metallicTexture);
@@ -193,7 +190,7 @@ namespace Aozora {
             else if (type == aiTextureType_DIFFUSE_ROUGHNESS) {
                 aiString str;
                 mat->GetTexture(type, 0, &str);
-                material.roughnessTexture.id = loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+                material.roughnessTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory); // load texturefromfile here
                 material.roughnessTexture.type = typeName;
                 material.roughnessTexture.path = str.C_Str();
                 material.activeTextures.push_back(material.roughnessTexture);
@@ -203,45 +200,6 @@ namespace Aozora {
         return;
         
     }
-
-    unsigned int ModelLoader::loadTexture(const std::string path, const std::string& directory) // TODO move to separate and separate opengl implementation
-    {
-        std::string filename = std::string(path);
-        filename = directory + "/" + filename;
-        std::cout << "Loading Texture: " << filename << "\n";
-        unsigned int texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        int width, height, nrChannels;
-
-        unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
-        if (data) {
-            if (nrChannels == 4) {
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-                glGenerateMipmap(GL_TEXTURE_2D);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            }
-            else {
-
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-                glGenerateMipmap(GL_TEXTURE_2D);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            }
-        }
-        else {
-            std::cerr << "texture load failed\n";
-        }
-        stbi_image_free(data);
-
-        return texture;
-    }
-
 
 
 

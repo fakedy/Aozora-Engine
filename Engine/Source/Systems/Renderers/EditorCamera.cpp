@@ -15,7 +15,6 @@ glm::mat4 EditorCamera::getView()
 	m_right = glm::normalize(glm::cross(m_forward, m_up));
 
 	m_view = glm::lookAt(m_pos, m_pos + m_forward, m_up);
-	glm::translate(m_view, m_pos);
 
 	return m_view;
 }

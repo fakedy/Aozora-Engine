@@ -1,7 +1,6 @@
 #pragma once
 #include <entt/entt.hpp>
 #include <memory>
-#include "Systems/Renderers/Camera.h"
 #include "Systems/Renderers/EditorCamera.h"
 #include "Systems/Renderers/Renderer.h"
 #include "Systems/ECS/Components/ModelComponent.h"
@@ -14,6 +13,9 @@ namespace Aozora {
 
 	class Scene {
 	public:
+
+		int m_gameViewPortX{ 1920 };
+		int m_gameViewPortY{ 1080 };
 	
 		Scene(std::shared_ptr<Renderer> renderer, std::shared_ptr<entt::registry> registry);
 

@@ -2,8 +2,9 @@
 #include "ModelLoader.h"
 #include "TextureLoader.h"
 #include "unordered_map"
-#include "..\Renderers\Camera.h"
 #include <memory>
+#include <iostream>
+#include <glad/glad.h>
 
 
 namespace Aozora {
@@ -24,7 +25,7 @@ namespace Aozora {
 
 		const std::vector<Mesh> loadModel(const std::string& file);
 
-		unsigned int loadTexture(const char* path);
+		unsigned int loadTexture(const std::string path, const std::string& directory);
 
 
 	private:
@@ -33,6 +34,10 @@ namespace Aozora {
 
 		TextureLoader m_textureLoader = TextureLoader();
 		ModelLoader m_modelLoader = ModelLoader();
+
+		std::unordered_map<std::string, Material::Texture> m_loadedTextures;
+
+		int textureLoaded(const std::string path);
 
 
 	};

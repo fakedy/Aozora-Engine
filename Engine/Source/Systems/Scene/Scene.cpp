@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include <glm/glm.hpp>
+#include <GLFW/glfw3.h>
 
 
 
@@ -33,26 +34,25 @@ namespace Aozora {
 
 		auto view = m_registry->view<const ModelComponent, TransformComponent>(); // register of all mesh components
 
-		auto cameraView = m_registry->view<const CameraComponent>();
+		auto cameraView = m_registry->view<CameraComponent>();
 		for (const auto cameraEntity : cameraView) { // change this we are currently rendering multiple cameras
 
 			for (const auto entity : view) {
 				auto& renderModel = view.get<ModelComponent>(entity);
 				auto& transform = view.get<TransformComponent>(entity);
                 
-				std::shared_ptr<CameraComponent> current_camera = std::make_shared<CameraComponent>(cameraView.get<CameraComponent>(cameraEntity));
+				auto& current_camera = cameraView.get<CameraComponent>(cameraEntity);
+				current_camera.m_viewPortX = m_gameViewPortX;
+				current_camera.m_viewPortY = m_gameViewPortY;
 
-				// TODO
-				/*
-				* Update the view and projection based on what type of camera it is
-				* 
-				* 
-				*/
+				if (current_camera.isActive()) {
+					m_renderer->render(m_defaultShader, transform.model, current_camera.getView(), current_camera.getProjection());
 
+					glUniform3fv(glGetUniformLocation(m_defaultShader.ID, "cameraPos"), 1, &current_camera.getPos()[0]);
+					renderModel.model->draw(m_defaultShader); // temp af
 
-				m_renderer->render(m_defaultShader,transform.model, current_camera->getView(), current_camera->getProjection());
+				}
 
-				renderModel.model->draw(m_defaultShader); // temp af
 			}
 		}
 	}

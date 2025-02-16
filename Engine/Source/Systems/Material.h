@@ -12,6 +12,7 @@ namespace Aozora {
 
 		struct Texture {
 			unsigned int id{};
+			unsigned int refCount{};
 			std::string type{};
 			std::string path{};
 		};
