@@ -1,7 +1,6 @@
 #include "CameraSystem.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "Systems/ECS/Components/ModelComponent.h"
 #include "Systems/ECS/Components/TransformComponent.h"
 #include "Systems/ECS/Components/CameraComponent.h"
 

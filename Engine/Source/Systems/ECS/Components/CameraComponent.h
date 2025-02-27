@@ -4,9 +4,6 @@ namespace Aozora {
 
 	struct CameraComponent {
 
-		int m_viewPortX{ 1920 };
-		int m_viewPortY{ 1080 };
-		float m_fovY{ 45.0f };
 
 		glm::mat4 getProjection() const {
 			return m_proj;
@@ -54,6 +51,10 @@ namespace Aozora {
 		void setActive(bool state) {
 			m_isActive = state;
 		}
+
+		int m_viewPortX{ 1920 };
+		int m_viewPortY{ 1080 };
+		float m_fovY{ 45.0f };
 
 	private:
 		glm::mat4 m_proj = glm::mat4(1.0f);

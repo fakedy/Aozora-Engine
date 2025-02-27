@@ -2,8 +2,10 @@
 #include "Engine.h"
 #include "ComponentsView.h"
 #include "Systems/ECS/Components/TransformComponent.h"
-#include "Systems/ECS/Components/modelComponent.h"
 #include "Systems/ECS/Components/NameComponent.h"
+#include "Systems/ECS/Components/RelationComponent.h"
+#include "Systems/ECS/Components/MeshComponent.h"
+#include "Systems/ECS/Components/TagComponent.h"
 
 
 class EditorEntityWindow {

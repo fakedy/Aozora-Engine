@@ -154,8 +154,9 @@
     <ClInclude Include="Source\Engine.h" />
     <ClInclude Include="Source\Systems\CameraSystem.h" />
     <ClInclude Include="Source\Systems\ECS\Components\CameraComponent.h" />
-    <ClInclude Include="Source\Systems\ECS\Components\ModelComponent.h" />
+    <ClInclude Include="Source\Systems\ECS\Components\MeshComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\NameComponent.h" />
+    <ClInclude Include="Source\Systems\ECS\Components\RelationComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\RigidBodyComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\ScriptComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\TagComponent.h" />
@@ -166,7 +167,7 @@
     <ClInclude Include="Source\Systems\Layers\LayerStack.h" />
     <ClInclude Include="Source\Systems\Material.h" />
     <ClInclude Include="Source\Systems\Mesh.h" />
-    <ClInclude Include="Source\Systems\Model.h" />
+    <ClInclude Include="Source\Systems\MeshSystem.h" />
     <ClInclude Include="Source\Systems\Project\Project.h" />
     <ClInclude Include="Source\Systems\Renderers\EditorCamera.h" />
     <ClInclude Include="Source\Systems\Renderers\FrameBuffer.h" />
@@ -191,7 +192,7 @@
     <ClCompile Include="Source\Systems\Layers\Layer.cpp" />
     <ClCompile Include="Source\Systems\Layers\LayerStack.cpp" />
     <ClCompile Include="Source\Systems\Mesh.cpp" />
-    <ClCompile Include="Source\Systems\Model.cpp" />
+    <ClCompile Include="Source\Systems\MeshSystem.cpp" />
     <ClCompile Include="Source\Systems\Renderers\EditorCamera.cpp" />
     <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglFrameBuffer.cpp" />

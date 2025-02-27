@@ -3,9 +3,9 @@
 #include <memory>
 #include "Systems/Renderers/EditorCamera.h"
 #include "Systems/Renderers/Renderer.h"
-#include "Systems/ECS/Components/ModelComponent.h"
 #include "Systems/ECS/Components/TransformComponent.h"
 #include "Systems/ECS/Components/CameraComponent.h"
+#include "Systems/ECS/Components/MeshComponent.h"
 #include "Systems/Renderers/Opengl/OpenglShader.h"
 #include "..\ResourceManager\ResourceManager.h"
 

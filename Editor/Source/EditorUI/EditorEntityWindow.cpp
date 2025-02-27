@@ -13,11 +13,14 @@ void EditorEntityWindow::draw()
 	if (ImGui::Button("Create entity")) {
 		const auto entity = m_registry->create();
 		m_registry->emplace<Aozora::NameComponent>(entity).name = "Entity";
+		m_registry->emplace<Aozora::TagComponent>(entity);
 		m_registry->emplace<Aozora::TransformComponent>(entity);
-		m_registry->emplace<Aozora::ModelComponent>(entity);
+		m_registry->emplace<Aozora::RelationComponent>(entity);
+		m_registry->emplace<Aozora::MeshComponent>(entity);
 		
 	}
 
+	// TODO CLEAN
 	for (int i = view.size(); i > 0; i--) {
 		auto& nameComponent = view.get<Aozora::NameComponent>(view[i-1]);
 		std::string blabla = nameComponent.name + std::to_string(view.size() - i);
@@ -26,6 +29,7 @@ void EditorEntityWindow::draw()
 			m_componentsView->setSelectedEntity(view[i-1]);
 		}
 	}
+
 
 	ImGui::End();
 }

@@ -35,6 +35,8 @@ namespace Aozora {
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
 
         glBindVertexArray(0);
+
+        // can clear meshdata
     }
     void Mesh::draw(Shader &shader)
     {

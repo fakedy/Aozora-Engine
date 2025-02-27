@@ -25,17 +25,29 @@ namespace Aozora {
 
     }
 
-    void ModelLoader::processNode(aiNode* node, const aiScene* scene, std::vector<Mesh>* meshVector) {
+    void ModelLoader::processNode(aiNode* node, const aiScene* scene, std::vector<unsigned int>* meshVector, const std::string& file) {
+
+        // instead of mesh vector we create entities per mesh and make it have a mesh component
+        ResourceManager& resourceManager = ResourceManager::getResourceManager();
 
 
         for (unsigned int i = 0; i < node->mNumMeshes; i++) {
-            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            meshVector->push_back(processMesh(mesh, scene));
+            aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
+            if (resourceManager.meshLoaded(file) == -1) {
+                Mesh mesh = processMesh(aiMesh, scene);
+                resourceManager.m_meshPathToID[file] = resourceManager.m_nextMeshID;
+                resourceManager.m_loadedMeshes[resourceManager.m_nextMeshID] = mesh;
+                resourceManager.m_nextMeshID++;
+            }
+            else {
+
+                meshVector->push_back(resourceManager.meshLoaded(file));
+            }
             
         }
 
         for (unsigned int i = 0; i < node->mNumChildren; i++) {
-            processNode(node->mChildren[i], scene, meshVector);
+            processNode(node->mChildren[i], scene, meshVector, file);
         }
 
 
@@ -44,12 +56,16 @@ namespace Aozora {
     Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene)
     {
         Mesh createdmesh;
+
+        // check if the material already exist
+        unsigned int mMaterialIndex = mesh->mMaterialIndex;
         Material material;
-		std::cout << "Created material\n";
 
+        ResourceManager& resourceManager = ResourceManager::getResourceManager();
+        if(mMaterialIndex >= 0){
+            //resourceManager.createMaterial(mMaterialIndex);
 
-        if(mesh->mMaterialIndex >= 0){
-            aiMaterial* aimaterial = scene->mMaterials[mesh->mMaterialIndex];
+            aiMaterial* aimaterial = scene->mMaterials[mMaterialIndex];
 
             loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE, "texture_diffuse");
 
@@ -62,6 +78,7 @@ namespace Aozora {
             loadMaterialTextures(material, aimaterial, aiTextureType_METALNESS, "texture_metallic");
 
             loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE_ROUGHNESS, "texture_roughness");
+
         }
 
         for (uint32_t v = 0; v < mesh->mNumVertices; v++) {
@@ -105,6 +122,8 @@ namespace Aozora {
             for (unsigned int j = 0; j < face.mNumIndices; j++) // for every indice in face
                 createdmesh.meshData.indices.push_back(face.mIndices[j]);
         }
+
+        //resourceManager.createMaterial(material);
 		createdmesh.material = std::make_shared<Material>(material);
         createdmesh.bufferData();
         return createdmesh;
@@ -196,20 +215,18 @@ namespace Aozora {
                 material.activeTextures.push_back(material.roughnessTexture);
             }
         }
-
-        return;
         
     }
 
 
 
-    std::vector<Mesh> ModelLoader::loadModel(const std::string& file)
+    std::vector<unsigned int> ModelLoader::loadModel(const std::string& file)
     {
         const aiScene* scene = importFile(file);
         m_directory = file.substr(0, file.find_last_of('/'));
         std::cout << "\nLoading model: " << file << "\n";
-        std::vector<Mesh> meshVector;
-        processNode(scene->mRootNode, scene, &meshVector);
+        std::vector<unsigned int> meshVector;
+        processNode(scene->mRootNode, scene, &meshVector, file);
         
         return meshVector;
     }

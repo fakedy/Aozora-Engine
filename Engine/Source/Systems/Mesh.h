@@ -30,6 +30,8 @@ namespace Aozora {
 			std::string path{};
 		};
 
+		unsigned int id;
+
 		std::shared_ptr<Material> material;
 
 		unsigned int VAO{};

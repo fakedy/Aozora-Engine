@@ -6,18 +6,18 @@
 namespace Aozora {
 
 
-    const std::vector<Mesh> ResourceManager::loadModel(const std::string& file)
+    const std::vector<unsigned int> ResourceManager::loadModel(const std::string& file)
     {
 
         // I think a system that will check if the model is already loaded is good here.
         // it will ensure we dont load multiple of the same models into memory
 
-        // TODO store model into memory
-
+        
         return m_modelLoader.loadModel(file);
 
     }
 
+    // opengl dependent code for loading texture
     unsigned int ResourceManager::loadTexture(const std::string path, const std::string& directory)
     {
         std::string filename = std::string(path);
@@ -59,7 +59,7 @@ namespace Aozora {
         }
         stbi_image_free(data);
 
-        // temp?
+        // filename will be unique so its alright to use the filename
         m_loadedTextures[filename].id = texture;
         m_loadedTextures[filename].refCount++;
 
@@ -67,12 +67,41 @@ namespace Aozora {
 
     }
 
+    unsigned int ResourceManager::createMaterial(Material* material)
+    {
+        return 0;
+    }
+
+    // check if material is loaded, if it is loaded return it's id, else return -1
+    unsigned int ResourceManager::materialLoaded(unsigned int id)
+    {
+
+        auto it = m_loadedmaterials.find(id);
+        if (it != m_loadedmaterials.end()) {
+            return it->first;
+        }
+
+        return -1;
+    }
+    
+
+    // Check if texture is loaded, if it is loaded return it's id, else return -1
     int ResourceManager::textureLoaded(const std::string path)
     {
         auto it = m_loadedTextures.find(path);
         if (it != m_loadedTextures.end()){
             return it->second.id;
         }
+        return -1;
+    }
+
+    unsigned int ResourceManager::meshLoaded(const std::string path)
+    {
+        auto it = m_meshPathToID.find(path);
+        if (it != m_meshPathToID.end()) {
+            return it->second;
+        }
+
         return -1;
     }
 
