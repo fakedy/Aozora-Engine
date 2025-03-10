@@ -27,21 +27,20 @@ namespace Aozora {
 
     void ModelLoader::processNode(aiNode* node, const aiScene* scene, std::vector<unsigned int>* meshVector, const std::string& file) {
 
-        // instead of mesh vector we create entities per mesh and make it have a mesh component
         ResourceManager& resourceManager = ResourceManager::getResourceManager();
-
 
         for (unsigned int i = 0; i < node->mNumMeshes; i++) {
             aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
-            if (resourceManager.meshLoaded(file) == -1) {
+            std::string key = file + std::to_string(node->mMeshes[i]);
+            if (resourceManager.meshLoaded(key) == -1) {
                 Mesh mesh = processMesh(aiMesh, scene);
-                resourceManager.m_meshPathToID[file] = resourceManager.m_nextMeshID;
+                resourceManager.m_meshPathToID[key] = resourceManager.m_nextMeshID;
                 resourceManager.m_loadedMeshes[resourceManager.m_nextMeshID] = mesh;
                 resourceManager.m_nextMeshID++;
+                meshVector->push_back(resourceManager.meshLoaded(key));
             }
             else {
-
-                meshVector->push_back(resourceManager.meshLoaded(file));
+                meshVector->push_back(resourceManager.meshLoaded(key));
             }
             
         }

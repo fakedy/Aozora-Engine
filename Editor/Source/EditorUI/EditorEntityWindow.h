@@ -6,6 +6,7 @@
 #include "Systems/ECS/Components/RelationComponent.h"
 #include "Systems/ECS/Components/MeshComponent.h"
 #include "Systems/ECS/Components/TagComponent.h"
+#include "Systems/ResourceManager/ResourceManager.h"
 
 
 class EditorEntityWindow {

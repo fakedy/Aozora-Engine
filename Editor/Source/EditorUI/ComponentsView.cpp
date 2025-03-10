@@ -3,6 +3,7 @@
 #include "Systems/ECS/Components/TransformComponent.h"
 #include "Systems/ECS/Components/CameraComponent.h"
 #include "Systems/ECS/Components/RigidBodyComponent.h"
+#include "Systems/ECS/Components/MeshComponent.h"
 #include "glm/gtc/type_ptr.hpp"
 
 
@@ -26,8 +27,8 @@ void ComponentsView::draw() {
 					if (ImGui::MenuItem("Camera")) {
 						m_registry->emplace_or_replace<Aozora::CameraComponent>(m_selectedEntity);
 					}
-					if (ImGui::MenuItem("Model")) {
-
+					if (ImGui::MenuItem("Mesh")) {
+						m_registry->emplace_or_replace<Aozora::MeshComponent>(m_selectedEntity);
 					}
 					if (ImGui::MenuItem("RigidBody")) {
 						m_registry->emplace_or_replace<Aozora::RigidBodyComponent>(m_selectedEntity);
@@ -59,6 +60,13 @@ void ComponentsView::draw() {
 			ImGui::Text("Camera component");
 		}
 
+		if (m_registry->all_of<Aozora::MeshComponent>(m_selectedEntity)) {
+			auto& meshComp = m_registry->get<Aozora::MeshComponent>(m_selectedEntity);
+			ImGui::Text("Mesh component");
+			ImGui::Text("Material ID: ", meshComp.material);
+
+		}
+
 	}
 	ImGui::End();
 }
@@ -66,6 +74,4 @@ void ComponentsView::draw() {
 void ComponentsView::setSelectedEntity(entt::entity entity)
 {
 	m_selectedEntity = entity;
-
-
 }

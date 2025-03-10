@@ -33,6 +33,7 @@ namespace Aozora {
 		void editorUpdate(std::shared_ptr<EditorCamera> editorCamera);
 
 		OpenglShader m_defaultShader{ OpenglShader("Resources/Shaders/v_default.glsl", "Resources/Shaders/f_default.glsl") };
+		OpenglShader m_gridShader{ OpenglShader("Resources/Shaders/v_grid.glsl", "Resources/Shaders/f_grid.glsl") };
 	private:
 
 		

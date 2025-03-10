@@ -9,9 +9,6 @@ namespace Aozora {
     const std::vector<unsigned int> ResourceManager::loadModel(const std::string& file)
     {
 
-        // I think a system that will check if the model is already loaded is good here.
-        // it will ensure we dont load multiple of the same models into memory
-
         
         return m_modelLoader.loadModel(file);
 

@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <GLFW/glfw3.h>
 
 
@@ -17,11 +18,8 @@ namespace Aozora {
 			auto& transform = view.get<TransformComponent>(entity);
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(glm::mat4(1.0f), transform.pos);
-			// solving rotation for now
-			model = glm::rotate(model, glm::radians(transform.rot.x), glm::vec3(1.0f, 0.0f, 0.0f));
-			model = glm::rotate(model, glm::radians(transform.rot.y), glm::vec3(0.0f, 1.0f, 0.0f));
-			model = glm::rotate(model, glm::radians(transform.rot.z), glm::vec3(0.0f, 0.0f, 1.0f));
-			//model = glm::rotate(model, glm::radians(20.0f)* (float)glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
+			glm::quat rotation = glm::quat(glm::radians(transform.rot));
+			model = model * glm::mat4_cast(rotation);
 			model = glm::scale(model, transform.scale);
 			transform.model = model;
 		}
@@ -32,6 +30,7 @@ namespace Aozora {
 	{
 		ResourceManager& resourceManager = ResourceManager::getResourceManager();
 		m_renderer->clear();
+		glUseProgram(m_defaultShader.ID);
 		auto view = m_registry->view<const MeshComponent, TransformComponent>(); // register of all mesh components
 
 		auto cameraView = m_registry->view<CameraComponent>();
@@ -63,6 +62,7 @@ namespace Aozora {
 	void Scene::renderEditorScene(std::shared_ptr<EditorCamera> editorCamera)
 	{
 		m_renderer->clear();
+		glUseProgram(m_defaultShader.ID);
 		ResourceManager& resourceManager = ResourceManager::getResourceManager();
 
 		auto view = m_registry->view<const MeshComponent, TransformComponent>(); // register of all mesh components
@@ -77,6 +77,28 @@ namespace Aozora {
 				resourceManager.m_loadedMeshes[id].draw(m_defaultShader);
 			}
 		}
+
+
+		// render grid
+
+		unsigned int gridVAO;
+		glGenVertexArrays(1, &gridVAO);
+		glBindVertexArray(gridVAO);
+		glUseProgram(m_gridShader.ID);
+		glUniform2fv(glGetUniformLocation(m_gridShader.ID, "screenSize"), 1, &glm::vec2(editorCamera->m_viewPortX, editorCamera->m_viewPortY)[0]);
+		glUniformMatrix4fv(glGetUniformLocation(m_gridShader.ID, "view"), 1, GL_FALSE, &editorCamera->getView()[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(m_gridShader.ID, "proj"), 1, GL_FALSE, &editorCamera->getProjection()[0][0]);
+		glUniform3fv(glGetUniformLocation(m_gridShader.ID, "cameraPos"), 1, &editorCamera->getPos()[0]);
+		
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+
+
+
+
+
+
 		
 	}
 

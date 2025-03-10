@@ -27,18 +27,12 @@ namespace Aozora {
 		m_cameraSystem = std::make_unique<CameraSystem>(m_registry);
 		m_renderer = std::shared_ptr<Renderer>(Renderer::create(props));
 		m_currentScene = std::make_shared<Scene>(m_renderer, m_registry);
-		m_resourceManager.loadModel("Resources/cube/cube.obj");
-		//m_meshes = source.loadModel("Resources/sponza/sponza.obj");
-		//m_meshes = source.loadModel("Resources/cube/cube.obj");
-		//m_meshes = source.loadModel("Resources/DamagedHelmet/DamagedHelmet.gltf");
 
-		//m_meshes = source.loadModel("Resources/hintze-hall-vr-tour/source/hintze-hall_UV_pack01.fbx");
-		//m_meshes = source.loadModel("Resources/survival-guitar-backpack/source/Survival_BackPack_2.fbx");
-		//m_meshes = source.loadModel("Resources/cube/cube.obj");
-		//m_meshes = source.loadModel("Resources/sponza/sponza.obj");
-		//m_meshes = source.loadModel("Resources/DamagedHelmet/DamagedHelmet.gltf");
-		//m_meshes = source.loadModel("Resources/gpmesh/scene.gltf"); // TODO FIX MATERIALS
-
+		/*
+		std::cout << "Material count: " << m_resourceManager.m_loadedmaterials.size() << "\n";
+		std::cout << "Texture count: " << m_resourceManager.m_loadedTextures.size() << "\n";
+		std::cout << "Mesh count: " << m_resourceManager.m_loadedMeshes.size() << "\n";
+		*/
 		layerStack = new LayerStack();
 
 	}

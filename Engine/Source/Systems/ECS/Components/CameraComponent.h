@@ -56,7 +56,6 @@ namespace Aozora {
 		int m_viewPortY{ 1080 };
 		float m_fovY{ 45.0f };
 
-	private:
 		glm::mat4 m_proj = glm::mat4(1.0f);
 		glm::mat4 m_view = glm::mat4(1.0f);
 		glm::vec3 m_pos = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -77,6 +76,7 @@ namespace Aozora {
 		float pitch = 0.0f; // up and down
 
 		float sensitivity = 0.3f;
+	private:
 
 	};
 

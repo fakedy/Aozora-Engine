@@ -7,8 +7,8 @@ StatsView::StatsView()
 }
 
 void StatsView::draw() {
-
-	ImGui::Begin("Stats"); // will display components
+    // this is not accurate
+	ImGui::Begin("Stats"); 
 	ImGui::Text("Frame time: %f ms", Time::deltaTime);
     frameTimeGraph();
 	ImGui::Text("Frame rate: %f fps", 1000 / Time::deltaTime);

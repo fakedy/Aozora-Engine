@@ -10,6 +10,7 @@ namespace Aozora {
 
 		bool m_isActive{ true };
 		std::vector<unsigned int> meshIDs{0};
+		unsigned int material{ 0 };
 	};
 
 }
