@@ -49,9 +49,16 @@ void EditorUILayer::onUpdate(){
 	// editor window
 	ImGui::Begin("Editor", NULL); // textureid
 	ImVec2 contentRegion = ImGui::GetContentRegionAvail();
-	m_editorCamera->m_viewPortX = contentRegion.x;
-	m_editorCamera->m_viewPortY = contentRegion.y;
-	m_editorCamera->calcProjection();
+	if (m_editorCamera->m_viewPortX != contentRegion.x || m_editorCamera->m_viewPortY != contentRegion.y) {
+		m_editorCamera->m_viewPortX = contentRegion.x;
+		m_editorCamera->m_viewPortY = contentRegion.y;
+		m_editorFramebufferSizeX = contentRegion.x;
+		m_editorFramebufferSizeY = contentRegion.y;
+		m_editorCamera->calcProjection();
+		m_editorFramebuffer->updateTexture(m_editorFramebufferSizeX, m_editorFramebufferSizeY);
+		std::cout << "cock\n";
+	}
+
 	ImGui::Image((void*)(intptr_t)m_editorFramebuffer->m_colorTextureID, ImVec2(contentRegion.x, contentRegion.y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 
@@ -59,8 +66,13 @@ void EditorUILayer::onUpdate(){
 	// game window
 	ImGui::Begin("Game", NULL); // textureid
 	ImVec2 contentRegionGame = ImGui::GetContentRegionAvail();
-	m_currentScene->m_gameViewPortX = contentRegionGame.x;
-	m_currentScene->m_gameViewPortY = contentRegionGame.y;
+	if (m_currentScene->m_gameViewPortX != contentRegionGame.x || m_currentScene->m_gameViewPortY != contentRegionGame.y) {
+		m_currentScene->m_gameViewPortX = contentRegionGame.x;
+		m_currentScene->m_gameViewPortY = contentRegionGame.y;
+		m_gameFramebufferSizeX = contentRegionGame.x;
+		m_gameFramebufferSizeY = contentRegionGame.y;
+		m_gameFramebuffer->updateTexture(m_gameFramebufferSizeX, m_gameFramebufferSizeY);
+	}
 
 	ImGui::Image((void*)(intptr_t)m_gameFramebuffer->m_colorTextureID, ImVec2(contentRegionGame.x, contentRegionGame.y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();

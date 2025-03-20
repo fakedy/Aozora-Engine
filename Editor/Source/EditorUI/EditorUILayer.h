@@ -36,12 +36,12 @@ public:
 
 		m_editorFramebuffer = std::make_shared<Aozora::OpenglFrameBuffer>();
 		m_editorFramebuffer.get()->create();
-		m_editorFramebuffer.get()->createTextures(m_framebufferSizeX, m_framebufferSizeY);
+		m_editorFramebuffer.get()->createTextures(m_editorFramebufferSizeX, m_editorFramebufferSizeY);
 		m_editorFramebuffer.get()->bufferTexture();
 
 		m_gameFramebuffer = std::make_shared<Aozora::OpenglFrameBuffer>();
 		m_gameFramebuffer.get()->create();
-		m_gameFramebuffer.get()->createTextures(m_framebufferSizeX, m_framebufferSizeY);
+		m_gameFramebuffer.get()->createTextures(m_gameFramebufferSizeX, m_gameFramebufferSizeY);
 		m_gameFramebuffer.get()->bufferTexture();
 
 		m_editorCamera = std::make_shared<EditorCamera>();
@@ -64,8 +64,10 @@ private:
 
 	std::shared_ptr<Aozora::FrameBuffer> m_editorFramebuffer;
 	std::shared_ptr<Aozora::FrameBuffer> m_gameFramebuffer;
-	int m_framebufferSizeX = 1920;
-	int m_framebufferSizeY = 1080;
+	unsigned int m_editorFramebufferSizeX{ 1920 };
+	unsigned int m_editorFramebufferSizeY{ 1080 };
+	unsigned int m_gameFramebufferSizeX{ 1920 };
+	unsigned int m_gameFramebufferSizeY{ 1080 };
 	std::shared_ptr<EditorCamera> m_editorCamera;
 
 	void resizeFramebuffer(int x, int y);

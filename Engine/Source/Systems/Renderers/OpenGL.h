@@ -11,7 +11,7 @@ namespace Aozora {
 	{
 	public:
 
-		OpenGL(Window::WindowProps props);
+		OpenGL(const Window::WindowProps &props);
 
 		void render(Shader& shader, glm::mat4 model, glm::mat4 view, glm::mat4 proj) override;
 		void clear() override;

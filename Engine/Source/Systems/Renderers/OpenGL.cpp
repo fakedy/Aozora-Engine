@@ -6,11 +6,11 @@
 
 namespace Aozora {
 
-	Renderer* Renderer::create(Window::WindowProps props) {
+	Renderer* Renderer::create(const Window::WindowProps &props) {
 		return new OpenGL(props);
 	}
 
-	OpenGL::OpenGL(Window::WindowProps props)
+	OpenGL::OpenGL(const Window::WindowProps &props)
 	{
 		m_props = props;
 		init();

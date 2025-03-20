@@ -15,7 +15,10 @@ namespace Aozora {
 
 		virtual void bufferTexture() = 0;
 
-		virtual void createTextures(int width, int height) = 0;
+		virtual void createTextures(unsigned int width, unsigned int height) = 0;
+
+		virtual void updateTexture(unsigned int width, unsigned int height) = 0;
+
 		unsigned int m_colorTextureID{};
 		unsigned int m_depthTextureID{};
 

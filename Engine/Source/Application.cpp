@@ -28,6 +28,11 @@ namespace Aozora {
 		m_renderer = std::shared_ptr<Renderer>(Renderer::create(props));
 		m_currentScene = std::make_shared<Scene>(m_renderer, m_registry);
 
+		// we need to actually grab the window size and use its callback to call this function or something
+		m_renderer->setViewport(0, 0, 3840, 2160); // base this on actual window size :))
+
+
+
 		/*
 		std::cout << "Material count: " << m_resourceManager.m_loadedmaterials.size() << "\n";
 		std::cout << "Texture count: " << m_resourceManager.m_loadedTextures.size() << "\n";
