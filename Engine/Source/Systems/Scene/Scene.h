@@ -1,7 +1,6 @@
 #pragma once
 #include <entt/entt.hpp>
 #include <memory>
-#include "Systems/Renderers/EditorCamera.h"
 #include "Systems/ECS/Components/TransformComponent.h"
 #include "Systems/ECS/Components/CameraComponent.h"
 #include "Systems/ECS/Components/MeshComponent.h"
@@ -26,7 +25,6 @@ namespace Aozora {
 
 		void update();
 
-		void renderEditorScene(std::shared_ptr<EditorCamera> editorCamera);
 		entt::registry& getRegistry();
 
 

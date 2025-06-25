@@ -40,8 +40,6 @@ namespace Aozora {
 
 			camera.m_proj = glm::perspective(glm::radians(camera.m_fovY), (float)camera.m_viewPortWidth / camera.m_viewPortHeight, 0.1f, 1000.0f);
 			camera.m_view = glm::lookAt(currentPos, currentPos + camera.m_forward, camera.m_up);
-			std::cout << camera.m_forward.x << std::endl;
-			//std::cout << camera.m_view[0][0] << std::endl;
 
 
 		}

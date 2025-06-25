@@ -117,7 +117,7 @@ void main() {
     	vec3 tangentNormal = texture(texture_normal1, textureCoord).rgb * 2.0 - 1.0;
     	usedMaterial.normal = normalize(tangentNormal); 
 	} else {
-		usedMaterial.normal = normal;
+		usedMaterial.normal = normalize(normal);
 	}
 
 	if(usedMaterial.albedo.a == 0){
@@ -151,15 +151,14 @@ void main() {
 	vec3 k_s = f; 
 	vec3 k_d = (vec3(1.0f) - k_s) * (1.0 - usedMaterial.metallic);
 
-	vec3 diffuse = (k_d * usedMaterial.albedo.rgb / pi) + specular; // reflective distribution function
-
-	vec3 light = diffuse * lightFactor * lightColor;
+	vec3 diffuse = k_d * usedMaterial.albedo.rgb / pi; // reflective distribution function
+	vec3 radiance = (diffuse + specular) * lightFactor * lightColor;
 
 
 	vec3 emission = usedMaterial.emissive;
 
 	vec3 ambient = vec3(0.3) * usedMaterial.albedo.rgb * usedMaterial.ao;
-	vec3 color = ambient + light + emission;
+	vec3 color = ambient + radiance + emission;
 
 	fragColor = vec4(color, usedMaterial.albedo.a);
 
