@@ -8,7 +8,7 @@ namespace Aozora {
 	class WindowsWindow : public Window {
 	public:
 
-		WindowsWindow(const WindowProps& props);
+		WindowsWindow(WindowProps& props);
 		~WindowsWindow();
 
 		void onUpdate() override;
@@ -17,11 +17,16 @@ namespace Aozora {
 
 		void* getNativeWindow() override;
 
+		
+
+
 	private:
 
-		void init(const WindowProps& props);
+		void init();
 
 		GLFWwindow* m_window;
+
+		WindowProps& m_props;
 
 	};
 

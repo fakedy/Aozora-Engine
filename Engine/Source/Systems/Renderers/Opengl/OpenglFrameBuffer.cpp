@@ -7,7 +7,7 @@ Aozora::OpenglFrameBuffer::OpenglFrameBuffer()
 
 void Aozora::OpenglFrameBuffer::bind()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebufferID);
 	
 }
 
@@ -19,13 +19,13 @@ void Aozora::OpenglFrameBuffer::unbind()
 unsigned int Aozora::OpenglFrameBuffer::create()
 {
 
-	glGenFramebuffers(1, &framebuffer);
-	return framebuffer;
+	glGenFramebuffers(1, &framebufferID);
+	return framebufferID;
 }
 
 void Aozora::OpenglFrameBuffer::bufferTexture()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebufferID);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colorTextureID, 0);
 
 	// depth/stencil attachment

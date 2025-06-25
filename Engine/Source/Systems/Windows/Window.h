@@ -11,7 +11,7 @@ namespace Aozora {
 
 		struct WindowProps {
 			std::string title;
-			unsigned int width, height;
+			int width, height;
 			bool vSync;
 
 			WindowProps() : title("Window"), width(1920), height(1080) {}
@@ -31,7 +31,7 @@ namespace Aozora {
 
 
 		// factory window method
-		static Window* create(const WindowProps& props);
+		static Window* create(WindowProps& props);
 
 	private:
 

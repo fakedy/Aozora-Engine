@@ -12,16 +12,7 @@ namespace Aozora {
 	class ResourceManager {
 	public:
 
-
-		
-		static ResourceManager& getResourceManager() {
-			static ResourceManager instance;
-			return instance;
-		}
-
-		ResourceManager(ResourceManager const&) = delete;
-		void operator =(ResourceManager const&) = delete;
-
+		ResourceManager() {};
 
 		const std::vector<unsigned int> loadModel(const std::string& file);
 
@@ -43,7 +34,6 @@ namespace Aozora {
 
 	private:
 
-		ResourceManager() = default;
 
 		TextureLoader m_textureLoader = TextureLoader();
 		ModelLoader m_modelLoader = ModelLoader();

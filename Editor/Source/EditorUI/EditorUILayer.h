@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine.h"
+#include "AozoraAPI/Aozora.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
 #include "imgui/imgui_impl_glfw.h"
@@ -9,16 +9,17 @@
 #include "EditorEntityWindow.h"
 #include "ComponentsView.h"
 #include "StatsView.h"
-#include "Systems/Renderers/EditorCamera.h"
-#include "Systems/ResourceManager/ResourceManager.h"
+#include "Systems/Renderers/Viewport.h"
+#include <Systems/Scene/Scene.h>
 
 class EditorUILayer : public Aozora::Layer {
 public:
-	EditorUILayer(std::shared_ptr<Aozora::Scene> scene) : m_currentScene(scene) {
+	EditorUILayer(){
 
-		m_currentScene = scene;
-		m_componentsViewWindow = std::make_shared<ComponentsView>(scene->m_registry);
-		m_editorEntityWindow = std::make_shared<EditorEntityWindow>(scene->m_registry, m_componentsViewWindow);
+		Aozora::Scene& scene = Aozora::Application::getApplication().getCurrentScene();
+
+		m_componentsViewWindow = std::make_shared<ComponentsView>();
+		m_editorEntityWindow = std::make_shared<EditorEntityWindow>(m_componentsViewWindow);
 
 		
 		IMGUI_CHECKVERSION();
@@ -28,21 +29,26 @@ public:
 
 		ImGui::StyleColorsDark();
 
+
+		// based on 4k for now. should use 1.0f for 1440p or something
+		float scaleFactor = 1.5f;
+
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.ScaleAllSizes(scaleFactor);
+
+		io.Fonts->AddFontFromFileTTF("Resources/moon_get-Heavy.ttf", 15.0f * scaleFactor);
+
+
+		// use api?
 		Aozora::Application& m_app = Aozora::Application::getApplication();
 		GLFWwindow* m_window = static_cast<GLFWwindow*>(m_app.getWindow().getNativeWindow());
 
 		ImGui_ImplGlfw_InitForOpenGL(m_window, true);
 		ImGui_ImplOpenGL3_Init();
 
-		m_editorFramebuffer = std::make_shared<Aozora::OpenglFrameBuffer>();
-		m_editorFramebuffer.get()->create();
-		m_editorFramebuffer.get()->createTextures(m_editorFramebufferSizeX, m_editorFramebufferSizeY);
-		m_editorFramebuffer.get()->bufferTexture();
 
-		m_gameFramebuffer = std::make_shared<Aozora::OpenglFrameBuffer>();
-		m_gameFramebuffer.get()->create();
-		m_gameFramebuffer.get()->createTextures(m_gameFramebufferSizeX, m_gameFramebufferSizeY);
-		m_gameFramebuffer.get()->bufferTexture();
+		m_editorViewPortID = Aozora::RenderAPI::createViewport(&scene, Aozora::ViewportType::PrimaryEditor);
+		m_gameViewPortID = Aozora::RenderAPI::createViewport(&scene, Aozora::ViewportType::PrimaryGame);
 
 		m_editorCamera = std::make_shared<EditorCamera>();
 		
@@ -60,16 +66,10 @@ private:
 	void sceneGraph();
 	void componentsView();
 	void statsView();
-	std::shared_ptr<Aozora::Scene> m_currentScene;
 
-	std::shared_ptr<Aozora::FrameBuffer> m_editorFramebuffer;
-	std::shared_ptr<Aozora::FrameBuffer> m_gameFramebuffer;
-	unsigned int m_editorFramebufferSizeX{ 1920 };
-	unsigned int m_editorFramebufferSizeY{ 1080 };
-	unsigned int m_gameFramebufferSizeX{ 1920 };
-	unsigned int m_gameFramebufferSizeY{ 1080 };
+	uint32_t m_gameViewPortID;
+	uint32_t m_editorViewPortID;
+
 	std::shared_ptr<EditorCamera> m_editorCamera;
-
-	void resizeFramebuffer(int x, int y);
 
 };

@@ -6,6 +6,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\EditorLayer.h" />
     <ClInclude Include="Source\EditorUI\ComponentsView.h">
       <Filter>EditorUI</Filter>
     </ClInclude>
@@ -21,6 +22,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Editor.cpp" />
+    <ClCompile Include="Source\EditorLayer.cpp" />
     <ClCompile Include="Source\EditorUI\ComponentsView.cpp">
       <Filter>EditorUI</Filter>
     </ClCompile>

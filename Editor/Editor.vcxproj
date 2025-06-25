@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\EditorLayer.h" />
     <ClInclude Include="Source\EditorUI\ComponentsView.h" />
     <ClInclude Include="Source\EditorUI\EditorEntityWindow.h" />
     <ClInclude Include="Source\EditorUI\EditorUILayer.h" />
@@ -148,6 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Editor.cpp" />
+    <ClCompile Include="Source\EditorLayer.cpp" />
     <ClCompile Include="Source\EditorUI\ComponentsView.cpp" />
     <ClCompile Include="Source\EditorUI\EditorEntityWindow.cpp" />
     <ClCompile Include="Source\EditorUI\EditorUILayer.cpp" />

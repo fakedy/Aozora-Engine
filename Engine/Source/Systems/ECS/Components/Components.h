@@ -1,0 +1,9 @@
+#pragma once
+#include "CameraComponent.h"
+#include "MeshComponent.h"
+#include "NameComponent.h"
+#include "RelationComponent.h"
+#include "RigidBodyComponent.h"
+#include "ScriptCOmponent.h"
+#include "TagComponent.h"
+#include "TransformComponent.h"

@@ -41,7 +41,8 @@ project "Engine"
 	  ["Systems/Scene"] = { "Systems/Scene/*.cpp", "Systems/Scene/*.h" },
 	  ["Imgui"] = { "Vendor/include/imgui/*.cpp"},
       ["Engine"] = { "Engine/*.cpp", "Engine/*.h" },
-	  ["Resources"] = { "Resources/*"}
+	  ["Resources"] = { "Resources/*"},
+      ["AozoraAPI"] = { "AozoraAPI/*"}
 	  }
 
 

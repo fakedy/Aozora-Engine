@@ -7,15 +7,13 @@
 
 namespace Aozora {
 
-	Window* Window::create(const WindowProps& props) {
+	Window* Window::create(WindowProps& props) {
 		return new WindowsWindow(props); 
 	}
 
-
-
-	WindowsWindow::WindowsWindow(const WindowProps& props)
+	WindowsWindow::WindowsWindow(WindowProps& props) : m_props(props)
 	{
-		init(props);
+		init();
 	}
 
 	WindowsWindow::~WindowsWindow()
@@ -26,6 +24,7 @@ namespace Aozora {
 	void WindowsWindow::onUpdate()
 	{
 		glfwSwapBuffers(m_window);
+		glfwGetFramebufferSize(m_window, &m_props.width, &m_props.height);
 		glfwPollEvents();
 	}
 
@@ -44,7 +43,7 @@ namespace Aozora {
 		return m_window;
 	}
 
-	void WindowsWindow::init(const WindowProps& props)
+	void WindowsWindow::init()
 	{
 		// initiate glfw
 		if (!glfwInit()) {
@@ -54,7 +53,7 @@ namespace Aozora {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
-		m_window = glfwCreateWindow(props.width, props.height, props.title.c_str(), nullptr, nullptr);
+		m_window = glfwCreateWindow(m_props.width, m_props.height, m_props.title.c_str(), nullptr, nullptr);
 
 		glfwMakeContextCurrent(m_window);
 
@@ -66,7 +65,8 @@ namespace Aozora {
 		glfwSetKeyCallback(m_window, Input::keyCallback);
 		glfwSetCursorPosCallback(m_window, Input::mouseCallback);
 		glfwSetMouseButtonCallback(m_window, Input::mouseButtonCallback);
-		//glfwSetWindowSizeCallback(m_window, )
 
 	}
+
+
 }

@@ -4,7 +4,7 @@ namespace Aozora {
 
 	void LayerStack::addLayer(Layer* layer)
 	{
-		m_layerStack.push_back(layer);
+		m_layerStack.insert(m_layerStack.begin(), layer);
 	}
 
 	void LayerStack::removeLayer(Layer* layer)

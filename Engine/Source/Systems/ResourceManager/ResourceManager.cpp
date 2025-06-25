@@ -28,6 +28,7 @@ namespace Aozora {
             return isAlreadyLoaded;
         }
 
+        std::cout << "Loading texture file: " << filename << "\n";
         int width, height, nrChannels;
         unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
         glGenTextures(1, &texture);
@@ -52,7 +53,8 @@ namespace Aozora {
             }
         }
         else {
-            std::cerr << "texture load failed\n";
+            std::cerr << "ResourceManager: texture load failed\n";
+            return 0;
         }
         stbi_image_free(data);
 

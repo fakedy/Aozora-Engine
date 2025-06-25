@@ -1,6 +1,7 @@
 #include <iostream>
-#include "Engine.h"
+#include "AozoraAPI/Aozora.h"
 #include "EditorUI/EditorUILayer.h"
+#include "EditorLayer.h"
 
 class Editor : public Aozora::Application {
 
@@ -11,10 +12,8 @@ public:
 	Editor() : Application("Aozora Editor") { // calls the constructor of Application
 
 
-		layerStack->addLayer(new EditorUILayer(m_currentScene));
-
-		// create project which essentially is the application we create
-		// project will have a scene that the engine works on
+		layerStack->addLayer(new EditorLayer());
+		layerStack->addOverlay(new EditorUILayer());
 
 
 		run(); // run the app

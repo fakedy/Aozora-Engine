@@ -18,9 +18,11 @@ namespace Aozora {
 
 		virtual void updateTexture(unsigned int width, unsigned int height) override;
 
+		unsigned int framebufferID;
+
+
 	private:
 
-		unsigned int framebuffer;
 
 	};
 

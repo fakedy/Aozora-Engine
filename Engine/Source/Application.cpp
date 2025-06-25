@@ -13,31 +13,24 @@ namespace Aozora {
 
 	Application* Application::m_appInstance = nullptr;
 
-	Aozora::Application::Application(const char* title) : m_resourceManager(ResourceManager::getResourceManager())
+	Aozora::Application::Application(const char* title) : m_resourceManager()
 	{
 		// singleton
 		assert(m_appInstance == nullptr);
 		m_appInstance = this;
 
 
-		Window::WindowProps props = Window::WindowProps(title, 1920, 1080);
+		props = Window::WindowProps(title, 1920, 1080);
 
 		m_window = Window::create(props);
-		m_registry = std::make_shared<entt::registry>();
-		m_cameraSystem = std::make_unique<CameraSystem>(m_registry);
-		m_renderer = std::shared_ptr<Renderer>(Renderer::create(props));
-		m_currentScene = std::make_shared<Scene>(m_renderer, m_registry);
+		m_renderer = std::unique_ptr<Renderer>(Renderer::create(props));
 
-		// we need to actually grab the window size and use its callback to call this function or something
-		m_renderer->setViewport(0, 0, 3840, 2160); // base this on actual window size :))
+		m_resourceManager = std::make_unique<ResourceManager>();
 
+		createNewScene();
+		
+		m_cameraSystem = std::make_unique<CameraSystem>();
 
-
-		/*
-		std::cout << "Material count: " << m_resourceManager.m_loadedmaterials.size() << "\n";
-		std::cout << "Texture count: " << m_resourceManager.m_loadedTextures.size() << "\n";
-		std::cout << "Mesh count: " << m_resourceManager.m_loadedMeshes.size() << "\n";
-		*/
 		layerStack = new LayerStack();
 
 	}
@@ -54,10 +47,6 @@ namespace Aozora {
 				layer->onUpdate(); // update layers
 			}
 
-			m_cameraSystem->update(); 
-
-
-
 			m_window->onUpdate(); // swap buffer
 
 
@@ -66,6 +55,11 @@ namespace Aozora {
 			Time::deltaTime = elapsed.count();
 
 		}
+	}
+	void Application::createNewScene()
+	{
+		m_currentScene = std::make_unique<Scene>();
+		m_renderer->updatePrimaryScene(m_currentScene.get());
 	}
 }
 

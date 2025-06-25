@@ -24,7 +24,7 @@ uniform bool has_texture_normal1 = false;
 uniform vec3 cameraPos;
 
 struct Material{
-	vec3 albedo;
+	vec4 albedo;
 	float metallic;
 	float roughness;
 	float ao;
@@ -33,7 +33,7 @@ struct Material{
 };
 
 // temporary, might move this to an UBO/SSBO
-uniform vec3 albedo;
+uniform vec4 albedo;
 uniform float metallic;
 uniform float roughness;
 uniform float ao;
@@ -80,7 +80,7 @@ void main() {
 
 
 	if(has_texture_diffuse1){
-		usedMaterial.albedo = texture(texture_diffuse1, textureCoord).rgb;
+		usedMaterial.albedo = texture(texture_diffuse1, textureCoord).rgba;
 	} else {
 		usedMaterial.albedo = albedo;
 	}
@@ -120,6 +120,10 @@ void main() {
 		usedMaterial.normal = normal;
 	}
 
+	if(usedMaterial.albedo.a == 0){
+		discard;
+	}
+
 
 	usedMaterial.normal = normal;
 
@@ -134,7 +138,7 @@ void main() {
 	vec3 viewDir = normalize(cameraPos - fragPos);
 
 	vec3 h = normalize(lightDir + viewDir);
-	vec3 f_0 = mix(vec3(0.04f), usedMaterial.albedo, usedMaterial.metallic);
+	vec3 f_0 = mix(vec3(0.04f), usedMaterial.albedo.rgb, usedMaterial.metallic);
 	float d = ndf(usedMaterial.normal, h, usedMaterial.roughness);
 	vec3 f = f(h, viewDir, f_0); // fresnelSchlick
 	float g = g(usedMaterial.normal, viewDir, usedMaterial.roughness) * g(usedMaterial.normal, lightDir, usedMaterial.roughness); // GeometrySmith
@@ -147,16 +151,16 @@ void main() {
 	vec3 k_s = f; 
 	vec3 k_d = (vec3(1.0f) - k_s) * (1.0 - usedMaterial.metallic);
 
-	vec3 diffuse = (k_d * usedMaterial.albedo / pi) + specular; // reflective distribution function
+	vec3 diffuse = (k_d * usedMaterial.albedo.rgb / pi) + specular; // reflective distribution function
 
 	vec3 light = diffuse * lightFactor * lightColor;
 
 
 	vec3 emission = usedMaterial.emissive;
 
-	vec3 ambient = vec3(0.3) * usedMaterial.albedo * usedMaterial.ao;
+	vec3 ambient = vec3(0.3) * usedMaterial.albedo.rgb * usedMaterial.ao;
 	vec3 color = ambient + light + emission;
 
-	fragColor = vec4(color, 1.0);
+	fragColor = vec4(color, usedMaterial.albedo.a);
 
 }

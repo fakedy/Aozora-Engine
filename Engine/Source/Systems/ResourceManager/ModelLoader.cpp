@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include "Systems/Material.h"
 #include "Systems/ResourceManager/ResourceManager.h"
+#include <Application.h>
 
 
 namespace Aozora {
@@ -27,7 +28,7 @@ namespace Aozora {
 
     void ModelLoader::processNode(aiNode* node, const aiScene* scene, std::vector<unsigned int>* meshVector, const std::string& file) {
 
-        ResourceManager& resourceManager = ResourceManager::getResourceManager();
+        ResourceManager& resourceManager = Application::getApplication().getResourceManager();
 
         for (unsigned int i = 0; i < node->mNumMeshes; i++) {
             aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
@@ -60,7 +61,7 @@ namespace Aozora {
         unsigned int mMaterialIndex = mesh->mMaterialIndex;
         Material material;
 
-        ResourceManager& resourceManager = ResourceManager::getResourceManager();
+        ResourceManager& resourceManager = Application::getApplication().getResourceManager();
         if(mMaterialIndex >= 0){
             //resourceManager.createMaterial(mMaterialIndex);
 
@@ -122,7 +123,6 @@ namespace Aozora {
                 createdmesh.meshData.indices.push_back(face.mIndices[j]);
         }
 
-        //resourceManager.createMaterial(material);
 		createdmesh.material = std::make_shared<Material>(material);
         createdmesh.bufferData();
         return createdmesh;
@@ -132,8 +132,9 @@ namespace Aozora {
 
     void ModelLoader::loadMaterialTextures(Material &material, aiMaterial* mat, aiTextureType type, std::string typeName) {
 
-        ResourceManager& resourceManager = ResourceManager::getResourceManager();
+        ResourceManager& resourceManager = Application::getApplication().getResourceManager();
 
+        // if there are no textures we will grab the colors from the materials and create our own material
         if(mat->GetTextureCount(type) == 0){
 
             if (type == aiTextureType_DIFFUSE) {
@@ -165,10 +166,12 @@ namespace Aozora {
         }
         else {
 
+            // if we have textures we'll create textures with them...
+
             if (type == aiTextureType_DIFFUSE) {
                 aiString str;
                 mat->GetTexture(type, 0, &str);
-                material.diffuseTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+                material.diffuseTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory);
                 material.diffuseTexture.type = typeName;
                 material.diffuseTexture.path = str.C_Str();
 			    material.activeTextures.push_back(material.diffuseTexture);
@@ -176,7 +179,7 @@ namespace Aozora {
             else if (type == aiTextureType_NORMALS) {
                 aiString str;
                 mat->GetTexture(type, 0, &str);
-                material.normalTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+                material.normalTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory);
                 material.normalTexture.type = typeName;
                 material.normalTexture.path = str.C_Str();
                 material.activeTextures.push_back(material.normalTexture);
@@ -184,7 +187,7 @@ namespace Aozora {
             else if (type == aiTextureType_EMISSIVE) {
                 aiString str;
                 mat->GetTexture(type, 0, &str);
-                material.emissiveTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+                material.emissiveTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory);
                 material.emissiveTexture.type = typeName;
                 material.emissiveTexture.path = str.C_Str();
                 material.activeTextures.push_back(material.emissiveTexture);
@@ -192,7 +195,7 @@ namespace Aozora {
             else if (type == aiTextureType_AMBIENT_OCCLUSION) {
                 aiString str;
                 mat->GetTexture(type, 0, &str);
-                material.aoTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+                material.aoTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory);
                 material.aoTexture.type = typeName;
                 material.aoTexture.path = str.C_Str();
                 material.activeTextures.push_back(material.aoTexture);
@@ -200,7 +203,7 @@ namespace Aozora {
             else if (type == aiTextureType_METALNESS) {
                 aiString str;
                 mat->GetTexture(type, 0, &str);
-                material.metallicTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+                material.metallicTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory);
                 material.metallicTexture.type = typeName;
                 material.metallicTexture.path = str.C_Str();
                 material.activeTextures.push_back(material.metallicTexture);
@@ -208,7 +211,7 @@ namespace Aozora {
             else if (type == aiTextureType_DIFFUSE_ROUGHNESS) {
                 aiString str;
                 mat->GetTexture(type, 0, &str);
-                material.roughnessTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory); // load texturefromfile here
+                material.roughnessTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory);
                 material.roughnessTexture.type = typeName;
                 material.roughnessTexture.path = str.C_Str();
                 material.activeTextures.push_back(material.roughnessTexture);

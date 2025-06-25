@@ -1,4 +1,5 @@
 #include "EditorUILayer.h"
+#include "Application.h"
 
 void EditorUILayer::onUpdate(){
 
@@ -13,6 +14,7 @@ void EditorUILayer::onUpdate(){
 	ImGui::Begin("DockSpace", NULL, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
 		ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus);
+
 
 	if (ImGui::BeginMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
@@ -47,34 +49,27 @@ void EditorUILayer::onUpdate(){
 
 
 	// editor window
-	ImGui::Begin("Editor", NULL); // textureid
+	ImGui::Begin("Editor", NULL);
 	ImVec2 contentRegion = ImGui::GetContentRegionAvail();
-	if (m_editorCamera->m_viewPortX != contentRegion.x || m_editorCamera->m_viewPortY != contentRegion.y) {
-		m_editorCamera->m_viewPortX = contentRegion.x;
-		m_editorCamera->m_viewPortY = contentRegion.y;
-		m_editorFramebufferSizeX = contentRegion.x;
-		m_editorFramebufferSizeY = contentRegion.y;
-		m_editorCamera->calcProjection();
-		m_editorFramebuffer->updateTexture(m_editorFramebufferSizeX, m_editorFramebufferSizeY);
-		std::cout << "cock\n";
-	}
+	Aozora::RenderAPI::resizeViewport(m_editorViewPortID, contentRegion.x, contentRegion.y);
 
-	ImGui::Image((void*)(intptr_t)m_editorFramebuffer->m_colorTextureID, ImVec2(contentRegion.x, contentRegion.y), ImVec2(0, 1), ImVec2(1, 0));
+
+	uint32_t editorTextureID = Aozora::RenderAPI::getViewportTextureID(m_editorViewPortID);
+
+	ImGui::Image((void*)(intptr_t)editorTextureID, ImVec2(contentRegion.x, contentRegion.y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 
 
-	// game window
-	ImGui::Begin("Game", NULL); // textureid
-	ImVec2 contentRegionGame = ImGui::GetContentRegionAvail();
-	if (m_currentScene->m_gameViewPortX != contentRegionGame.x || m_currentScene->m_gameViewPortY != contentRegionGame.y) {
-		m_currentScene->m_gameViewPortX = contentRegionGame.x;
-		m_currentScene->m_gameViewPortY = contentRegionGame.y;
-		m_gameFramebufferSizeX = contentRegionGame.x;
-		m_gameFramebufferSizeY = contentRegionGame.y;
-		m_gameFramebuffer->updateTexture(m_gameFramebufferSizeX, m_gameFramebufferSizeY);
-	}
 
-	ImGui::Image((void*)(intptr_t)m_gameFramebuffer->m_colorTextureID, ImVec2(contentRegionGame.x, contentRegionGame.y), ImVec2(0, 1), ImVec2(1, 0));
+	// game window
+	ImGui::Begin("Game", NULL);
+	// get the imgui space
+	ImVec2 contentRegionGame = ImGui::GetContentRegionAvail();
+	Aozora::RenderAPI::resizeViewport(m_gameViewPortID, contentRegionGame.x, contentRegionGame.y);
+
+	uint32_t gameTextureID = Aozora::RenderAPI::getViewportTextureID(m_gameViewPortID);
+
+	ImGui::Image((void*)(intptr_t)gameTextureID, ImVec2(contentRegionGame.x, contentRegionGame.y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 
 	ImGui::PopStyleVar();
@@ -93,17 +88,9 @@ void EditorUILayer::onUpdate(){
 
 
 	// temporary really. right now we have to unbind because we default to rendering to framebuffer
-	m_editorFramebuffer->unbind();
+	//m_editorFramebuffer->unbind();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-	m_editorFramebuffer->bind();
-	m_currentScene->editorUpdate(m_editorCamera);
-	m_editorFramebuffer->unbind();
-
-	m_gameFramebuffer->bind();
-	m_currentScene->renderScene();
-	m_gameFramebuffer->unbind();
 
 }
 
@@ -123,20 +110,4 @@ void EditorUILayer::statsView()
 	m_statsViewWindow->draw();
 }
 
-void EditorUILayer::resizeFramebuffer(int x, int y)
-{
-	/*
-	// move to framebuffer
-	m_framebufferSizeX = x;
-	m_framebufferSizeY = y;
-	glBindTexture(GL_TEXTURE_2D, m_editColorTextureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_framebufferSizeX, m_framebufferSizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glBindTexture(GL_TEXTURE_2D, m_editDepthTextureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_framebufferSizeX, m_framebufferSizeY, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	m_editorFramebuffer.get()->bufferTexture(m_editColorTextureID, m_editDepthTextureID);
-	std::cout << "x: " << x << " y: " << y << std::endl;
-	*/
-}

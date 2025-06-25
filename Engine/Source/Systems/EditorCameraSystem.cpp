@@ -1,4 +1,4 @@
-#include "CameraSystem.h"
+#include "EditorCameraSystem.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -10,12 +10,12 @@
 
 namespace Aozora {
 
-	CameraSystem::CameraSystem()
+	EditorCameraSystem::EditorCameraSystem()
 	{
 
 	}
 
-	void CameraSystem::update()
+	void EditorCameraSystem::update()
 	{
 		entt::registry& registry = Application::getApplication().getCurrentScene().getRegistry();
 		auto view = registry.view<CameraComponent, TransformComponent>();

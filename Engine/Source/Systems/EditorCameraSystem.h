@@ -5,11 +5,11 @@
 
 namespace Aozora {
 
-	class CameraSystem
+	class EditorCameraSystem
 	{
 	public:
 
-		CameraSystem();
+		EditorCameraSystem();
 
 		void update();
 
