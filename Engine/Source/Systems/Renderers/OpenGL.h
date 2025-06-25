@@ -22,7 +22,7 @@ namespace Aozora {
 		void clear() override;
 		virtual void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
-		uint32_t createViewport(Scene* scene, ViewportType type);
+		uint32_t createViewport(Scene* scene, ViewportType type, entt::entity editorCameraEntity);
 
 		Viewport& getViewport(uint32_t viewportID);
 

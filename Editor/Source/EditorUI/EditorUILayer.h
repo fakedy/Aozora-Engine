@@ -11,12 +11,12 @@
 #include "StatsView.h"
 #include "Systems/Renderers/Viewport.h"
 #include <Systems/Scene/Scene.h>
+#include "EditorLayer.h"
 
 class EditorUILayer : public Aozora::Layer {
 public:
-	EditorUILayer(){
+	EditorUILayer(EditorLayer* editlayer) : m_editorLayer(editlayer){
 
-		Aozora::Scene& scene = Aozora::Application::getApplication().getCurrentScene();
 
 		m_componentsViewWindow = std::make_shared<ComponentsView>();
 		m_editorEntityWindow = std::make_shared<EditorEntityWindow>(m_componentsViewWindow);
@@ -47,10 +47,7 @@ public:
 		ImGui_ImplOpenGL3_Init();
 
 
-		m_editorViewPortID = Aozora::RenderAPI::createViewport(&scene, Aozora::ViewportType::PrimaryEditor);
-		m_gameViewPortID = Aozora::RenderAPI::createViewport(&scene, Aozora::ViewportType::PrimaryGame);
 
-		m_editorCamera = std::make_shared<EditorCamera>();
 		
 
 
@@ -67,9 +64,7 @@ private:
 	void componentsView();
 	void statsView();
 
-	uint32_t m_gameViewPortID;
-	uint32_t m_editorViewPortID;
+	EditorLayer* m_editorLayer;
 
-	std::shared_ptr<EditorCamera> m_editorCamera;
 
 };

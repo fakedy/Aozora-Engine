@@ -14,19 +14,17 @@ void EditorEntityWindow::draw()
 
 	}
 
-	// wack
-	/*
-	auto view = m_registry->view<Aozora::NameComponent>();
+	std::vector<entt::entity> view = Aozora::SceneAPI::getSceneHierarchyEntities();
 
-	for (int i = view.size(); i > 0; i--) {
-		auto& nameComponent = view.get<Aozora::NameComponent>(view[i-1]);
-		std::string entityName = nameComponent.name + std::to_string(view.size() - i);
+	uint32_t entityCount = 0;
+	for (entt::entity entity: view) {
+		std::string entityName = Aozora::SceneAPI::getEntityName(entity) + std::to_string(entityCount);
 		// if component also have children we need to figure that out :)
 		if (ImGui::Selectable(entityName.c_str())) {
-			m_componentsView->setSelectedEntity(view[i-1]);
+			m_componentsView->setSelectedEntity(entity);
 		}
+		entityCount++;
 	}
-	*/
 
 	ImGui::End();
 }

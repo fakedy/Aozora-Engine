@@ -2,6 +2,7 @@
 #include <memory>
 #include "FrameBuffer.h"
 #include "Systems/Scene/Scene.h"
+#include <entt/entt.hpp>
 
 
 namespace Aozora {
@@ -21,6 +22,7 @@ namespace Aozora {
 		std::unique_ptr<FrameBuffer> framebuffer;
 
 		Scene* scene;
+		entt::entity camera;
 
 	};
 }

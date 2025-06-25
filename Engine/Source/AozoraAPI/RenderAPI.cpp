@@ -5,9 +5,19 @@
 #include <Systems/Renderers/Viewport.h>
 
 
-
 namespace Aozora {
 
+
+	uint32_t RenderAPI::createViewport(Scene* scene, ViewportType type, entt::entity editorCameraEntity) {
+
+		Renderer& renderer = Application::getApplication().getRenderer();
+		// for now we "know" that we use opengl
+		OpenGL& openglRenderer = static_cast<OpenGL&>(renderer);
+
+
+		uint32_t viewportID = openglRenderer.createViewport(scene, type, editorCameraEntity);
+		return viewportID;
+	}
 
 	uint32_t RenderAPI::createViewport(Scene* scene, ViewportType type) {
 
@@ -15,8 +25,7 @@ namespace Aozora {
 		// for now we "know" that we use opengl
 		OpenGL& openglRenderer = static_cast<OpenGL&>(renderer);
 
-
-		uint32_t viewportID = openglRenderer.createViewport(scene, type);
+		uint32_t viewportID = openglRenderer.createViewport(scene, type, entt::null);
 		return viewportID;
 	}
 

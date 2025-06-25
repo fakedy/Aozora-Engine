@@ -7,3 +7,4 @@
 #include "ScriptCOmponent.h"
 #include "TagComponent.h"
 #include "TransformComponent.h"
+#include "EditorEntityTag.h"

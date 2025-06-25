@@ -51,10 +51,10 @@ void EditorUILayer::onUpdate(){
 	// editor window
 	ImGui::Begin("Editor", NULL);
 	ImVec2 contentRegion = ImGui::GetContentRegionAvail();
-	Aozora::RenderAPI::resizeViewport(m_editorViewPortID, contentRegion.x, contentRegion.y);
+	Aozora::RenderAPI::resizeViewport(m_editorLayer->m_editorViewPortID, contentRegion.x, contentRegion.y);
 
 
-	uint32_t editorTextureID = Aozora::RenderAPI::getViewportTextureID(m_editorViewPortID);
+	uint32_t editorTextureID = Aozora::RenderAPI::getViewportTextureID(m_editorLayer->m_editorViewPortID);
 
 	ImGui::Image((void*)(intptr_t)editorTextureID, ImVec2(contentRegion.x, contentRegion.y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
@@ -65,9 +65,9 @@ void EditorUILayer::onUpdate(){
 	ImGui::Begin("Game", NULL);
 	// get the imgui space
 	ImVec2 contentRegionGame = ImGui::GetContentRegionAvail();
-	Aozora::RenderAPI::resizeViewport(m_gameViewPortID, contentRegionGame.x, contentRegionGame.y);
+	Aozora::RenderAPI::resizeViewport(m_editorLayer->m_gameViewPortID, contentRegionGame.x, contentRegionGame.y);
 
-	uint32_t gameTextureID = Aozora::RenderAPI::getViewportTextureID(m_gameViewPortID);
+	uint32_t gameTextureID = Aozora::RenderAPI::getViewportTextureID(m_editorLayer->m_gameViewPortID);
 
 	ImGui::Image((void*)(intptr_t)gameTextureID, ImVec2(contentRegionGame.x, contentRegionGame.y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();

@@ -1,0 +1,14 @@
+
+
+
+
+
+
+
+namespace Aozora {
+
+	struct EditorEntityTag {
+
+	};
+
+}

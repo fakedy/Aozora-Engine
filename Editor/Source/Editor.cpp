@@ -11,9 +11,9 @@ public:
 
 	Editor() : Application("Aozora Editor") { // calls the constructor of Application
 
-
-		layerStack->addLayer(new EditorLayer());
-		layerStack->addOverlay(new EditorUILayer());
+		EditorLayer* editlayer = new EditorLayer();
+		layerStack->addLayer(editlayer);
+		layerStack->addOverlay(new EditorUILayer(editlayer));
 
 
 		run(); // run the app

@@ -45,6 +45,25 @@ namespace Aozora {
 
 	}
 
+	std::vector<entt::entity> SceneAPI::getSceneHierarchyEntities()
+	{
+
+		entt::registry& registry = Application::getApplication().getCurrentScene().getRegistry();
+
+		// everything but editor related entities
+		// want to sort this by name first
+		auto view = registry.view<NameComponent>(entt::exclude<EditorEntityTag>);
+
+		return { view.begin(), view.end() };
+	}
+
+	std::string SceneAPI::getEntityName(entt::entity entity)
+	{
+		entt::registry& registry = Application::getApplication().getCurrentScene().getRegistry();
+		auto target = registry.get<NameComponent>(entity);
+		return target.name;
+	}
+
 
 
 

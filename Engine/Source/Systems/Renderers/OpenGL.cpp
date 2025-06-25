@@ -43,18 +43,6 @@ namespace Aozora {
 
 	void OpenGL::render()
 	{
-
-
-		/*
-			m_editorFramebuffer->bind();
-			m_currentScene->editorUpdate(m_editorCamera);
-			m_editorFramebuffer->unbind();
-
-			m_gameFramebuffer->bind();
-			m_currentScene->renderScene();
-			m_gameFramebuffer->unbind();
-		*/
-		
 		// loop through unordered_map of viewports
 		for (auto& [ID, viewport] : m_viewports) {
 
@@ -71,25 +59,25 @@ namespace Aozora {
 			setViewport(0, 0, viewport.width, viewport.height);
 			auto view = viewport.scene->getRegistry().view<const MeshComponent, TransformComponent>(); // register of all mesh components
 			auto cameraView = viewport.scene->getRegistry().view<CameraComponent>();
-			for (const auto cameraEntity : cameraView) { // change this we are currently rendering multiple cameras
 
+			// check if viewport have a camera
+			if (viewport.camera != entt::null) {
+				auto& current_camera = cameraView.get<CameraComponent>(viewport.camera);
+				current_camera.m_viewPortWidth = viewport.width;
+				current_camera.m_viewPortHeight = viewport.height;
+
+				// for every entity to be rendered
 				for (const auto entity : view) {
 					auto& meshComponent = view.get<MeshComponent>(entity);
-					auto& transform = view.get<TransformComponent>(entity);
+					auto& transformComponent = view.get<TransformComponent>(entity);
 
-					auto& current_camera = cameraView.get<CameraComponent>(cameraEntity);
-					current_camera.m_viewPortX = viewport.width;
-					current_camera.m_viewPortY = viewport.height;
+					glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.ID, "model"), 1, GL_FALSE, &transformComponent.model[0][0]);
+					glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.ID, "view"), 1, GL_FALSE, &current_camera.getView()[0][0]);
+					glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.ID, "proj"), 1, GL_FALSE, &current_camera.getProjection()[0][0]);
 
-					if (current_camera.isActive()) {
-						glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.ID, "model"), 1, GL_FALSE, &transform.model[0][0]);
-						glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.ID, "view"), 1, GL_FALSE, &current_camera.getView()[0][0]);
-						glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.ID, "proj"), 1, GL_FALSE, &transform.model[0][0]);
-
-						glUniform3fv(glGetUniformLocation(m_defaultShader.ID, "cameraPos"), 1, &current_camera.getPos()[0]);
-						for (unsigned int id : meshComponent.meshIDs) {
-							resourceManager.m_loadedMeshes[id].draw(m_defaultShader);
-						}
+					glUniform3fv(glGetUniformLocation(m_defaultShader.ID, "cameraPos"), 1, &transformComponent.pos[0]);
+					for (unsigned int id : meshComponent.meshIDs) {
+						resourceManager.m_loadedMeshes[id].draw(m_defaultShader);
 
 					}
 
@@ -110,13 +98,14 @@ namespace Aozora {
 		glViewport(x, y, width, height);
 	}
 
-	uint32_t OpenGL::createViewport(Scene* scene, ViewportType type)
+	uint32_t OpenGL::createViewport(Scene* scene, ViewportType type, entt::entity editorCameraEntity)
 	{
 		uint32_t viewportID = nextViewportID;
 		m_viewports.emplace(std::piecewise_construct, std::forward_as_tuple(viewportID), std::forward_as_tuple(1920,1080));
 		Viewport& tempViewport = m_viewports.at(viewportID);
 		tempViewport.type = type;
 		tempViewport.scene = scene;
+		tempViewport.camera = editorCameraEntity;
 		nextViewportID++;
 		return viewportID;
 	}

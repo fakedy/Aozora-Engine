@@ -27,7 +27,7 @@ namespace Aozora {
 			if (camera.isActive()) {
 				auto& transform = view.get<TransformComponent>(entity);
 
-				glm::vec3 currentPos = camera.m_pos + transform.pos;
+				glm::vec3 currentPos = transform.pos;
 				
 				
 
@@ -42,7 +42,7 @@ namespace Aozora {
 
 				camera.m_up = glm::normalize(glm::cross(camera.m_right, camera.m_forward));
 				
-				camera.m_proj = glm::perspective(glm::radians(camera.m_fovY), (float)camera.m_viewPortX / camera.m_viewPortY, 0.1f, 1000.0f);
+				camera.m_proj = glm::perspective(glm::radians(camera.m_fovY), (float)camera.m_viewPortWidth / camera.m_viewPortHeight, 0.1f, 1000.0f);
 				camera.m_view = glm::lookAt(currentPos, currentPos + camera.m_forward, camera.m_up);
 				
 			}
