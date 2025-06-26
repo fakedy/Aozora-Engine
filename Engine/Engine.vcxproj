@@ -171,6 +171,7 @@
     <ClInclude Include="Source\Systems\Material.h" />
     <ClInclude Include="Source\Systems\Mesh.h" />
     <ClInclude Include="Source\Systems\MeshSystem.h" />
+    <ClInclude Include="Source\Systems\Model.h" />
     <ClInclude Include="Source\Systems\Project\Project.h" />
     <ClInclude Include="Source\Systems\Renderers\FrameBuffer.h" />
     <ClInclude Include="Source\Systems\Renderers\OpenGL.h" />
@@ -190,6 +191,7 @@
   <ItemGroup>
     <ClCompile Include="Source\AozoraAPI\ApplicationAPI.cpp" />
     <ClCompile Include="Source\AozoraAPI\RenderAPI.cpp" />
+    <ClCompile Include="Source\AozoraAPI\ResourcesAPI.cpp" />
     <ClCompile Include="Source\AozoraAPI\SceneAPI.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Systems\CameraSystem.cpp" />
@@ -200,6 +202,7 @@
     <ClCompile Include="Source\Systems\Layers\LayerStack.cpp" />
     <ClCompile Include="Source\Systems\Mesh.cpp" />
     <ClCompile Include="Source\Systems\MeshSystem.cpp" />
+    <ClCompile Include="Source\Systems\Model.cpp" />
     <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglFrameBuffer.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglShader.cpp" />

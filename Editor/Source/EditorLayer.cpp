@@ -12,6 +12,10 @@ void EditorLayer::onUpdate()
 	auto& app = Aozora::Application::getApplication();
 
 
+
+
+
+
 	// TEMPORARY
 	if (Input::getKeyDown(Input::Key::MOUSE_BUTTON_RIGHT)) {
 

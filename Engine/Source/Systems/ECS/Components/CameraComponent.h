@@ -60,14 +60,7 @@ namespace Aozora {
 		bool perspective{ true };
 
 		bool m_isActive{ true };
-		// I want to move this to implementation specific stuff aka defined in user scripts
-		float lastX = 1920 / 2.0f;
-		float lastY = 1080 / 2.0f;
 
-		float yaw = -90.0f; // rotate
-		float pitch = 0.0f; // up and down
-
-		float sensitivity = 0.3f;
 	private:
 
 	};

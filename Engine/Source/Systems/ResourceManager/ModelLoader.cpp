@@ -26,30 +26,49 @@ namespace Aozora {
 
     }
 
-    void ModelLoader::processNode(aiNode* node, const aiScene* scene, std::vector<unsigned int>* meshVector, const std::string& file) {
+    Model::Node* ModelLoader::processNode(aiNode* node, const aiScene* scene, const std::string& file, Model& model) {
 
         ResourceManager& resourceManager = Application::getApplication().getResourceManager();
+
+        Model::Node* newNode = new Model::Node();
+        // fill node data below
+
+        model.allNodes.push_back(newNode);
+
+
 
         for (unsigned int i = 0; i < node->mNumMeshes; i++) {
             aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
             std::string key = file + std::to_string(node->mMeshes[i]);
+
+            uint32_t meshID;
+            // if mesh isnt already loaded
             if (resourceManager.meshLoaded(key) == -1) {
                 Mesh mesh = processMesh(aiMesh, scene);
                 resourceManager.m_meshPathToID[key] = resourceManager.m_nextMeshID;
                 resourceManager.m_loadedMeshes[resourceManager.m_nextMeshID] = mesh;
+                meshID = resourceManager.m_nextMeshID; // use new mesh ID
                 resourceManager.m_nextMeshID++;
-                meshVector->push_back(resourceManager.meshLoaded(key));
+
             }
             else {
-                meshVector->push_back(resourceManager.meshLoaded(key));
+                meshID = resourceManager.meshLoaded(key); // use the already loaded mesh ID
             }
-            
+            Model::Node* meshNode = new Model::Node();
+            newNode->childrenNodes.push_back(meshNode);
+            meshNode->parentNode = newNode;
+            meshNode->meshID = meshID;
+            model.allNodes.push_back(meshNode);
         }
 
         for (unsigned int i = 0; i < node->mNumChildren; i++) {
-            processNode(node->mChildren[i], scene, meshVector, file);
+
+            Model::Node* childNode = processNode(node->mChildren[i], scene, file, model);
+            newNode->childrenNodes.push_back(childNode);
+            childNode->parentNode = newNode;
         }
 
+        return newNode;
 
     }
 
@@ -124,7 +143,6 @@ namespace Aozora {
         }
 
 		createdmesh.material = std::make_shared<Material>(material);
-        createdmesh.bufferData();
         return createdmesh;
     }
 
@@ -222,14 +240,18 @@ namespace Aozora {
 
 
 
-    std::vector<unsigned int> ModelLoader::loadModel(const std::string& file)
+    Model ModelLoader::loadModel(const std::string& file)
     {
+        ResourceManager& resourceManager = Application::getApplication().getResourceManager();
         const aiScene* scene = importFile(file);
         m_directory = file.substr(0, file.find_last_of('/'));
         std::cout << "\nLoading model: " << file << "\n";
-        std::vector<unsigned int> meshVector;
-        processNode(scene->mRootNode, scene, &meshVector, file);
-        
-        return meshVector;
+        std::string filename = file.substr(file.find_last_of('/'), file.find_last_of('.'));
+        Model loadedModel;
+        loadedModel.name = filename;
+        loadedModel.filePath = file;
+        processNode(scene->mRootNode, scene, file, loadedModel);
+
+        return loadedModel;
     }
 }

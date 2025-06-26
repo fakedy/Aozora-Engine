@@ -63,9 +63,7 @@ void ComponentsView::draw() {
 		if (registry.all_of<Aozora::MeshComponent>(m_selectedEntity)) {
 			auto& meshComp = registry.get<Aozora::MeshComponent>(m_selectedEntity);
 			ImGui::Text("Mesh component");
-			for (unsigned int i : meshComp.meshIDs) {
-				ImGui::Text("Mesh ID: ", meshComp.meshIDs[i]); // TODO doesnt work
-			}
+			ImGui::Text("Mesh ID: ", meshComp.meshID);
 			ImGui::Text("Material ID: ", meshComp.material); // TODO doesnt work
 			                                                                                                          
 		}

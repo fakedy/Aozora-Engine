@@ -77,6 +77,16 @@ void EditorUILayer::onUpdate(){
 	sceneGraph(); // the list of entities in the scene
 
 	ImGui::Begin("workspace"); // file browser
+
+	std::vector <std::string> loadedModelNames = Aozora::ResourcesAPI::getLoadedModelNames();
+
+	for (std::string modelName : loadedModelNames) {
+		ImGui::Text(modelName.c_str());
+	}
+
+
+
+
 	ImGui::End();
 
 	componentsView();

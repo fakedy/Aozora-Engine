@@ -5,6 +5,7 @@
 #include <memory>
 #include <iostream>
 #include <glad/glad.h>
+#include "Systems/Model.h"
 
 
 namespace Aozora {
@@ -14,7 +15,7 @@ namespace Aozora {
 
 		ResourceManager() {};
 
-		const std::vector<unsigned int> loadModel(const std::string& file);
+		const void loadModel(const std::string& file);
 
 		unsigned int loadTexture(const std::string path, const std::string& directory);
 		unsigned int createMaterial(Material* material);
@@ -23,14 +24,16 @@ namespace Aozora {
 		// check functions
 		int textureLoaded(const std::string path);
 		unsigned int meshLoaded(const std::string path);
-
+		bool modelLoaded(const std::string path);
 		// resources
 		std::unordered_map<std::string, Material::Texture> m_loadedTextures;
 		std::unordered_map<std::string, unsigned int> m_meshPathToID;
 		std::unordered_map<unsigned int, Mesh> m_loadedMeshes;
 		std::unordered_map<unsigned int, Material> m_loadedmaterials;
+		std::unordered_map<std::string, Model> m_loadedModels;
 
 		unsigned int m_nextMeshID{ 0 };
+
 
 	private:
 

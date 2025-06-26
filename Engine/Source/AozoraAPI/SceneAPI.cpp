@@ -15,11 +15,15 @@ namespace Aozora {
 		entt::registry& registry = currentScene.getRegistry();
 		const auto entity = registry.create();
 
+		// this will be way more complicated now pog 
+		// one entity per mesh
 		registry.emplace<Aozora::NameComponent>(entity).name = "Entity";
 		registry.emplace<Aozora::TagComponent>(entity);
 		registry.emplace<Aozora::TransformComponent>(entity);
 		registry.emplace<Aozora::RelationComponent>(entity);
-		registry.emplace<Aozora::MeshComponent>(entity).meshIDs = resourceManager.loadModel("Resources/testcube/testcube.obj");
+
+
+		//registry.emplace<Aozora::MeshComponent>(entity).meshIDs = resourceManager.loadModel("Resources/testcube/testcube.obj");
 
 
 		//m_resourceManager.loadModel("Resources/cube/cube.obj");
@@ -33,9 +37,11 @@ namespace Aozora {
 		//m_resourceManager.loadModel("Resources/DamagedHelmet/DamagedHelmet.gltf");
 		//m_meshes = source.loadModel("Resources/gpmesh/scene.gltf");
 
+		/*
 		std::cout << "Material count: " << resourceManager.m_loadedmaterials.size() << "\n";
 		std::cout << "Texture count: " << resourceManager.m_loadedTextures.size() << "\n";
 		std::cout << "Mesh count: " << resourceManager.m_loadedMeshes.size() << "\n";
+		*/
 	}
 
 	void SceneAPI::deleteEntity() {

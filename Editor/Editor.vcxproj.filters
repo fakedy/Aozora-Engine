@@ -21,6 +21,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Editor.cpp" />
     <ClCompile Include="Source\EditorLayer.cpp" />
     <ClCompile Include="Source\EditorUI\ComponentsView.cpp">
       <Filter>EditorUI</Filter>
@@ -34,6 +35,5 @@
     <ClCompile Include="Source\EditorUI\StatsView.cpp">
       <Filter>EditorUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Editor.cpp" />
   </ItemGroup>
 </Project>

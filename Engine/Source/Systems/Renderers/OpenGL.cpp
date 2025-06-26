@@ -76,10 +76,7 @@ namespace Aozora {
 					glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.ID, "proj"), 1, GL_FALSE, &current_camera.getProjection()[0][0]);
 
 					glUniform3fv(glGetUniformLocation(m_defaultShader.ID, "cameraPos"), 1, &transformComponent.pos[0]);
-					for (unsigned int id : meshComponent.meshIDs) {
-						resourceManager.m_loadedMeshes[id].draw(m_defaultShader);
-
-					}
+					resourceManager.m_loadedMeshes[meshComponent.meshID].draw(m_defaultShader); // this gives me sus feeling
 
 				}
 			}

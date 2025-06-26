@@ -6,6 +6,9 @@
 #include "Systems/Layers/Layer.h"
 #include "Systems/Renderers/Viewport.h"
 #include "entt/entt.hpp"
+#include <string>
+#include <Systems/Model.h>
+#include <Systems/Mesh.h>
 
 namespace Aozora {
 
@@ -40,6 +43,17 @@ namespace Aozora {
 
 		static void createNewScene();
 
+
+	};
+
+	class ResourcesAPI {
+	public:
+
+		static void loadModel(std::string path);
+		static uint32_t instantiateModel(std::string name);
+
+		static std::vector<std::string> getLoadedModelNames();
+		static Model* getModel(std::string name);
 
 	};
 

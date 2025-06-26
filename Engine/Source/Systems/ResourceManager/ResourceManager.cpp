@@ -6,11 +6,18 @@
 namespace Aozora {
 
 
-    const std::vector<unsigned int> ResourceManager::loadModel(const std::string& file)
+    const void ResourceManager::loadModel(const std::string& file)
     {
+        // imho its bad that i do this filename thing again.
+        // storing shorted filename and whole path for the map is confusing
+        std::string filename = file.substr(file.find_last_of('/'), file.find_last_of('.'));
+        if (modelLoaded(filename)) {
+            std::cout << "model already loaded\n";
+            return;
+        }
+        Model loadedModel = m_modelLoader.loadModel(file);
 
-        
-        return m_modelLoader.loadModel(file);
+        m_loadedModels.emplace(loadedModel.name, std::move(loadedModel));
 
     }
 
@@ -94,14 +101,25 @@ namespace Aozora {
         return -1;
     }
 
+    // return the index of the loaded mesh or -1 if its not loaded
     unsigned int ResourceManager::meshLoaded(const std::string path)
     {
         auto it = m_meshPathToID.find(path);
         if (it != m_meshPathToID.end()) {
+            std::cout << "Mesh already loaded\n";
             return it->second;
         }
 
         return -1;
+    }
+
+    bool ResourceManager::modelLoaded(const std::string path) {
+
+        auto it = m_loadedModels.find(path);
+        if (it == m_loadedModels.end()) {
+            return false;
+        }
+        return true;
     }
 
 

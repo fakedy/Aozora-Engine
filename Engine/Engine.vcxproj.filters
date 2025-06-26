@@ -105,6 +105,9 @@
     <ClInclude Include="Source\Systems\MeshSystem.h">
       <Filter>Source\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\Model.h">
+      <Filter>Source\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\Project\Project.h">
       <Filter>Source\Systems\Project</Filter>
     </ClInclude>
@@ -188,6 +191,9 @@
     <ClCompile Include="Source\Systems\MeshSystem.cpp">
       <Filter>Source\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Systems\Model.cpp">
+      <Filter>Source\Systems</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp">
       <Filter>Source\Systems\Renderers</Filter>
     </ClCompile>
@@ -235,6 +241,9 @@
     </ClCompile>
     <ClCompile Include="Vendor\include\imgui\imgui_widgets.cpp">
       <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AozoraAPI\ResourcesAPI.cpp">
+      <Filter>Source\AozoraAPI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
