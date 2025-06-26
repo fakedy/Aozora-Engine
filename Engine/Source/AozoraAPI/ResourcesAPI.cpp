@@ -55,16 +55,12 @@ namespace Aozora {
 				resourceManager.m_loadedMeshes.at(node->meshID).bufferData();
 			}
 			
-			// prob better way of doing it
-			if (node->childrenNodes.size() == 0 && node->parentNode == nullptr) {
-				return entity;
-			}
-			Aozora::RelationComponent& relationComponent = registry.emplace<Aozora::RelationComponent>(entity);
+		Aozora::RelationComponent& relationComponent = registry.emplace<Aozora::RelationComponent>(entity, parent);
 
 		for (Model::Node* childNode : node->childrenNodes) {
 
-			relationComponent.parent = parent;
-			relationComponent.children.push_back(createEntityFromNodes(childNode, entity));
+			entt::entity childEntity = createEntityFromNodes(childNode, entity);
+			relationComponent.children.push_back(childEntity);
 		
 		}
 

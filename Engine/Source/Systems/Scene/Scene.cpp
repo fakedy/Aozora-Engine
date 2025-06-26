@@ -25,16 +25,6 @@ namespace Aozora {
 			model = glm::scale(model, transform.scale);
 			transform.model = model;
 		}
-
-		/*
-		
-
-
-			editorCamera->update();
-			renderEditorScene(editorCamera);
-
-
-		*/
 	}
 
 

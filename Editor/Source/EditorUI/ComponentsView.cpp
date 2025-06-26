@@ -76,3 +76,8 @@ void ComponentsView::setSelectedEntity(entt::entity entity)
 {
 	m_selectedEntity = entity;
 }
+
+entt::entity ComponentsView::getSelectedEntity()
+{
+	return m_selectedEntity;
+}

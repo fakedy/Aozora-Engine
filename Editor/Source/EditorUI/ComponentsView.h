@@ -10,6 +10,7 @@ public:
 	ComponentsView();
 	void draw();
 	void setSelectedEntity(entt::entity entity);
+	entt::entity getSelectedEntity();
 private:
 
 	entt::entity m_selectedEntity;

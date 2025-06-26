@@ -32,11 +32,12 @@ namespace Aozora {
 
         Model::Node* newNode = new Model::Node();
 
+        // set the model origin node
         if (model.originNode == nullptr) {
             model.originNode = newNode;
         }
-        // fill node data below
 
+        // add new node to the model node list
         model.allNodes.push_back(newNode);
 
 
@@ -57,6 +58,7 @@ namespace Aozora {
                 meshID = resourceManager.meshLoaded(key); // use the already loaded mesh ID
             }
 
+            // all mesh nodes will be children to the parent node
             Model::Node* meshNode = new Model::Node();
             newNode->childrenNodes.push_back(meshNode);
             meshNode->parentNode = newNode;

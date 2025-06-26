@@ -16,15 +16,48 @@ void EditorEntityWindow::draw()
 
 	std::vector<entt::entity> view = Aozora::SceneAPI::getSceneHierarchyEntities();
 
-	uint32_t entityCount = 0;
 	for (entt::entity entity: view) {
-		std::string entityName = Aozora::SceneAPI::getEntityName(entity) + std::to_string(entityCount);
-		// if component also have children we need to figure that out :)
-		if (ImGui::Selectable(entityName.c_str())) {
-			m_componentsView->setSelectedEntity(entity);
+		// only draw root nodes, the children will get drawn from them
+		if (Aozora::SceneAPI::getEntityParent(entity) == entt::null) {
+			drawEntityNode(entity);
 		}
-		entityCount++;
 	}
 
 	ImGui::End();
+}
+
+void EditorEntityWindow::drawEntityNode(entt::entity entity)
+{
+
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+
+	const auto& children = Aozora::SceneAPI::getEntityChildren(entity);
+	std::string entityName = Aozora::SceneAPI::getEntityName(entity);
+
+	// check for entity children
+	if (children.empty()) {
+		flags |= ImGuiTreeNodeFlags_Leaf;
+	}
+
+	if (m_componentsView->getSelectedEntity() == entity) {
+		flags |= ImGuiTreeNodeFlags_Selected;
+	}
+
+
+	bool nodeOpen = ImGui::TreeNodeEx((void*)(uint64_t)entity, flags, "%s", entityName.c_str());
+
+	if (ImGui::IsItemClicked()) {
+		m_componentsView->setSelectedEntity(entity);
+	}
+
+
+	if (nodeOpen) {
+
+		for (entt::entity child : children) {
+			drawEntityNode(child);
+		}
+		ImGui::TreePop();
+	}
+
+
 }

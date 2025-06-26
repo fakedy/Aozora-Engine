@@ -23,6 +23,9 @@ namespace Aozora {
 		static void deleteEntity();
 		static std::vector<entt::entity> getSceneHierarchyEntities();
 		static std::string getEntityName(entt::entity entity);
+		static std::vector<entt::entity>& getEntityChildren(entt::entity entity);
+		static entt::entity& getEntityParent(entt::entity entity);
+			
 
 
 	};

@@ -20,6 +20,7 @@ namespace Aozora {
 		registry.emplace<Aozora::NameComponent>(entity).name = "Entity";
 		registry.emplace<Aozora::TagComponent>(entity);
 		registry.emplace<Aozora::TransformComponent>(entity);
+		registry.emplace<Aozora::RelationComponent>(entity);
 
 
 		//registry.emplace<Aozora::MeshComponent>(entity).meshIDs = resourceManager.loadModel("Resources/testcube/testcube.obj");
@@ -57,6 +58,7 @@ namespace Aozora {
 
 		// everything but editor related entities
 		// want to sort this by name first
+		// https://github.com/skypjack/entt/wiki/Crash-Course:-entity-component-system/465d90e0f5961adc460cd9d1e9358370987fbcd3#sorting-is-it-possible
 		auto view = registry.view<NameComponent>(entt::exclude<EditorEntityTag>);
 
 		return { view.begin(), view.end() };
@@ -67,6 +69,25 @@ namespace Aozora {
 		entt::registry& registry = Application::getApplication().getCurrentScene().getRegistry();
 		auto target = registry.get<NameComponent>(entity);
 		return target.name;
+	}
+
+	std::vector<entt::entity>& SceneAPI::getEntityChildren(entt::entity entity)
+	{
+		entt::registry& registry = Application::getApplication().getCurrentScene().getRegistry();
+		auto& relationComponent = registry.get<RelationComponent>(entity);
+
+		return relationComponent.children;
+
+	}
+
+	entt::entity& SceneAPI::getEntityParent(entt::entity entity)
+	{
+
+		entt::registry& registry = Application::getApplication().getCurrentScene().getRegistry();
+		auto& relationComponent = registry.get<RelationComponent>(entity);
+
+		return relationComponent.parent;
+		
 	}
 
 
