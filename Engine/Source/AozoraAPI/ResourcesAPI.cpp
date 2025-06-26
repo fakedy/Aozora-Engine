@@ -1,13 +1,13 @@
 #include "Aozora.h"
 #include "Systems/ResourceManager/ResourceManager.h"
-
+#include "Systems/ECS/Components/Components.h"
 
 
 
 
 namespace Aozora {
 
-
+	entt::entity createEntityFromNodes(Model::Node* node, entt::entity parent);
 
 	void ResourcesAPI::loadModel(std::string path) {
 
@@ -26,19 +26,49 @@ namespace Aozora {
 
 
 		// check if it is loaded
-		resourceManager.m_loadedModels.find(name);
 		if (resourceManager.m_loadedModels.find(name) == resourceManager.m_loadedModels.end()) {
 			// do some error or something idk
 
 		}
 
-		// dont forget to buffer the data to the gpu
-		// I assume this can be problematic if we buffer duplicate data
-		//createdmesh.bufferData();
-		// perform the whole crazy entity creation with tree structure
+		Model& model = resourceManager.m_loadedModels.at(name);
 
+		createEntityFromNodes(model.originNode, entt::null);
 
 		return 0;
+	}
+
+
+	entt::entity createEntityFromNodes(Model::Node* node, entt::entity parent) {
+
+		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
+		Scene& currentScene = Application::getApplication().getCurrentScene();
+		entt::registry& registry = currentScene.getRegistry();
+
+			const auto entity = registry.create();
+
+			registry.emplace<Aozora::NameComponent>(entity).name = "Entity";
+			registry.emplace<Aozora::TagComponent>(entity);
+			registry.emplace<Aozora::TransformComponent>(entity);
+			if (node->hasMesh) {
+				registry.emplace<Aozora::MeshComponent>(entity).meshID = node->meshID;
+				resourceManager.m_loadedMeshes.at(node->meshID).bufferData();
+			}
+			
+			// prob better way of doing it
+			if (node->childrenNodes.size() == 0 && node->parentNode == nullptr) {
+				return entity;
+			}
+			Aozora::RelationComponent& relationComponent = registry.emplace<Aozora::RelationComponent>(entity);
+
+		for (Model::Node* childNode : node->childrenNodes) {
+
+			relationComponent.parent = parent;
+			relationComponent.children.push_back(createEntityFromNodes(childNode, entity));
+		
+		}
+
+		return entity;
 	}
 
 

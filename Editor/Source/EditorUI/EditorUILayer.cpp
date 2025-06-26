@@ -78,10 +78,19 @@ void EditorUILayer::onUpdate(){
 
 	ImGui::Begin("workspace"); // file browser
 
+
+
+
+
 	std::vector <std::string> loadedModelNames = Aozora::ResourcesAPI::getLoadedModelNames();
 
 	for (std::string modelName : loadedModelNames) {
-		ImGui::Text(modelName.c_str());
+		if (ImGui::Selectable(modelName.c_str())) {
+			Aozora::ResourcesAPI::instantiateModel(modelName);
+		}
+
+		// not working for now
+		// ImGui::ImageButtonEx(0,0, ImVec2(32,32), ImVec2(0, 0), ImVec2(1, 1), ImVec4(1,1,1,1), ImVec4(0, 1, 1, 1));
 	}
 
 

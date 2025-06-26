@@ -20,7 +20,6 @@ namespace Aozora {
 		registry.emplace<Aozora::NameComponent>(entity).name = "Entity";
 		registry.emplace<Aozora::TagComponent>(entity);
 		registry.emplace<Aozora::TransformComponent>(entity);
-		registry.emplace<Aozora::RelationComponent>(entity);
 
 
 		//registry.emplace<Aozora::MeshComponent>(entity).meshIDs = resourceManager.loadModel("Resources/testcube/testcube.obj");

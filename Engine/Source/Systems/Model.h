@@ -12,17 +12,18 @@ namespace Aozora {
 		// for preserving the hierarchal data
 		class Node {
 		public:
-			Node* parentNode;
+			Node* parentNode{ nullptr };
 			std::vector<Node*> childrenNodes;
 		
 			uint32_t meshID;
+			bool hasMesh{ false };
 
 		};
 		
 		std::string name{};
 		std::string filePath{};
 
-		Node* node;
+		Node* originNode{nullptr};
 		std::vector<Node*> allNodes;
 
 

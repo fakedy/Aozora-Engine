@@ -31,10 +31,13 @@ namespace Aozora {
         ResourceManager& resourceManager = Application::getApplication().getResourceManager();
 
         Model::Node* newNode = new Model::Node();
+
+        if (model.originNode == nullptr) {
+            model.originNode = newNode;
+        }
         // fill node data below
 
         model.allNodes.push_back(newNode);
-
 
 
         for (unsigned int i = 0; i < node->mNumMeshes; i++) {
@@ -49,15 +52,16 @@ namespace Aozora {
                 resourceManager.m_loadedMeshes[resourceManager.m_nextMeshID] = mesh;
                 meshID = resourceManager.m_nextMeshID; // use new mesh ID
                 resourceManager.m_nextMeshID++;
-
             }
             else {
                 meshID = resourceManager.meshLoaded(key); // use the already loaded mesh ID
             }
+
             Model::Node* meshNode = new Model::Node();
             newNode->childrenNodes.push_back(meshNode);
             meshNode->parentNode = newNode;
             meshNode->meshID = meshID;
+            meshNode->hasMesh = true;
             model.allNodes.push_back(meshNode);
         }
 
