@@ -31,7 +31,7 @@ namespace Aozora {
         ResourceManager& resourceManager = Application::getApplication().getResourceManager();
 
         Model::Node* newNode = new Model::Node();
-
+        newNode->name = node->mName.C_Str();
         // set the model origin node
         if (model.originNode == nullptr) {
             model.originNode = newNode;
@@ -64,6 +64,7 @@ namespace Aozora {
             meshNode->parentNode = newNode;
             meshNode->meshID = meshID;
             meshNode->hasMesh = true;
+            meshNode->name = aiMesh->mName.C_Str();
             model.allNodes.push_back(meshNode);
         }
 
@@ -148,6 +149,7 @@ namespace Aozora {
                 createdmesh.meshData.indices.push_back(face.mIndices[j]);
         }
 
+        // creating material
 		createdmesh.material = std::make_shared<Material>(material);
         return createdmesh;
     }
@@ -160,7 +162,6 @@ namespace Aozora {
 
         // if there are no textures we will grab the colors from the materials and create our own material
         if(mat->GetTextureCount(type) == 0){
-
             if (type == aiTextureType_DIFFUSE) {
                     aiColor3D color(0.0f);
                     mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);

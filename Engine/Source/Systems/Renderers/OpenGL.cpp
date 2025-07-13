@@ -71,6 +71,7 @@ namespace Aozora {
 					auto& meshComponent = view.get<MeshComponent>(entity);
 					auto& transformComponent = view.get<TransformComponent>(entity);
 
+					// get rid of "glgetuniformlocation"?
 					glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.ID, "model"), 1, GL_FALSE, &transformComponent.model[0][0]);
 					glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.ID, "view"), 1, GL_FALSE, &current_camera.getView()[0][0]);
 					glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.ID, "proj"), 1, GL_FALSE, &current_camera.getProjection()[0][0]);

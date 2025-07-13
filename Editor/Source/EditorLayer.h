@@ -35,10 +35,12 @@ public:
 
 		// temp loading models
 		Aozora::ResourcesAPI::loadModel("Resources/testcube/testcube.obj");
-		//Aozora::ResourcesAPI::loadModel("Resources/cone/cone.obj");
-		// loading extra to make sure the cache works
-		//Aozora::ResourcesAPI::loadModel("Resources/testcube/testcube.obj");
-		//Aozora::ResourcesAPI::loadModel("Resources/cone/cone.obj");
+		Aozora::ResourcesAPI::loadModel("Resources/cube/cube.obj");
+		Aozora::ResourcesAPI::loadModel("Resources/sponza/sponza.obj");
+		Aozora::ResourcesAPI::loadModel("Resources/DamagedHelmet/DamagedHelmet.gltf");
+		Aozora::ResourcesAPI::loadModel("Resources/hintze-hall-vr-tour/source/hintze-hall_UV_pack01.fbx");
+		Aozora::ResourcesAPI::loadModel("Resources/survival-guitar-backpack/source/Survival_BackPack_2.fbx");
+		Aozora::ResourcesAPI::loadModel("Resources/gpmesh/scene.gltf");
 
 	}
 

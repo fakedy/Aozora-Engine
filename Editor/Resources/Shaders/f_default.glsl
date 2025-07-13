@@ -14,12 +14,12 @@ uniform sampler2D texture_metallic1;
 uniform sampler2D texture_roughness1;
 uniform sampler2D texture_normal1;
 
-uniform bool has_texture_diffuse1 = false;
-uniform bool has_texture_emissive1 = false;
-uniform bool has_texture_ao1 = false;
-uniform bool has_texture_metallic1 = false;
-uniform bool has_texture_roughness1 = false;
-uniform bool has_texture_normal1 = false;
+uniform bool has_texture_diffuse1;
+uniform bool has_texture_emissive1;
+uniform bool has_texture_ao1;
+uniform bool has_texture_metallic1;
+uniform bool has_texture_roughness1;
+uniform bool has_texture_normal1;
 
 uniform vec3 cameraPos;
 
@@ -125,7 +125,7 @@ void main() {
 	}
 
 
-	usedMaterial.normal = normal;
+	// usedMaterial.normal = normal;
 
 	float intensity = 2.0f;
 	vec3 lightPos = vec3(0.8, 1.0, 0.3);

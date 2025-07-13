@@ -47,7 +47,7 @@ namespace Aozora {
 
 			const auto entity = registry.create();
 
-			registry.emplace<Aozora::NameComponent>(entity).name = "Entity";
+			registry.emplace<Aozora::NameComponent>(entity).name = node->name.c_str();
 			registry.emplace<Aozora::TagComponent>(entity);
 			registry.emplace<Aozora::TransformComponent>(entity);
 			if (node->hasMesh) {

@@ -5,7 +5,7 @@
 
 namespace Aozora {
 
-    // dependent on opengl which is bad but I'm not sure how to design it
+
 
     Mesh::Mesh()
     {
@@ -56,7 +56,7 @@ namespace Aozora {
 
 
         for (unsigned int i = 0; i < material->activeTextures.size(); i++) {
-            glActiveTexture(GL_TEXTURE0 + i);
+            glActiveTexture(GL_TEXTURE0 + i); // activate the texture
             std::string number;
             unsigned int num = 0;
             std::string name = material->activeTextures[i].type;
@@ -91,20 +91,22 @@ namespace Aozora {
                 number = std::to_string(num);
             }
 
+            // really performance expensive
             glUniform1i(glGetUniformLocation(shader.ID, ("has_" + name + number).c_str()), num);
             glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
             glBindTexture(GL_TEXTURE_2D, material->activeTextures[i].id);
         }
 
+        
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, meshData.indices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
+
 
         for (unsigned int i = 0; i < material->activeTextures.size(); i++) {
             glActiveTexture(GL_TEXTURE0 + i);
             glBindTexture(GL_TEXTURE_2D, 0);
         }
-        
 
     }
 }

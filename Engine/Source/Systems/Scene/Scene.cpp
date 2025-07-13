@@ -11,26 +11,49 @@ namespace Aozora {
 	{
 		m_registry = std::make_shared<entt::registry>();
 
+
 	}
 	void Scene::update()
 	{
-		// essentially a system that act on transforms
-		auto view = m_registry->view<TransformComponent>(); // register of all transform components
-		for (const auto entity : view) {
-			auto& transform = view.get<TransformComponent>(entity);
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(glm::mat4(1.0f), transform.pos);
-			glm::quat rotation = glm::quat(glm::radians(transform.rot));
-			model = model * glm::mat4_cast(rotation);
-			model = glm::scale(model, transform.scale);
-			transform.model = model;
+
+		// recursive update, going from parents and updating their children i guess.
+		const std::vector<entt::entity>& view = Aozora::SceneAPI::getSceneHierarchyEntities();
+
+		for (entt::entity entity : view) {
+			// if root node
+			if (Aozora::SceneAPI::getEntityParent(entity) == entt::null) {
+				// caching would be cool?
+				// why update transforms for stuff that does not move.
+				updateTransform(entity, glm::mat4(1.0f));
+			}
 		}
+
 	}
-
-
 
 	entt::registry& Scene::getRegistry()
 	{
 		return *m_registry;
+	}
+
+	void Scene::updateTransform(entt::entity entity , const glm::mat4& model)
+	{
+		auto view = m_registry->view<TransformComponent>();
+		
+		auto& transform = view.get<TransformComponent>(entity);
+		
+		glm::mat4 tempModel = glm::mat4(1.0f);
+		tempModel = glm::translate(glm::mat4(1.0f), transform.pos);
+		glm::quat rotation = glm::quat(glm::radians(transform.rot));
+		tempModel = tempModel * glm::mat4_cast(rotation);
+		tempModel = glm::scale(tempModel, transform.scale);
+		tempModel = model * tempModel;
+		transform.model = tempModel;
+		const std::vector<entt::entity>& children = Aozora::SceneAPI::getEntityChildren(entity);
+
+		// update children
+		for (const auto entity : children) {
+			updateTransform(entity, tempModel);
+		}
+
 	}
 }

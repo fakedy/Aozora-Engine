@@ -14,7 +14,7 @@ void EditorEntityWindow::draw()
 
 	}
 
-	std::vector<entt::entity> view = Aozora::SceneAPI::getSceneHierarchyEntities();
+	const std::vector<entt::entity>& view = Aozora::SceneAPI::getSceneHierarchyEntities();
 
 	for (entt::entity entity: view) {
 		// only draw root nodes, the children will get drawn from them

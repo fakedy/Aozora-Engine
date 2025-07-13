@@ -69,6 +69,8 @@ namespace Aozora {
         m_loadedTextures[filename].id = texture;
         m_loadedTextures[filename].refCount++;
 
+        std::cout << "Created texture with ID: " << texture << "\n";
+
         return texture;
 
     }

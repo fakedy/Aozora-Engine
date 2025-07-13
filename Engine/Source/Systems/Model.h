@@ -17,6 +17,7 @@ namespace Aozora {
 		
 			uint32_t meshID;
 			bool hasMesh{ false };
+			std::string name{};
 
 		};
 		

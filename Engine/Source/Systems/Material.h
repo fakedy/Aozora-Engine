@@ -31,7 +31,7 @@ namespace Aozora {
 		float metallic{ 0.0f };
 		float specular{ 0.0f };
 		float roughness{ 0.0f };
-		float ao{ 1.0f };
+		float ao{ 0.0f };
 		glm::fvec3 emissive{ glm::fvec3(0.0f,0.0f,0.0f) };
 
 	private:
