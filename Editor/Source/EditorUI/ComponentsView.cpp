@@ -1,9 +1,5 @@
 #include "ComponentsView.h"
-#include "Systems/ECS/Components/NameComponent.h"
-#include "Systems/ECS/Components/TransformComponent.h"
-#include "Systems/ECS/Components/CameraComponent.h"
-#include "Systems/ECS/Components/RigidBodyComponent.h"
-#include "Systems/ECS/Components/MeshComponent.h"
+#include "Systems/ECS/Components/Components.h"
 #include "glm/gtc/type_ptr.hpp"
 #include <Application.h>
 #include <Systems/Material.h>
@@ -37,6 +33,9 @@ void ComponentsView::draw() {
 					if (ImGui::MenuItem("Script")) {
 
 					}
+					if (ImGui::MenuItem("Light")) {
+						registry.emplace_or_replace<Aozora::LightComponent>(m_selectedEntity);
+					}
 				
 					ImGui::EndMenu();
 				}
@@ -49,34 +48,54 @@ void ComponentsView::draw() {
 
 
 		if (registry.all_of<Aozora::TransformComponent>(m_selectedEntity)) {
-			auto& transformComp = registry.get<Aozora::TransformComponent>(m_selectedEntity);
-			ImGui::Text("Transform component");
+			if (ImGui::CollapsingHeader("TransformComponent", ImGuiTreeNodeFlags_DefaultOpen)) {
+			
+				auto& transformComp = registry.get<Aozora::TransformComponent>(m_selectedEntity);
+				ImGui::Text("Transform component");
 
-			if (ImGui::DragFloat3("Transform", glm::value_ptr(transformComp.pos), 0.1f)) {
-				Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
-			}
-			if (ImGui::DragFloat3("Scale", glm::value_ptr(transformComp.scale), 0.1f)) {
-				Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
-			}
-			if (ImGui::DragFloat3("Rotation", glm::value_ptr(transformComp.rot), 0.1f)) {
-				Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
+				if (ImGui::DragFloat3("Transform", glm::value_ptr(transformComp.pos), 0.1f)) {
+					Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
+				}
+				if (ImGui::DragFloat3("Scale", glm::value_ptr(transformComp.scale), 0.1f)) {
+					Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
+				}
+				if (ImGui::DragFloat3("Rotation", glm::value_ptr(transformComp.rot), 0.1f)) {
+					Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
+				}
 			}
 		}
 
+		// check if our entity got a camera
 		if (registry.all_of<Aozora::CameraComponent>(m_selectedEntity)) {
-			auto& cameraComp = registry.get<Aozora::CameraComponent>(m_selectedEntity);
-			ImGui::Text("Camera component");
+
+			if (ImGui::CollapsingHeader("CameraComponent", ImGuiTreeNodeFlags_DefaultOpen)) {
+				auto& cameraComp = registry.get<Aozora::CameraComponent>(m_selectedEntity);
+				ImGui::Text("Camera component");
+			}
 		}
 
+		// check if entity got mesh
 		if (registry.all_of<Aozora::MeshComponent>(m_selectedEntity)) {
-			auto& meshComp = registry.get<Aozora::MeshComponent>(m_selectedEntity);
-			ImGui::Text("Mesh component");
-			ImGui::Text("Mesh ID: %i", meshComp.meshID);
-			ImGui::Text("Material ID: %i", meshComp.materialID);
+			if (ImGui::CollapsingHeader("MeshComponent", ImGuiTreeNodeFlags_DefaultOpen)) {
 
-			Aozora::Material& mat = Aozora::ResourcesAPI::getMaterial(meshComp.materialID);
-			ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.05f);
-			ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.05f);
+				auto& meshComp = registry.get<Aozora::MeshComponent>(m_selectedEntity);
+				ImGui::Text("Mesh ID: %i", meshComp.meshID);
+
+
+				Aozora::Material& mat = Aozora::ResourcesAPI::getMaterial(meshComp.materialID);
+				ImGui::Text("Material name: %s", mat.name);
+				ImGui::Text("Material ID: %i", meshComp.materialID);
+				ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.05f);
+				ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.05f);
+			}
+		}
+
+		if (registry.all_of<Aozora::LightComponent>(m_selectedEntity)) {
+			if (ImGui::CollapsingHeader("LightComponent", ImGuiTreeNodeFlags_DefaultOpen)) {
+
+				auto& lightComp = registry.get<Aozora::LightComponent>(m_selectedEntity);
+				ImGui::Text("Type: %s", lightComp.type);
+			}
 		}
 
 	}

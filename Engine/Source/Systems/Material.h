@@ -45,6 +45,7 @@ namespace Aozora {
 		glm::fvec4 emissive{ glm::fvec4(0.0f,0.0f,0.0f, 0.0f) };
 
 		uint32_t ID;
+		std::string name;
 
 	private:
 		unsigned int ShaderProgram;

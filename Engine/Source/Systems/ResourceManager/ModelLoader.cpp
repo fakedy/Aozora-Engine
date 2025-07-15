@@ -150,6 +150,7 @@ namespace Aozora {
 
         // creating material
         createdmesh.materialID = resourceManager.m_nextMaterialID;
+        material.name = scene->mMaterials[mMaterialIndex]->GetName().C_Str();
         resourceManager.m_loadedmaterials[resourceManager.m_nextMaterialID] = material;
         resourceManager.m_nextMaterialID++;
         return createdmesh;
