@@ -38,7 +38,7 @@ namespace Aozora {
 		return 0;
 	}
 
-
+	// with the nodes we create the actually entities
 	entt::entity createEntityFromNodes(Model::Node* node, entt::entity parent) {
 
 		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
@@ -51,7 +51,10 @@ namespace Aozora {
 			registry.emplace<Aozora::TagComponent>(entity);
 			registry.emplace<Aozora::TransformComponent>(entity);
 			if (node->hasMesh) {
-				registry.emplace<Aozora::MeshComponent>(entity).meshID = node->meshID;
+				// add a mesh component to the entity with the id of the mesh
+				auto& meshComp = registry.emplace<Aozora::MeshComponent>(entity);
+				meshComp.meshID = node->meshID;
+				meshComp.materialID = resourceManager.m_loadedMeshes.at(node->meshID).materialID;
 				resourceManager.m_loadedMeshes.at(node->meshID).bufferData();
 			}
 			
@@ -89,5 +92,11 @@ namespace Aozora {
 		else {
 			return &resourceManager.m_loadedModels.at(name);
 		}
+	}
+	Material& ResourcesAPI::getMaterial(uint32_t id)
+	{
+		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
+
+		return resourceManager.m_loadedmaterials[id];
 	}
 }

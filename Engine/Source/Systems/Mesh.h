@@ -32,7 +32,7 @@ namespace Aozora {
 
 		unsigned int id;
 
-		std::shared_ptr<Material> material;
+		uint32_t materialID;
 
 		unsigned int VAO{};
 		unsigned int VBO{};

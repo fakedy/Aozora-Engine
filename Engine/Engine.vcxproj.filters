@@ -60,6 +60,9 @@
     <ClInclude Include="Source\Systems\ECS\Components\EditorEntityTag.h">
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\ECS\Components\LightComponent.h">
+      <Filter>Source\Systems\ECS\Components</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\ECS\Components\MeshComponent.h">
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
@@ -161,6 +164,9 @@
     <ClCompile Include="Source\AozoraAPI\RenderAPI.cpp">
       <Filter>Source\AozoraAPI</Filter>
     </ClCompile>
+    <ClCompile Include="Source\AozoraAPI\ResourcesAPI.cpp">
+      <Filter>Source\AozoraAPI</Filter>
+    </ClCompile>
     <ClCompile Include="Source\AozoraAPI\SceneAPI.cpp">
       <Filter>Source\AozoraAPI</Filter>
     </ClCompile>
@@ -241,9 +247,6 @@
     </ClCompile>
     <ClCompile Include="Vendor\include\imgui\imgui_widgets.cpp">
       <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\AozoraAPI\ResourcesAPI.cpp">
-      <Filter>Source\AozoraAPI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

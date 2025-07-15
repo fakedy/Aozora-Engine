@@ -89,21 +89,20 @@ namespace Aozora {
 
         ResourceManager& resourceManager = Application::getApplication().getResourceManager();
         if(mMaterialIndex >= 0){
-            //resourceManager.createMaterial(mMaterialIndex);
 
             aiMaterial* aimaterial = scene->mMaterials[mMaterialIndex];
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE, "texture_diffuse");
+            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE, Material::TextureType::DIFFUSE);
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_NORMALS, "texture_normal");
+            loadMaterialTextures(material, aimaterial, aiTextureType_NORMALS, Material::TextureType::NORMAL);
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_EMISSIVE, "texture_emissive");
+            loadMaterialTextures(material, aimaterial, aiTextureType_EMISSIVE, Material::TextureType::EMISSIVE);
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_AMBIENT_OCCLUSION, "texture_ao");
+            loadMaterialTextures(material, aimaterial, aiTextureType_AMBIENT_OCCLUSION, Material::TextureType::AO);
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_METALNESS, "texture_metallic");
+            loadMaterialTextures(material, aimaterial, aiTextureType_METALNESS, Material::TextureType::METALLIC);
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE_ROUGHNESS, "texture_roughness");
+            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE_ROUGHNESS, Material::TextureType::ROUGHNESS);
 
         }
 
@@ -150,97 +149,93 @@ namespace Aozora {
         }
 
         // creating material
-		createdmesh.material = std::make_shared<Material>(material);
+        createdmesh.materialID = resourceManager.m_nextMaterialID;
+        resourceManager.m_loadedmaterials[resourceManager.m_nextMaterialID] = material;
+        resourceManager.m_nextMaterialID++;
         return createdmesh;
     }
 
 
 
-    void ModelLoader::loadMaterialTextures(Material &material, aiMaterial* mat, aiTextureType type, std::string typeName) {
+    void ModelLoader::loadMaterialTextures(Material &material, aiMaterial* mat, aiTextureType type, Material::TextureType typeName) {
 
         ResourceManager& resourceManager = Application::getApplication().getResourceManager();
 
         // if there are no textures we will grab the colors from the materials and create our own material
-        if(mat->GetTextureCount(type) == 0){
-            if (type == aiTextureType_DIFFUSE) {
-                    aiColor3D color(0.0f);
-                    mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-                    material.baseColor = glm::fvec3(color.r, color.g, color.b);
-			}
-			else if (type == aiTextureType_EMISSIVE) {
+        if (mat->GetTextureCount(type) == 0) {
+            switch (type) {
+            case aiTextureType_DIFFUSE: {
+                aiColor4D color(0.0f);
+                mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+                material.baseColor = glm::fvec4(color.r, color.g, color.b, color.a);
+                break;
+            }
+            case aiTextureType_EMISSIVE: {
+                aiColor4D color(0.0f);
+                mat->Get(AI_MATKEY_COLOR_EMISSIVE, color);
+                material.emissive = glm::fvec4(color.r, color.g, color.b, color.a);
+                break;
+            }
+            case aiTextureType_AMBIENT_OCCLUSION: {
                 aiColor3D color(0.0f);
-				mat->Get(AI_MATKEY_COLOR_EMISSIVE, color);
-				material.emissive = glm::fvec3(color.r, color.g, color.b);
-			}
-			else if (type == aiTextureType_AMBIENT_OCCLUSION) {
+                mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
+                material.ao = color.r;
+                break;
+            }
+            case aiTextureType_METALNESS: {
                 aiColor3D color(0.0f);
-				mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
-				material.ao = color.r;
-			}
-			else if (type == aiTextureType_METALNESS) {
+                mat->Get(AI_MATKEY_METALLIC_FACTOR, color);
+                material.metallic = color.r;
+                break;
+            }
+            case aiTextureType_DIFFUSE_ROUGHNESS: {
                 aiColor3D color(0.0f);
-				mat->Get(AI_MATKEY_METALLIC_FACTOR, color);
-				material.metallic = color.r;
-			}
-			else if (type == aiTextureType_DIFFUSE_ROUGHNESS) {
-                aiColor3D color(0.0f);
-				mat->Get(AI_MATKEY_ROUGHNESS_FACTOR, color);
-				material.roughness = color.r;
-			}
-			return;
+                mat->Get(AI_MATKEY_ROUGHNESS_FACTOR, color);
+                material.roughness = color.r;
+                break;
+            }
+            }
+            return;
         }
         else {
 
             // if we have textures we'll create textures with them...
 
-            if (type == aiTextureType_DIFFUSE) {
+            Material::Texture* targetTexture = nullptr;
+            switch (type)
+            {
+            case aiTextureType_DIFFUSE:
+                targetTexture = &material.diffuseTexture;
+                break;
+            case aiTextureType_NORMALS:
+                targetTexture = &material.normalTexture;
+                break;
+            case aiTextureType_EMISSIVE:
+                targetTexture = &material.emissiveTexture;
+                break;
+            case aiTextureType_AMBIENT_OCCLUSION:
+                targetTexture = &material.aoTexture;
+                break;
+            case aiTextureType_METALNESS:
+                targetTexture = &material.metallicTexture;
+                break;
+            case aiTextureType_DIFFUSE_ROUGHNESS:
+                targetTexture = &material.roughnessTexture;
+                break;
+            default:
+                break;
+            }
+
+            if (targetTexture) {
+
                 aiString str;
                 mat->GetTexture(type, 0, &str);
-                material.diffuseTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory);
-                material.diffuseTexture.type = typeName;
-                material.diffuseTexture.path = str.C_Str();
-			    material.activeTextures.push_back(material.diffuseTexture);
+                targetTexture->id = resourceManager.loadTexture(str.C_Str(), m_directory);
+                targetTexture->type = typeName;
+                targetTexture->path = str.C_Str();
+                material.activeTextures.push_back(*targetTexture);
             }
-            else if (type == aiTextureType_NORMALS) {
-                aiString str;
-                mat->GetTexture(type, 0, &str);
-                material.normalTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory);
-                material.normalTexture.type = typeName;
-                material.normalTexture.path = str.C_Str();
-                material.activeTextures.push_back(material.normalTexture);
-            }
-            else if (type == aiTextureType_EMISSIVE) {
-                aiString str;
-                mat->GetTexture(type, 0, &str);
-                material.emissiveTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory);
-                material.emissiveTexture.type = typeName;
-                material.emissiveTexture.path = str.C_Str();
-                material.activeTextures.push_back(material.emissiveTexture);
-            }
-            else if (type == aiTextureType_AMBIENT_OCCLUSION) {
-                aiString str;
-                mat->GetTexture(type, 0, &str);
-                material.aoTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory);
-                material.aoTexture.type = typeName;
-                material.aoTexture.path = str.C_Str();
-                material.activeTextures.push_back(material.aoTexture);
-            }
-            else if (type == aiTextureType_METALNESS) {
-                aiString str;
-                mat->GetTexture(type, 0, &str);
-                material.metallicTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory);
-                material.metallicTexture.type = typeName;
-                material.metallicTexture.path = str.C_Str();
-                material.activeTextures.push_back(material.metallicTexture);
-            }
-            else if (type == aiTextureType_DIFFUSE_ROUGHNESS) {
-                aiString str;
-                mat->GetTexture(type, 0, &str);
-                material.roughnessTexture.id = resourceManager.loadTexture(str.C_Str(), m_directory);
-                material.roughnessTexture.type = typeName;
-                material.roughnessTexture.path = str.C_Str();
-                material.activeTextures.push_back(material.roughnessTexture);
-            }
+
         }
         
     }

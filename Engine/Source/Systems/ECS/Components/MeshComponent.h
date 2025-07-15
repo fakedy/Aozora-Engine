@@ -10,7 +10,7 @@ namespace Aozora {
 
 		bool m_isActive{ true };
 		uint32_t meshID{0};
-		uint32_t material{ 0 };
+		uint32_t materialID{ 0 };
 	};
 
 }

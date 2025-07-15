@@ -25,6 +25,7 @@ namespace Aozora {
 		static std::string getEntityName(entt::entity entity);
 		static std::vector<entt::entity>& getEntityChildren(entt::entity entity);
 		static entt::entity& getEntityParent(entt::entity entity);
+		static void makeTransformDirty(entt::entity entity);
 			
 
 
@@ -58,6 +59,7 @@ namespace Aozora {
 		static std::vector<std::string> getLoadedModelNames();
 		static Model* getModel(std::string name);
 
+		static Material& getMaterial(uint32_t id);
 	};
 
 

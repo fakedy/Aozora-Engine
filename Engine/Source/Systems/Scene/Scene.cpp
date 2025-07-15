@@ -19,11 +19,11 @@ namespace Aozora {
 		// recursive update, going from parents and updating their children i guess.
 		const std::vector<entt::entity>& view = Aozora::SceneAPI::getSceneHierarchyEntities();
 
+		auto transforms = m_registry->view<TransformComponent>();
 		for (entt::entity entity : view) {
-			// if root node
-			if (Aozora::SceneAPI::getEntityParent(entity) == entt::null) {
-				// caching would be cool?
-				// why update transforms for stuff that does not move.
+			auto& transform = transforms.get<TransformComponent>(entity);
+
+			if (transform.isDirty && Aozora::SceneAPI::getEntityParent(entity) == entt::null) {
 				updateTransform(entity, glm::mat4(1.0f));
 			}
 		}
@@ -40,7 +40,7 @@ namespace Aozora {
 		auto view = m_registry->view<TransformComponent>();
 		
 		auto& transform = view.get<TransformComponent>(entity);
-		
+
 		glm::mat4 tempModel = glm::mat4(1.0f);
 		tempModel = glm::translate(glm::mat4(1.0f), transform.pos);
 		glm::quat rotation = glm::quat(glm::radians(transform.rot));
@@ -48,11 +48,12 @@ namespace Aozora {
 		tempModel = glm::scale(tempModel, transform.scale);
 		tempModel = model * tempModel;
 		transform.model = tempModel;
+		
 		const std::vector<entt::entity>& children = Aozora::SceneAPI::getEntityChildren(entity);
-
+		transform.isDirty = false;
 		// update children
 		for (const auto entity : children) {
-			updateTransform(entity, tempModel);
+			updateTransform(entity, transform.model);
 		}
 
 	}

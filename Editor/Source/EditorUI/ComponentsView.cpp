@@ -6,6 +6,7 @@
 #include "Systems/ECS/Components/MeshComponent.h"
 #include "glm/gtc/type_ptr.hpp"
 #include <Application.h>
+#include <Systems/Material.h>
 
 
 ComponentsView::ComponentsView()
@@ -50,9 +51,16 @@ void ComponentsView::draw() {
 		if (registry.all_of<Aozora::TransformComponent>(m_selectedEntity)) {
 			auto& transformComp = registry.get<Aozora::TransformComponent>(m_selectedEntity);
 			ImGui::Text("Transform component");
-			ImGui::DragFloat3("Transform", glm::value_ptr(transformComp.pos), 0.1f);
-			ImGui::DragFloat3("Scale", glm::value_ptr(transformComp.scale), 0.1f);
-			ImGui::DragFloat3("Rotation", glm::value_ptr(transformComp.rot), 0.1f);
+
+			if (ImGui::DragFloat3("Transform", glm::value_ptr(transformComp.pos), 0.1f)) {
+				Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
+			}
+			if (ImGui::DragFloat3("Scale", glm::value_ptr(transformComp.scale), 0.1f)) {
+				Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
+			}
+			if (ImGui::DragFloat3("Rotation", glm::value_ptr(transformComp.rot), 0.1f)) {
+				Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
+			}
 		}
 
 		if (registry.all_of<Aozora::CameraComponent>(m_selectedEntity)) {
@@ -63,9 +71,12 @@ void ComponentsView::draw() {
 		if (registry.all_of<Aozora::MeshComponent>(m_selectedEntity)) {
 			auto& meshComp = registry.get<Aozora::MeshComponent>(m_selectedEntity);
 			ImGui::Text("Mesh component");
-			ImGui::Text("Mesh ID: ", meshComp.meshID);
-			ImGui::Text("Material ID: ", meshComp.material); // TODO doesnt work
-			                                                                                                          
+			ImGui::Text("Mesh ID: %i", meshComp.meshID);
+			ImGui::Text("Material ID: %i", meshComp.materialID);
+
+			Aozora::Material& mat = Aozora::ResourcesAPI::getMaterial(meshComp.materialID);
+			ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.05f);
+			ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.05f);
 		}
 
 	}

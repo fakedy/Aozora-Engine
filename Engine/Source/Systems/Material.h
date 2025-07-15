@@ -10,10 +10,20 @@ namespace Aozora {
 		// shader
 	public:
 
+		enum TextureType{
+			DIFFUSE,
+			NORMAL,
+			EMISSIVE,
+			AO,
+			METALLIC,
+			ROUGHNESS
+		};
+
+
 		struct Texture {
 			unsigned int id{};
 			unsigned int refCount{};
-			std::string type{};
+			TextureType type{};
 			std::string path{};
 		};
 
@@ -27,12 +37,14 @@ namespace Aozora {
 		Texture metallicTexture;
 		Texture roughnessTexture;
 
-		glm::fvec3 baseColor{ glm::fvec3(0.3f,1.0f,1.0f) };
+		glm::fvec4 baseColor{ glm::fvec4(0.3f, 1.0f, 1.0f , 1.0f) };
 		float metallic{ 0.0f };
 		float specular{ 0.0f };
 		float roughness{ 0.0f };
 		float ao{ 0.0f };
-		glm::fvec3 emissive{ glm::fvec3(0.0f,0.0f,0.0f) };
+		glm::fvec4 emissive{ glm::fvec4(0.0f,0.0f,0.0f, 0.0f) };
+
+		uint32_t ID;
 
 	private:
 		unsigned int ShaderProgram;

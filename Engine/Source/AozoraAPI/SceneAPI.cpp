@@ -6,6 +6,7 @@
 
 namespace Aozora {
 
+
 	void SceneAPI::addEntity() {
 
 
@@ -78,6 +79,20 @@ namespace Aozora {
 
 		return relationComponent.parent;
 		
+	}
+
+	void SceneAPI::makeTransformDirty(entt::entity entity)
+	{
+
+		entt::registry& registry = Application::getApplication().getCurrentScene().getRegistry();
+		auto& transformComponent = registry.get<TransformComponent>(entity);
+		transformComponent.isDirty = true;
+
+		auto& parent = SceneAPI::getEntityParent(entity);
+		if (parent != entt::null) {
+			makeTransformDirty(SceneAPI::getEntityParent(entity));
+		}
+
 	}
 
 

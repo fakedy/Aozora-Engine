@@ -8,3 +8,4 @@
 #include "TagComponent.h"
 #include "TransformComponent.h"
 #include "EditorEntityTag.h"
+#include "LightComponent.h"

@@ -33,6 +33,7 @@ namespace Aozora {
 		std::unordered_map<std::string, Model> m_loadedModels;
 
 		unsigned int m_nextMeshID{ 0 };
+		unsigned int m_nextMaterialID{ 0 };
 
 
 	private:

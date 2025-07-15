@@ -2,6 +2,7 @@
 #include "ResourceManager/ResourceManager.h"
 #include "glad/glad.h"
 #include <iostream>
+#include <AozoraAPI/Aozora.h>
 
 namespace Aozora {
 
@@ -38,73 +39,88 @@ namespace Aozora {
 
         // can clear meshdata
     }
+
+
+    // need a total rework of this system with chacing the uniformlocations
     void Mesh::draw(Shader &shader)
     {
-        unsigned int diffuseNr = 0;
-        unsigned int normalNr = 0;
-        unsigned int heightNr = 0;
-        unsigned int emissiveNr = 0;
-        unsigned int aoNr = 0;
-        unsigned int metallicNr = 0;
-        unsigned int roughnessNr = 0;
+        auto& material = ResourcesAPI::getMaterial(materialID);
+        glUniform4fv(glGetUniformLocation(shader.ID, "albedo"), 1, &material.baseColor[0]);
+        glUniform1f(glGetUniformLocation(shader.ID, "metallic"), material.metallic);
+        glUniform1f(glGetUniformLocation(shader.ID, "roughness"), material.roughness);
+        glUniform1f(glGetUniformLocation(shader.ID, "ao"), material.ao);
+        glUniform4fv(glGetUniformLocation(shader.ID, "emissive"), 1, &material.emissive[0]);
+        // bad
+        glUniform1i(glGetUniformLocation(shader.ID, "has_texture_diffuse"), 0);
+        glUniform1i(glGetUniformLocation(shader.ID, "has_texture_normal"), 0);
+        glUniform1i(glGetUniformLocation(shader.ID, "has_texture_emissive"), 0);
+        glUniform1i(glGetUniformLocation(shader.ID, "has_texture_ao"), 0);
+        glUniform1i(glGetUniformLocation(shader.ID, "has_texture_metallic"), 0);
+        glUniform1i(glGetUniformLocation(shader.ID, "has_texture_roughness"), 0);
 
-        glUniform3fv(glGetUniformLocation(shader.ID, "albedo"), 1, &material->baseColor[0]);
-        glUniform1f(glGetUniformLocation(shader.ID, "metallic"), material->metallic);
-        glUniform1f(glGetUniformLocation(shader.ID, "roughness"), material->roughness);
-        glUniform1f(glGetUniformLocation(shader.ID, "ao"), material->ao);
-        glUniform3fv(glGetUniformLocation(shader.ID, "emissive"), 1, &material->emissive[0]);
 
+        for (unsigned int i = 0; i < material.activeTextures.size(); i++) {
+            std::string name;
+            int textureUnit = 0;
+            Material::TextureType type = material.activeTextures[i].type;
 
-        for (unsigned int i = 0; i < material->activeTextures.size(); i++) {
-            glActiveTexture(GL_TEXTURE0 + i); // activate the texture
-            std::string number;
-            unsigned int num = 0;
-            std::string name = material->activeTextures[i].type;
-            if (name == "texture_diffuse") {
-                diffuseNr++;
-				num = diffuseNr;
-                number = std::to_string(num);
-            }
-            else if (name == "texture_normal") {
-                normalNr++;
-                num = normalNr;
-                number = std::to_string(num);
-            }
-            else if (name == "texture_emissive") {
-                emissiveNr++;
-                num = emissiveNr;
-                number = std::to_string(num);
-            }
-            else if (name == "texture_ao") {
-                aoNr++;
-                num = aoNr;
-                number = std::to_string(num);
-            }
-            else if (name == "texture_metallic") {
-                metallicNr++;
-                num = metallicNr;
-                number = std::to_string(num);
-            }
-            else if (name == "texture_roughness") {
-                roughnessNr++;
-                num = roughnessNr;
-                number = std::to_string(num);
+            switch (type)
+            {
+            case Aozora::Material::DIFFUSE:
+                textureUnit = 0;
+                name = "texture_diffuse";
+                break;
+            case Aozora::Material::NORMAL:
+                textureUnit = 1;
+                name = "texture_normal";
+                break;
+            case Aozora::Material::EMISSIVE:
+                textureUnit = 2;
+                name = "texture_emissive";
+                break;
+            case Aozora::Material::AO:
+                textureUnit = 3;
+                name = "texture_ao";
+                break;
+            case Aozora::Material::METALLIC:
+                textureUnit = 4;
+                name = "texture_metallic";
+                break;
+            case Aozora::Material::ROUGHNESS:
+                textureUnit = 5;
+                name = "texture_roughness";
+                break;
+            default:
+                continue;
+                break;
             }
 
-            // really performance expensive
-            glUniform1i(glGetUniformLocation(shader.ID, ("has_" + name + number).c_str()), num);
-            glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
-            glBindTexture(GL_TEXTURE_2D, material->activeTextures[i].id);
+            glActiveTexture(GL_TEXTURE0 + textureUnit); // activate the texture
+            // quite slow
+            glUniform1i(glGetUniformLocation(shader.ID, ("has_" + name).c_str()), 1);
+            glUniform1i(glGetUniformLocation(shader.ID, (name).c_str()), textureUnit);
+            glBindTexture(GL_TEXTURE_2D, material.activeTextures[i].id);
         }
 
-        
+
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, meshData.indices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
+        // clean
+        for (const auto& texture : material.activeTextures) {
 
-        for (unsigned int i = 0; i < material->activeTextures.size(); i++) {
-            glActiveTexture(GL_TEXTURE0 + i);
+            int textureUnit = 0;
+            switch (texture.type) {
+            case Aozora::Material::DIFFUSE:     textureUnit = 0; break;
+            case Aozora::Material::NORMAL:      textureUnit = 1; break;
+            case Aozora::Material::EMISSIVE:    textureUnit = 2; break;
+            case Aozora::Material::AO:          textureUnit = 3; break;
+            case Aozora::Material::METALLIC:    textureUnit = 4; break;
+            case Aozora::Material::ROUGHNESS:   textureUnit = 5; break;
+            default: continue;
+            }
+            glActiveTexture(GL_TEXTURE0 + textureUnit);
             glBindTexture(GL_TEXTURE_2D, 0);
         }
 
