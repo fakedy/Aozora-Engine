@@ -174,11 +174,14 @@
     <ClInclude Include="Source\Systems\MeshSystem.h" />
     <ClInclude Include="Source\Systems\Model.h" />
     <ClInclude Include="Source\Systems\Project\Project.h" />
+    <ClInclude Include="Source\Systems\Renderers\DeferredPipeline.h" />
     <ClInclude Include="Source\Systems\Renderers\FrameBuffer.h" />
+    <ClInclude Include="Source\Systems\Renderers\IrenderAPI.h" />
+    <ClInclude Include="Source\Systems\Renderers\IrenderPipeline.h" />
     <ClInclude Include="Source\Systems\Renderers\OpenGL.h" />
     <ClInclude Include="Source\Systems\Renderers\Opengl\OpenglFrameBuffer.h" />
     <ClInclude Include="Source\Systems\Renderers\Opengl\OpenglShader.h" />
-    <ClInclude Include="Source\Systems\Renderers\Renderer.h" />
+    <ClInclude Include="Source\Systems\Renderers\SceneRenderer.h" />
     <ClInclude Include="Source\Systems\Renderers\Shader.h" />
     <ClInclude Include="Source\Systems\Renderers\Viewport.h" />
     <ClInclude Include="Source\Systems\ResourceManager\ModelLoader.h" />
@@ -204,9 +207,11 @@
     <ClCompile Include="Source\Systems\Mesh.cpp" />
     <ClCompile Include="Source\Systems\MeshSystem.cpp" />
     <ClCompile Include="Source\Systems\Model.cpp" />
+    <ClCompile Include="Source\Systems\Renderers\DeferredPipeline.cpp" />
     <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglFrameBuffer.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglShader.cpp" />
+    <ClCompile Include="Source\Systems\Renderers\SceneRenderer.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Viewport.cpp" />
     <ClCompile Include="Source\Systems\ResourceManager\ModelLoader.cpp" />
     <ClCompile Include="Source\Systems\ResourceManager\ResourceManager.cpp" />

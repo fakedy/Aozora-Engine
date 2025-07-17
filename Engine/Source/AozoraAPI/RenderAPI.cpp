@@ -3,60 +3,48 @@
 #include <Systems/Renderers/FrameBuffer.h>
 #include <Systems/Renderers/OpenGL.h>
 #include <Systems/Renderers/Viewport.h>
+#include <Systems/Renderers/SceneRenderer.h>
 
 
 namespace Aozora {
 
-
+	// create viewport with set camera and returns the ID
 	uint32_t RenderAPI::createViewport(Scene* scene, ViewportType type, entt::entity editorCameraEntity) {
 
-		Renderer& renderer = Application::getApplication().getRenderer();
-		// for now we "know" that we use opengl
-		OpenGL& openglRenderer = static_cast<OpenGL&>(renderer);
+		SceneRenderer& renderer = Application::getApplication().getRenderer();
 
-
-		uint32_t viewportID = openglRenderer.createViewport(scene, type, editorCameraEntity);
+		uint32_t viewportID = renderer.createViewport(scene, type, editorCameraEntity);
 		return viewportID;
 	}
 
+	// create viewport without set camera and returns the ID
 	uint32_t RenderAPI::createViewport(Scene* scene, ViewportType type) {
 
-		Renderer& renderer = Application::getApplication().getRenderer();
-		// for now we "know" that we use opengl
-		OpenGL& openglRenderer = static_cast<OpenGL&>(renderer);
+		SceneRenderer& renderer = Application::getApplication().getRenderer();
 
-		uint32_t viewportID = openglRenderer.createViewport(scene, type, entt::null);
+		uint32_t viewportID = renderer.createViewport(scene, type, entt::null);
 		return viewportID;
 	}
 
 	void RenderAPI::resizeViewport(uint32_t ID, uint16_t width, uint32_t height)
 	{
 
-		Renderer& renderer = Application::getApplication().getRenderer();
-		// for now we "know" that we use opengl
-		OpenGL& openglRenderer = static_cast<OpenGL&>(renderer);
+		SceneRenderer& renderer = Application::getApplication().getRenderer();
 
-		Viewport& viewport = openglRenderer.getViewport(ID);
+		Viewport& viewport = renderer.getViewport(ID);
 		
-		if (viewport.width != width || viewport.height != height) {
-
-			viewport.width = width;
-			viewport.height = height;
-			viewport.framebuffer->updateTexture(width, height);
-		}
+		viewport.resize(width, height);
 
 
 	}
 
 	uint32_t RenderAPI::getViewportTextureID(uint32_t ID)
 	{
-		Renderer& renderer = Application::getApplication().getRenderer();
-		// for now we "know" that we use opengl
-		OpenGL& openglRenderer = static_cast<OpenGL&>(renderer);
+		SceneRenderer& renderer = Application::getApplication().getRenderer();
 
-		Viewport& viewport = openglRenderer.getViewport(ID);
+		Viewport& viewport = renderer.getViewport(ID);
 
-		return viewport.framebuffer->m_colorTextureID;
+		return viewport.renderPipeline->getFinalImage();
 	}
 
 

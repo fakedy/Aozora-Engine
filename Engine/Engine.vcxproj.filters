@@ -114,7 +114,16 @@
     <ClInclude Include="Source\Systems\Project\Project.h">
       <Filter>Source\Systems\Project</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\Renderers\DeferredPipeline.h">
+      <Filter>Source\Systems\Renderers</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\Renderers\FrameBuffer.h">
+      <Filter>Source\Systems\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Renderers\IrenderAPI.h">
+      <Filter>Source\Systems\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Renderers\IrenderPipeline.h">
       <Filter>Source\Systems\Renderers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Renderers\OpenGL.h">
@@ -126,7 +135,7 @@
     <ClInclude Include="Source\Systems\Renderers\Opengl\OpenglShader.h">
       <Filter>Source\Systems\Renderers\Opengl</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Systems\Renderers\Renderer.h">
+    <ClInclude Include="Source\Systems\Renderers\SceneRenderer.h">
       <Filter>Source\Systems\Renderers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Renderers\Shader.h">
@@ -200,6 +209,9 @@
     <ClCompile Include="Source\Systems\Model.cpp">
       <Filter>Source\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Systems\Renderers\DeferredPipeline.cpp">
+      <Filter>Source\Systems\Renderers</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp">
       <Filter>Source\Systems\Renderers</Filter>
     </ClCompile>
@@ -208,6 +220,9 @@
     </ClCompile>
     <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglShader.cpp">
       <Filter>Source\Systems\Renderers\Opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\Renderers\SceneRenderer.cpp">
+      <Filter>Source\Systems\Renderers</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Renderers\Viewport.cpp">
       <Filter>Source\Systems\Renderers</Filter>

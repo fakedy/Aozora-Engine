@@ -1,5 +1,6 @@
 #pragma once
 #include "Systems/Renderers/FrameBuffer.h"
+#include <cstdint>
 
 namespace Aozora {
 
@@ -18,7 +19,7 @@ namespace Aozora {
 
 		virtual void updateTexture(unsigned int width, unsigned int height) override;
 
-		unsigned int framebufferID;
+		uint32_t framebufferID;
 
 
 	private:

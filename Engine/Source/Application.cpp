@@ -23,11 +23,13 @@ namespace Aozora {
 		props = Window::WindowProps(title, 1920, 1080);
 
 		m_window = Window::create(props);
-		m_renderer = std::unique_ptr<Renderer>(Renderer::create(props));
+		m_renderAPI = std::unique_ptr<IrenderAPI>(IrenderAPI::create());
+
+		m_sceneRenderer = std::make_unique<SceneRenderer>();
 
 		m_resourceManager = std::make_unique<ResourceManager>();
 
-		createNewScene();
+		createNewScene(); // ???
 		
 		m_cameraSystem = std::make_unique<CameraSystem>();
 
@@ -59,7 +61,7 @@ namespace Aozora {
 	void Application::createNewScene()
 	{
 		m_currentScene = std::make_unique<Scene>();
-		m_renderer->updatePrimaryScene(m_currentScene.get());
+		m_sceneRenderer->updatePrimaryScene(m_currentScene.get());
 	}
 }
 

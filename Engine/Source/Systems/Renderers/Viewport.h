@@ -3,7 +3,8 @@
 #include "FrameBuffer.h"
 #include "Systems/Scene/Scene.h"
 #include <entt/entt.hpp>
-
+#include "Systems/Renderers/IrenderPipeline.h"
+#include "Systems/Renderers/DeferredPipeline.h"
 
 namespace Aozora {
 
@@ -12,7 +13,7 @@ namespace Aozora {
 	class Viewport {
 	public:
 
-		Viewport(uint32_t width, uint32_t height);
+		Viewport(uint32_t width, uint32_t height, std::unique_ptr<IrenderPipeline> pipeline);
 
 		
 		ViewportType type{ ViewportType::Generic };
@@ -20,9 +21,13 @@ namespace Aozora {
 		uint32_t height{1080};
 
 		std::unique_ptr<FrameBuffer> framebuffer;
+		std::unique_ptr<IrenderPipeline> renderPipeline;
+		
 
 		Scene* scene;
 		entt::entity camera;
+
+		void resize(uint32_t width, uint32_t height);
 
 	};
 }

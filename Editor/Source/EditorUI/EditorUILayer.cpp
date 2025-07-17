@@ -55,7 +55,6 @@ void EditorUILayer::onUpdate(){
 
 
 	uint32_t editorTextureID = Aozora::RenderAPI::getViewportTextureID(m_editorLayer->m_editorViewPortID);
-
 	ImGui::Image((void*)(intptr_t)editorTextureID, ImVec2(contentRegion.x, contentRegion.y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 

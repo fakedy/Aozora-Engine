@@ -33,6 +33,7 @@ public:
 		m_editorViewPortID = Aozora::RenderAPI::createViewport(&scene, Aozora::ViewportType::PrimaryEditor, editorCameraEntity);
 		m_gameViewPortID = Aozora::RenderAPI::createViewport(&scene, Aozora::ViewportType::PrimaryGame);
 
+
 		// temp loading models
 		Aozora::ResourcesAPI::loadModel("Resources/testcube/testcube.obj");
 		Aozora::ResourcesAPI::loadModel("Resources/sponza2/sponza.obj");
