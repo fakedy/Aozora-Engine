@@ -105,8 +105,6 @@ void EditorUILayer::onUpdate(){
 	statsView();
 
 
-	// temporary really. right now we have to unbind because we default to rendering to framebuffer
-	//m_editorFramebuffer->unbind();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

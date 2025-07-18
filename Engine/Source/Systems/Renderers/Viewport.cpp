@@ -13,11 +13,9 @@ namespace Aozora {
 
 		if (width != newWidth || height != newHeight) {
 
-			width = width;
-			height = height;
-			//updateTexture(width, height);
+			width = newWidth;
+			height = newHeight;
+			renderPipeline->resize(newWidth, newHeight);
 		}
-
-
 	}
 }

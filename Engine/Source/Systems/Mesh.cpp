@@ -125,4 +125,11 @@ namespace Aozora {
         }
 
     }
+    void Mesh::drawGeometry()
+    {
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, meshData.indices.size(), GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+
+    }
 }

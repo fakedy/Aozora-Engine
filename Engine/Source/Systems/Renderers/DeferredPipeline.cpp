@@ -5,44 +5,117 @@ namespace Aozora {
 
 	DeferredPipeline::DeferredPipeline(uint32_t width, uint32_t height) {
 
-		gBuffer = std::make_unique<OpenglFrameBuffer>();
-		renderBuffer = std::make_unique<OpenglFrameBuffer>();
+
+		FrameBuffer::FrameBufferSpecification gBufferSpecs;
+		FrameBuffer::FrameBufferAttachment positionAttachment;
+		FrameBuffer::FrameBufferAttachment normalAttachment;
+		FrameBuffer::FrameBufferAttachment albedoAttachment;
+		FrameBuffer::FrameBufferAttachment propertiesAttachment;
 
 
-		renderBuffer->create();
-		renderBuffer->createTextures(1920, 1080);
-		renderBuffer->bufferTexture();
+		gBufferSpecs.width = 1920;
+		gBufferSpecs.height = 1080;
+
+		positionAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA16F;
+		positionAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
+		positionAttachment.dataType = FrameBuffer::DataType::FLOAT;
+		positionAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
+
+		normalAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA16F;
+		normalAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
+		normalAttachment.dataType = FrameBuffer::DataType::FLOAT;
+		normalAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
+
+		albedoAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA16F;
+		albedoAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
+		albedoAttachment.dataType = FrameBuffer::DataType::UNSIGNED_BYTE;
+		albedoAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
+
+		propertiesAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA16F;
+		propertiesAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
+		propertiesAttachment.dataType = FrameBuffer::DataType::FLOAT;
+		propertiesAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
+
+
+		gBufferSpecs.attachments.push_back(positionAttachment);
+		gBufferSpecs.attachments.push_back(normalAttachment);
+		gBufferSpecs.attachments.push_back(albedoAttachment);
+		gBufferSpecs.attachments.push_back(propertiesAttachment);
+
+		FrameBuffer::FrameBufferSpecification renderBufferSpecs;
+		FrameBuffer::FrameBufferAttachment colorAttachment;
+		FrameBuffer::FrameBufferAttachment depthAttachment;
+
+		renderBufferSpecs.width = 1920;
+		renderBufferSpecs.height = 1080;
+
+		colorAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA16F;
+		colorAttachment.textureFilter = FrameBuffer::TextureFilter::Linear;
+		colorAttachment.textureWrap = FrameBuffer::TextureWrap::ClampToEdge;
+		colorAttachment.dataType = FrameBuffer::DataType::FLOAT;
+		colorAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;;
+
+		depthAttachment.textureFormat = FrameBuffer::TextureFormat::DEPTH24STENCIL8;
+		depthAttachment.textureFilter = FrameBuffer::TextureFilter::Linear;
+		depthAttachment.textureWrap = FrameBuffer::TextureWrap::ClampToEdge;
+		depthAttachment.dataType = FrameBuffer::DataType::UNSIGNED_BYTE;
+		depthAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
+
+		renderBufferSpecs.attachments.push_back(colorAttachment);
+		renderBufferSpecs.attachments.push_back(depthAttachment);
+
+		gBuffer = std::make_unique<OpenglFrameBuffer>(gBufferSpecs);
+		renderBuffer = std::make_unique<OpenglFrameBuffer>(renderBufferSpecs);
+
+		gBuffer->buffer();
+		renderBuffer->buffer();
+
+		// i dont care, we dont need normals but whatever
+		screenQuad.meshData.vertices = {
+			{ {-1.0f, -1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f} }, // 0: Bottom-left
+			{ { 1.0f, -1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {1.0f, 0.0f} }, // 1: Bottom-right
+			{ {-1.0f,  1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f} }, // 2: Top-left
+			{ { 1.0f,  1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f},  {1.0f, 1.0f} }  // 3: Top-right
+		};
+
+		screenQuad.meshData.indices = {
+			0, 1, 3, // First triangle
+			3, 2, 0  // Second triangle
+		};
+
+		screenQuad.bufferData();
 
 	}
 
 
 
-	void DeferredPipeline::createFramebuffer()
+
+	void DeferredPipeline::resize(uint32_t width, uint32_t height)
 	{
 
-
-
+		gBuffer->updateTexture(width, height);
+		renderBuffer->updateTexture(width, height);
 
 	}
+
 	void DeferredPipeline::execute(IrenderAPI& renderAPI, Scene& scene, entt::entity camera, uint32_t width, uint32_t height)
 	{
-		
-		//gBuffer->bind();
-		renderBuffer->bind();
 
-		// clear
-		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0.0f, 0.51f, 0.6f, 1.0f);
-
-		glUseProgram(m_defaultShader.ID);
-		glViewport(0, 0, width, height);
 		auto view = scene.getRegistry().view<const MeshComponent, TransformComponent>(); // register of all mesh components
 		auto cameraView = scene.getRegistry().view<CameraComponent>();
 
 		// check if viewport have a camera
 		if (camera != entt::null) {
+			// gBuffer pass
+			gBuffer->bind();
+			ResourceManager& resourceManager = Application::getApplication().getResourceManager();
+
+			glClearColor(0.0, 0.0, 0.0, 1.0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			glUseProgram(m_gBufferShader.ID);
+			glViewport(0, 0, width, height);
+
 			auto& current_camera = cameraView.get<CameraComponent>(camera);
 			current_camera.m_viewPortWidth = width;
 			current_camera.m_viewPortHeight = height;
@@ -52,28 +125,50 @@ namespace Aozora {
 				auto& meshComponent = view.get<MeshComponent>(entity);
 				auto& transformComponent = view.get<TransformComponent>(entity);
 
-				// get rid of "glgetuniformlocation"?
-				glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.ID, "model"), 1, GL_FALSE, &transformComponent.model[0][0]);
-				glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.ID, "view"), 1, GL_FALSE, &current_camera.getView()[0][0]);
-				glUniformMatrix4fv(glGetUniformLocation(m_defaultShader.ID, "proj"), 1, GL_FALSE, &current_camera.getProjection()[0][0]);
+				// get rid of "glgetuniformlocation"
+				glUniformMatrix4fv(glGetUniformLocation(m_gBufferShader.ID, "model"), 1, GL_FALSE, &transformComponent.model[0][0]);
+				glUniformMatrix4fv(glGetUniformLocation(m_gBufferShader.ID, "view"), 1, GL_FALSE, &current_camera.getView()[0][0]);
+				glUniformMatrix4fv(glGetUniformLocation(m_gBufferShader.ID, "proj"), 1, GL_FALSE, &current_camera.getProjection()[0][0]);
 
-				glUniform3fv(glGetUniformLocation(m_defaultShader.ID, "cameraPos"), 1, &transformComponent.pos[0]);
+				glUniform3fv(glGetUniformLocation(m_gBufferShader.ID, "cameraPos"), 1, &transformComponent.pos[0]);
 
 				// draw call
-				resourceManager.m_loadedMeshes[meshComponent.meshID].draw(m_defaultShader);
+				resourceManager.m_loadedMeshes[meshComponent.meshID].draw(m_gBufferShader);
 
 			}
+
+
+			gBuffer->unbind();
+			renderBuffer->bind();
+			// light pass
+
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glUseProgram(m_poopShader.ID);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[0]);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[1]);
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[2]);
+			glActiveTexture(GL_TEXTURE3);
+			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[3]);
+
+
+			screenQuad.drawGeometry();
+
+
+			renderBuffer->unbind();
+
 		}
 
-		renderBuffer->unbind();
-		//gBuffer->unbind();
 
-		// clear
 
 
 	}
 	uint32_t DeferredPipeline::getFinalImage()
 	{
-		return renderBuffer->m_colorTextureID;
+		//return renderBuffer->m_colorAttachments[0];
+		return gBuffer->m_colorAttachments[2];
 	}
 }

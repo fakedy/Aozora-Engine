@@ -41,6 +41,7 @@ namespace Aozora {
 		MeshData meshData;
 		void bufferData();
 		void draw(Shader& shader);
+		void drawGeometry();
 	private:
 
 	};

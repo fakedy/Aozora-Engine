@@ -5,6 +5,7 @@
 #include <entt/entt.hpp>
 #include "Systems/Renderers/IrenderPipeline.h"
 #include "Systems/Renderers/DeferredPipeline.h"
+#include <Systems/Mesh.h>
 
 namespace Aozora {
 
@@ -20,7 +21,6 @@ namespace Aozora {
 		uint32_t width{1920};
 		uint32_t height{1080};
 
-		std::unique_ptr<FrameBuffer> framebuffer;
 		std::unique_ptr<IrenderPipeline> renderPipeline;
 		
 
