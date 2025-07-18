@@ -1,26 +1,8 @@
 #version 450 core
 
-out vec4 fragColor;
+layout (location = 0) out vec4 finalColor;
+
 in vec2 textureCoord;
-in vec3 normal;
-in vec3 fragPos;
-
-
-uniform sampler2D texture_diffuse;
-uniform sampler2D texture_emissive;
-uniform sampler2D texture_ao;
-
-uniform sampler2D texture_metallic;
-uniform sampler2D texture_roughness;
-uniform sampler2D texture_normal;
-
-// should be 0(false) by default
-uniform bool has_texture_diffuse;
-uniform bool has_texture_emissive;
-uniform bool has_texture_ao;
-uniform bool has_texture_metallic;
-uniform bool has_texture_roughness;
-uniform bool has_texture_normal;
 
 uniform vec3 cameraPos;
 
@@ -29,16 +11,14 @@ struct Material{
 	float metallic;
 	float roughness;
 	float ao;
-	vec4 emissive;
+	float emissive;
 	vec3 normal;
 };
 
-// temporary, might move this to an UBO/SSBO
-uniform vec4 albedo;
-uniform float metallic;
-uniform float roughness;
-uniform float ao;
-uniform vec4 emissive;
+uniform sampler2D gPosition;
+uniform sampler2D gNormal;
+uniform sampler2D gAlbedo;
+uniform sampler2D gProperties;
 
 Material usedMaterial;
 
@@ -80,54 +60,24 @@ float g(vec3 n, vec3 v, float roughness){
 void main() {
 
 
+	vec3 fragPos = texture(gPosition, textureCoord).rgb;
 
-	if(has_texture_diffuse){
-		usedMaterial.albedo = texture(texture_diffuse, textureCoord).rgba;
-	} else {
-		usedMaterial.albedo = albedo;
-	}
+	usedMaterial.albedo = texture(gAlbedo, textureCoord).rgba;
 
-	if( has_texture_metallic){
-		usedMaterial.metallic = texture(texture_metallic, textureCoord).b;
-	} else {
-		usedMaterial.metallic = metallic;
-	}
+	usedMaterial.metallic = texture(gProperties, textureCoord).r;
 
+	usedMaterial.roughness = texture(gProperties, textureCoord).g; // or g i dont know, depends on texture
 
-	if( has_texture_roughness){
-		usedMaterial.roughness = texture(texture_roughness, textureCoord).g; // or g i dont know, depends on texture
-	} else {
-		usedMaterial.roughness = roughness;
-	}
+	usedMaterial.ao = texture(gProperties, textureCoord).b;
 
+	usedMaterial.emissive = texture(gProperties, textureCoord).a;
 
-	if( has_texture_ao){
-		usedMaterial.ao = texture(texture_ao, textureCoord).r;
-	} else {
-		usedMaterial.ao = ao;
-	}
-
-
-	if( has_texture_emissive){
-		usedMaterial.emissive = texture(texture_emissive, textureCoord).rgba;
-	} else {
-		usedMaterial.emissive = emissive;
-	}
-
-
-	if (has_texture_normal) {
-    	vec3 tangentNormal = texture(texture_normal, textureCoord).rgb * 2.0 - 1.0;
-    	usedMaterial.normal = normalize(tangentNormal); 
-	} else {
-		usedMaterial.normal = normalize(normal);
-	}
+	usedMaterial.normal = normalize(texture(gNormal, textureCoord).rgb);
 
 	if(usedMaterial.albedo.a < 0.05f){
 		discard;
 	}
 
-
-	// usedMaterial.normal = normal;
 
 	float intensity = 2.0f;
 	vec3 lightPos = vec3(0.8, 1.0, 0.3);
@@ -157,10 +107,10 @@ void main() {
 	vec3 radiance = (diffuse + specular) * lightFactor * lightColor;
 
 
-	vec3 emission = usedMaterial.emissive.rgb;
+	float emission = usedMaterial.emissive;
 	vec3 ambient = vec3(0.3f) * usedMaterial.albedo.rgb * usedMaterial.ao;
-	vec3 color = ambient + radiance + emission;
+	vec3 color = ambient + radiance + (emission*usedMaterial.albedo.rgb); // idk if this is legit
 
-	fragColor = vec4(color, usedMaterial.albedo.a);
+	finalColor = vec4(color, usedMaterial.albedo.a);
 
 }

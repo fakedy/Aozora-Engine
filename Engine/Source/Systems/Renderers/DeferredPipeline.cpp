@@ -28,7 +28,7 @@ namespace Aozora {
 
 		albedoAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA16F;
 		albedoAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
-		albedoAttachment.dataType = FrameBuffer::DataType::UNSIGNED_BYTE;
+		albedoAttachment.dataType = FrameBuffer::DataType::FLOAT;
 		albedoAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
 
 		propertiesAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA16F;
@@ -53,13 +53,13 @@ namespace Aozora {
 		colorAttachment.textureFilter = FrameBuffer::TextureFilter::Linear;
 		colorAttachment.textureWrap = FrameBuffer::TextureWrap::ClampToEdge;
 		colorAttachment.dataType = FrameBuffer::DataType::FLOAT;
-		colorAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;;
+		colorAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
 
 		depthAttachment.textureFormat = FrameBuffer::TextureFormat::DEPTH24STENCIL8;
 		depthAttachment.textureFilter = FrameBuffer::TextureFilter::Linear;
 		depthAttachment.textureWrap = FrameBuffer::TextureWrap::ClampToEdge;
-		depthAttachment.dataType = FrameBuffer::DataType::UNSIGNED_BYTE;
-		depthAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
+		depthAttachment.dataType = FrameBuffer::DataType::UNSIGNED_INT_24_8;
+		depthAttachment.dataFormat = FrameBuffer::DataFormat::DEPTH_STENCIL;
 
 		renderBufferSpecs.attachments.push_back(colorAttachment);
 		renderBufferSpecs.attachments.push_back(depthAttachment);
@@ -142,8 +142,14 @@ namespace Aozora {
 			renderBuffer->bind();
 			// light pass
 
+
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glUseProgram(m_poopShader.ID);
+			glUseProgram(m_defaultShader.ID);
+
+			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gPosition"), 0);
+			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gNormal"), 1);
+			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gAlbedo"), 2);
+			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gProperties"), 3);
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[0]);
@@ -153,6 +159,9 @@ namespace Aozora {
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[2]);
 			glActiveTexture(GL_TEXTURE3);
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[3]);
+
+
+			// render lightss
 
 
 			screenQuad.drawGeometry();
@@ -168,7 +177,6 @@ namespace Aozora {
 	}
 	uint32_t DeferredPipeline::getFinalImage()
 	{
-		//return renderBuffer->m_colorAttachments[0];
-		return gBuffer->m_colorAttachments[2];
+		return renderBuffer->m_colorAttachments[0];
 	}
 }
