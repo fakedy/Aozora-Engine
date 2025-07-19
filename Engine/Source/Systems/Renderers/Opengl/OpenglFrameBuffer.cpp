@@ -1,5 +1,6 @@
 #include "OpenglFrameBuffer.h"
 #include <glad/glad.h>
+#include <iostream>
 
 Aozora::OpenglFrameBuffer::OpenglFrameBuffer(FrameBufferSpecification spec)
 {
@@ -75,6 +76,10 @@ void Aozora::OpenglFrameBuffer::buffer()
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_depthTextureID, 0);
 	}
 
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		// Log an error: The FBO is not complete!
+		std::cout << "framebuffer not complete\n";
+	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

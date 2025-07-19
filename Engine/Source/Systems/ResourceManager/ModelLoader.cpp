@@ -15,8 +15,8 @@ namespace Aozora {
 
         const aiScene* scene = m_importer.ReadFile(file,
             aiProcess_Triangulate |
-            aiProcess_GenSmoothNormals |
-            aiProcess_FlipUVs);
+            aiProcess_FlipUVs |
+            aiProcess_CalcTangentSpace);
 
         if (scene == nullptr) {
             std::cerr << "Error importing file: " << m_importer.GetErrorString() << std::endl;
@@ -26,119 +26,127 @@ namespace Aozora {
 
     }
 
-    Model::Node* ModelLoader::processNode(aiNode* node, const aiScene* scene, const std::string& file, Model& model) {
+Model::Node* ModelLoader::processNode(aiNode* node, const aiScene* scene, const std::string& file, Model& model) {
 
-        ResourceManager& resourceManager = Application::getApplication().getResourceManager();
+    ResourceManager& resourceManager = Application::getApplication().getResourceManager();
 
-        Model::Node* newNode = new Model::Node();
-        newNode->name = node->mName.C_Str();
-        // set the model origin node
-        if (model.originNode == nullptr) {
-            model.originNode = newNode;
+    Model::Node* newNode = new Model::Node();
+    newNode->name = node->mName.C_Str();
+    // set the model origin node
+    if (model.originNode == nullptr) {
+        model.originNode = newNode;
+    }
+
+    // add new node to the model node list
+    model.allNodes.push_back(newNode);
+
+
+    for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+        aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
+        std::string key = file + std::to_string(node->mMeshes[i]);
+
+        uint32_t meshID;
+        // if mesh isnt already loaded
+        if (resourceManager.meshLoaded(key) == -1) {
+            Mesh mesh = processMesh(aiMesh, scene);
+            resourceManager.m_meshPathToID[key] = resourceManager.m_nextMeshID;
+            resourceManager.m_loadedMeshes[resourceManager.m_nextMeshID] = mesh;
+            meshID = resourceManager.m_nextMeshID; // use new mesh ID
+            resourceManager.m_nextMeshID++;
+        }
+        else {
+            meshID = resourceManager.meshLoaded(key); // use the already loaded mesh ID
         }
 
-        // add new node to the model node list
-        model.allNodes.push_back(newNode);
+        // all mesh nodes will be children to the parent node
+        Model::Node* meshNode = new Model::Node();
+        newNode->childrenNodes.push_back(meshNode);
+        meshNode->parentNode = newNode;
+        meshNode->meshID = meshID;
+        meshNode->hasMesh = true;
+        meshNode->name = aiMesh->mName.C_Str();
+        model.allNodes.push_back(meshNode);
+    }
 
+    for (unsigned int i = 0; i < node->mNumChildren; i++) {
 
-        for (unsigned int i = 0; i < node->mNumMeshes; i++) {
-            aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
-            std::string key = file + std::to_string(node->mMeshes[i]);
+        Model::Node* childNode = processNode(node->mChildren[i], scene, file, model);
+        newNode->childrenNodes.push_back(childNode);
+        childNode->parentNode = newNode;
+    }
 
-            uint32_t meshID;
-            // if mesh isnt already loaded
-            if (resourceManager.meshLoaded(key) == -1) {
-                Mesh mesh = processMesh(aiMesh, scene);
-                resourceManager.m_meshPathToID[key] = resourceManager.m_nextMeshID;
-                resourceManager.m_loadedMeshes[resourceManager.m_nextMeshID] = mesh;
-                meshID = resourceManager.m_nextMeshID; // use new mesh ID
-                resourceManager.m_nextMeshID++;
-            }
-            else {
-                meshID = resourceManager.meshLoaded(key); // use the already loaded mesh ID
-            }
+    return newNode;
 
-            // all mesh nodes will be children to the parent node
-            Model::Node* meshNode = new Model::Node();
-            newNode->childrenNodes.push_back(meshNode);
-            meshNode->parentNode = newNode;
-            meshNode->meshID = meshID;
-            meshNode->hasMesh = true;
-            meshNode->name = aiMesh->mName.C_Str();
-            model.allNodes.push_back(meshNode);
-        }
+}
 
-        for (unsigned int i = 0; i < node->mNumChildren; i++) {
+Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene)
+{
+    Mesh createdmesh;
 
-            Model::Node* childNode = processNode(node->mChildren[i], scene, file, model);
-            newNode->childrenNodes.push_back(childNode);
-            childNode->parentNode = newNode;
-        }
+    // check if the material already exist
+    unsigned int mMaterialIndex = mesh->mMaterialIndex;
+    Material material;
 
-        return newNode;
+    ResourceManager& resourceManager = Application::getApplication().getResourceManager();
+    if (mMaterialIndex >= 0) {
+
+        aiMaterial* aimaterial = scene->mMaterials[mMaterialIndex];
+
+        loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE, Material::TextureType::DIFFUSE);
+
+        loadMaterialTextures(material, aimaterial, aiTextureType_NORMALS, Material::TextureType::NORMAL);
+
+        loadMaterialTextures(material, aimaterial, aiTextureType_EMISSIVE, Material::TextureType::EMISSIVE);
+
+        loadMaterialTextures(material, aimaterial, aiTextureType_AMBIENT_OCCLUSION, Material::TextureType::AO);
+
+        loadMaterialTextures(material, aimaterial, aiTextureType_METALNESS, Material::TextureType::METALLIC);
+
+        loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE_ROUGHNESS, Material::TextureType::ROUGHNESS);
 
     }
 
-    Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene)
-    {
-        Mesh createdmesh;
+    for (uint32_t v = 0; v < mesh->mNumVertices; v++) {
 
-        // check if the material already exist
-        unsigned int mMaterialIndex = mesh->mMaterialIndex;
-        Material material;
+        Mesh::Vertex vertex;
 
-        ResourceManager& resourceManager = Application::getApplication().getResourceManager();
-        if(mMaterialIndex >= 0){
+        glm::vec3 position;
+        position.x = mesh->mVertices[v].x;
+        position.y = mesh->mVertices[v].y;
+        position.z = mesh->mVertices[v].z;
+        vertex.Position = position;
 
-            aiMaterial* aimaterial = scene->mMaterials[mMaterialIndex];
-
-            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE, Material::TextureType::DIFFUSE);
-
-            loadMaterialTextures(material, aimaterial, aiTextureType_NORMALS, Material::TextureType::NORMAL);
-
-            loadMaterialTextures(material, aimaterial, aiTextureType_EMISSIVE, Material::TextureType::EMISSIVE);
-
-            loadMaterialTextures(material, aimaterial, aiTextureType_AMBIENT_OCCLUSION, Material::TextureType::AO);
-
-            loadMaterialTextures(material, aimaterial, aiTextureType_METALNESS, Material::TextureType::METALLIC);
-
-            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE_ROUGHNESS, Material::TextureType::ROUGHNESS);
-
+        glm::vec3 normal;
+        if (mesh->HasNormals()) {
+            normal.x = mesh->mNormals[v].x;
+            normal.y = mesh->mNormals[v].y;
+            normal.z = mesh->mNormals[v].z;
+            vertex.Normal = normal;
         }
 
-        for (uint32_t v = 0; v < mesh->mNumVertices; v++) {
-
-            Mesh::Vertex vertex;
-
-            glm::vec3 position;
-            position.x = mesh->mVertices[v].x;
-            position.y = mesh->mVertices[v].y;
-            position.z = mesh->mVertices[v].z;
-            vertex.Position = position;
-
-            glm::vec3 normal;
-            if (mesh->HasNormals()) {
-                normal.x = mesh->mNormals[v].x;
-                normal.y = mesh->mNormals[v].y;
-                normal.z = mesh->mNormals[v].z;
-                vertex.Normal = normal;
-            }
-
-            glm::vec2 texcoord;
-            if (mesh->mTextureCoords[0]) {
-                texcoord.x = mesh->mTextureCoords[0][v].x;
-                texcoord.y = mesh->mTextureCoords[0][v].y;
-                vertex.TexCoords = texcoord;
-            }
-            else {
-                vertex.TexCoords = glm::vec2(0.0f, 0.0f);
-            }
-
-            // implement texture coords
-            createdmesh.meshData.vertices.push_back(vertex);
-
-
+        glm::vec3 tangent;
+        if (mesh->HasTangentsAndBitangents()){
+            tangent.x = mesh->mTangents[v].x;
+            tangent.y = mesh->mTangents[v].y;
+            tangent.z = mesh->mTangents[v].z;
+            vertex.Tangent = tangent;
         }
+
+        glm::vec2 texcoord;
+        if (mesh->mTextureCoords[0]) {
+            texcoord.x = mesh->mTextureCoords[0][v].x;
+            texcoord.y = mesh->mTextureCoords[0][v].y;
+            vertex.TexCoords = texcoord;
+        }
+        else {
+            vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+        }
+
+        // implement texture coords
+        createdmesh.meshData.vertices.push_back(vertex);
+
+
+    }
 
         // fix indices
         for (unsigned int f = 0; f < mesh->mNumFaces; f++) { // for every face in mesh i

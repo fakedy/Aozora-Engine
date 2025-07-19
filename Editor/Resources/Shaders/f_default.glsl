@@ -11,14 +11,16 @@ struct Material{
 	float metallic;
 	float roughness;
 	float ao;
-	float emissive;
+	vec4 emissive;
 	vec3 normal;
 };
 
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
+uniform sampler2D gEmissive;
 uniform sampler2D gProperties;
+
 
 Material usedMaterial;
 
@@ -70,9 +72,9 @@ void main() {
 
 	usedMaterial.ao = texture(gProperties, textureCoord).b;
 
-	usedMaterial.emissive = texture(gProperties, textureCoord).a;
+	usedMaterial.emissive = texture(gEmissive, textureCoord).rgba;
 
-	usedMaterial.normal = normalize(texture(gNormal, textureCoord).rgb);
+	usedMaterial.normal = texture(gNormal, textureCoord).rgb;
 
 	if(usedMaterial.albedo.a < 0.05f){
 		discard;
@@ -107,9 +109,10 @@ void main() {
 	vec3 radiance = (diffuse + specular) * lightFactor * lightColor;
 
 
-	float emission = usedMaterial.emissive;
-	vec3 ambient = vec3(0.3f) * usedMaterial.albedo.rgb * usedMaterial.ao;
-	vec3 color = ambient + radiance + (emission*usedMaterial.albedo.rgb); // idk if this is legit
+	vec3 emission = usedMaterial.emissive.rgb;
+	vec3 ambient = vec3(0.1f) * usedMaterial.albedo.rgb; // * usedMaterial.ao;
+
+	vec3 color = ambient + radiance + emission;
 
 	finalColor = vec4(color, usedMaterial.albedo.a);
 
