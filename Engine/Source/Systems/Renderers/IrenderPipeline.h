@@ -2,6 +2,7 @@
 #include "Systems/Scene/Scene.h"
 #include <entt/entt.hpp>
 #include "IrenderAPI.h"
+#include <Systems/ECS/Components/Components.h>
 
 
 namespace Aozora {

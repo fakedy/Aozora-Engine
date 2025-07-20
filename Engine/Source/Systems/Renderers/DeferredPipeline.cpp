@@ -115,7 +115,7 @@ namespace Aozora {
 	void DeferredPipeline::execute(IrenderAPI& renderAPI, Scene& scene, entt::entity camera, uint32_t width, uint32_t height)
 	{
 
-		auto view = scene.getRegistry().view<const MeshComponent, TransformComponent>(); // register of all mesh components
+		auto MeshTransformEntities = scene.getRegistry().view<const MeshComponent, TransformComponent>(); // register of all mesh components
 		auto cameraView = scene.getRegistry().view<CameraComponent>();
 
 		// check if viewport have a camera
@@ -124,8 +124,8 @@ namespace Aozora {
 			gBuffer->bind();
 			ResourceManager& resourceManager = Application::getApplication().getResourceManager();
 
-			glClearColor(0.0, 0.0, 0.0, 1.0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			renderAPI.clear(0.0f, 0.0f, 0.0f, 1.0f);
 			glUseProgram(m_gBufferShader.ID);
 			glViewport(0, 0, width, height);
 
@@ -136,9 +136,9 @@ namespace Aozora {
 			glDisable(GL_BLEND);
 
 			// for every entity to be rendered
-			for (const auto entity : view) {
-				auto& meshComponent = view.get<MeshComponent>(entity);
-				auto& transformComponent = view.get<TransformComponent>(entity);
+			for (const auto entity : MeshTransformEntities) {
+				auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
+				auto& transformComponent = MeshTransformEntities.get<TransformComponent>(entity);
 
 				// get rid of "glgetuniformlocation"
 				glUniformMatrix4fv(glGetUniformLocation(m_gBufferShader.ID, "model"), 1, GL_FALSE, &transformComponent.model[0][0]);
@@ -155,11 +155,10 @@ namespace Aozora {
 			gBuffer->unbind();
 			renderBuffer->bind();
 			// light pass
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			renderAPI.clear(0.0f, 0.0f, 0.0f, 1.0f);
 			glUseProgram(m_defaultShader.ID);
 
-
-			auto& camera_transform = view.get<TransformComponent>(camera);
+			auto& camera_transform = MeshTransformEntities.get<TransformComponent>(camera);
 			glUniform3fv(glGetUniformLocation(m_gBufferShader.ID, "cameraPos"), 1, &camera_transform.pos[0]);
 			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gPosition"), 0);
 			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gNormal"), 1);
@@ -179,7 +178,27 @@ namespace Aozora {
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[4]);
 
 			// render lightss
+			auto lightView = scene.getRegistry().view<const LightComponent, TransformComponent>();
 
+			int index = 0;
+			for (auto entity : lightView) {
+				auto& lightComponent = lightView.get<LightComponent>(entity);
+				auto& transformComponent = lightView.get<TransformComponent>(entity);
+				std::string lightPosVar = "lights[" + std::to_string(index) + "].position";
+				std::string lightColorVar = "lights[" + std::to_string(index) + "].color";
+				std::string lightLinearVar = "lights[" + std::to_string(index) + "].linear";
+				std::string lightQuadraticVar = "lights[" + std::to_string(index) + "].quadratic";
+				std::string lightRadiusVar = "lights[" + std::to_string(index) + "].radius";
+				std::string lightPowerVar = "lights[" + std::to_string(index) + "].power";
+				glUniform3fv(glGetUniformLocation(m_defaultShader.ID, lightPosVar.c_str()), 1, &transformComponent.pos[0]);
+				glUniform3fv(glGetUniformLocation(m_defaultShader.ID, lightColorVar.c_str()), 1, &lightComponent.color[0]);
+				glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightLinearVar.c_str()), lightComponent.linear);
+				glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightQuadraticVar.c_str()), lightComponent.quadratic);
+				glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightRadiusVar.c_str()), lightComponent.radius);
+				glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightPowerVar.c_str()), lightComponent.power);
+				index++;
+			}
+			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "activeLights"), index);
 
 			screenQuad.drawGeometry();
 

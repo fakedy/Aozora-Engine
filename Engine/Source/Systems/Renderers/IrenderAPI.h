@@ -11,7 +11,7 @@ namespace Aozora {
 	public:
 
 
-		virtual void clear() = 0;
+		virtual void clear(float r, float g, float b, float a) = 0;
 
 		static IrenderAPI* create();
 

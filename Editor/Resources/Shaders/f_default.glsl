@@ -15,6 +15,20 @@ struct Material{
 	vec3 normal;
 };
 
+struct Light {
+	vec3 position;
+	vec3 color;
+	float linear;
+	float quadratic;
+	float radius;
+	float power;
+};
+
+const int maxLights = 32; //temp
+uniform Light lights[maxLights];
+uniform int activeLights;
+
+
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
@@ -74,45 +88,59 @@ void main() {
 
 	usedMaterial.emissive = texture(gEmissive, textureCoord).rgba;
 
-	usedMaterial.normal = texture(gNormal, textureCoord).rgb;
+	usedMaterial.normal = normalize(texture(gNormal, textureCoord).rgb);
 
 	if(usedMaterial.albedo.a < 0.05f){
 		discard;
 	}
 
 
-	float intensity = 2.0f;
-	vec3 lightPos = vec3(0.8, 1.0, 0.3);
-	vec3 lightColor = vec3(1.0, 0.98, 0.92) * intensity; ;
-	vec3 lightDir = normalize(lightPos);
 
-	float lightFactor = max(dot(usedMaterial.normal, lightDir), 0.0);
-
-
-	vec3 viewDir = normalize(cameraPos - fragPos);
-
-	vec3 h = normalize(lightDir + viewDir);
-	vec3 f_0 = mix(vec3(0.04f), usedMaterial.albedo.rgb, usedMaterial.metallic);
-	float d = ndf(usedMaterial.normal, h, usedMaterial.roughness);
-	vec3 f = f(h, viewDir, f_0); // fresnelSchlick
-	float g = g(usedMaterial.normal, viewDir, usedMaterial.roughness) * g(usedMaterial.normal, lightDir, usedMaterial.roughness); // GeometrySmith
-
-	vec3 dfg = d*f*g;
-	float NdotV = max(dot(viewDir, usedMaterial.normal), 0.0);
-	float NdotL = max(dot(lightDir, usedMaterial.normal), 0.0);
-	vec3 specular = dfg / ((4.0 * NdotV * NdotL) + 0.0001); // Cook-Torrance BRDF equation, specular
-
-	vec3 k_s = f; 
-	vec3 k_d = (vec3(1.0f) - k_s) * (1.0 - usedMaterial.metallic);
-
-	vec3 diffuse = k_d * usedMaterial.albedo.rgb / pi; // reflective distribution function
-	vec3 radiance = (diffuse + specular) * lightFactor * lightColor;
-
-
+	vec3 ambient = vec3(0.005f) * usedMaterial.albedo.rgb; // * usedMaterial.ao;
 	vec3 emission = usedMaterial.emissive.rgb;
-	vec3 ambient = vec3(0.1f) * usedMaterial.albedo.rgb; // * usedMaterial.ao;
+	vec3 color = ambient + emission;
+	vec3 viewDir = normalize(cameraPos - fragPos);
+	for(int i = 0; i < activeLights; i++){
 
-	vec3 color = ambient + radiance + emission;
+		float distance = length(lights[i].position - fragPos);
+
+		if(distance < lights[i].radius){
+			vec3 lightDir = normalize(lights[i].position - fragPos);
+			float lightFactor = max(dot(usedMaterial.normal, lightDir), 0.0);
+
+			vec3 h = normalize(lightDir + viewDir);
+			vec3 f_0 = mix(vec3(0.04f), usedMaterial.albedo.rgb, usedMaterial.metallic);
+			float d = ndf(usedMaterial.normal, h, usedMaterial.roughness);
+			vec3 f = f(h, viewDir, f_0); // fresnelSchlick
+			float g = g(usedMaterial.normal, viewDir, usedMaterial.roughness) * g(usedMaterial.normal, lightDir, usedMaterial.roughness); // GeometrySmith
+
+			vec3 dfg = d*f*g;
+			float NdotV = max(dot(viewDir, usedMaterial.normal), 0.0);
+			float NdotL = max(dot(lightDir, usedMaterial.normal), 0.0);
+			vec3 specular = dfg / ((4.0 * NdotV * NdotL) + 0.0001); // Cook-Torrance BRDF equation, specular
+
+			vec3 k_s = f; 
+			vec3 k_d = (vec3(1.0f) - k_s) * (1.0 - usedMaterial.metallic);
+
+			vec3 diffuse = k_d * usedMaterial.albedo.rgb / pi; // reflective distribution function
+
+			float newQuadratic = (256 - 1.0f) / (lights[i].radius*lights[i].radius);
+			float attenuation = 1.0 / (1.0 + newQuadratic * distance * distance);
+
+
+			vec3 radiance = (specular + diffuse) * lightFactor * lights[i].color * attenuation * lights[i].power;
+
+
+
+			color += radiance;
+		}
+
+	}
+
+	
+
+
+
 
 	finalColor = vec4(color, usedMaterial.albedo.a);
 

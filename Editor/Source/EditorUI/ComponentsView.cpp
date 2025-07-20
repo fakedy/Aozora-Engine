@@ -94,7 +94,12 @@ void ComponentsView::draw() {
 			if (ImGui::CollapsingHeader("LightComponent", ImGuiTreeNodeFlags_DefaultOpen)) {
 
 				auto& lightComp = registry.get<Aozora::LightComponent>(m_selectedEntity);
-				ImGui::Text("Type: %s", lightComp.type);
+				//ImGui::Text("Type: %s", lightComp.type);
+				ImGui::DragFloat3("Color", glm::value_ptr(lightComp.color), 0.05f);
+				ImGui::DragFloat("Radius", &lightComp.radius, 0.05f);
+				ImGui::DragFloat("Linear", &lightComp.linear, 0.05f);
+				ImGui::DragFloat("Quadratic", &lightComp.quadratic, 0.05f);
+				ImGui::DragFloat("Power", &lightComp.power, 0.05f);
 			}
 		}
 
