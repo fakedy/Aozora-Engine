@@ -45,7 +45,11 @@ namespace Aozora {
 	class ApplicationAPI {
 	public:
 
+		static void newProject();
+		static void loadProject();
+		static void saveProject();
 		static void createNewScene();
+		static void loadScene();
 
 
 	};
@@ -60,6 +64,7 @@ namespace Aozora {
 		static Model* getModel(std::string name);
 
 		static Material& getMaterial(uint32_t id);
+
 	};
 
 

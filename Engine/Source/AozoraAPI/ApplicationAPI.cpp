@@ -14,11 +14,30 @@ namespace Aozora{
 
 
 
+	void ApplicationAPI::newProject()
+	{
+
+		createNewScene();
+	}
+
+	void ApplicationAPI::loadProject()
+	{
+	}
+
+	void ApplicationAPI::saveProject()
+	{
+	}
+
 	void ApplicationAPI::createNewScene() {
 
-		Application::getApplication().createNewScene();
+		auto action = []() {
+		};
 
+		Application::getApplication().queueAction(action);
+	}
 
+	void ApplicationAPI::loadScene()
+	{
 	}
 
 

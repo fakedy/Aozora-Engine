@@ -7,8 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Systems/Time.h"
 #include <chrono>
-
-
+#include <Systems/Project/Project.h>
 namespace Aozora {
 
 	Application* Application::m_appInstance = nullptr;
@@ -25,11 +24,8 @@ namespace Aozora {
 		m_window = Window::create(props);
 		m_renderAPI = std::unique_ptr<IrenderAPI>(IrenderAPI::create());
 
-		m_sceneRenderer = std::make_unique<SceneRenderer>();
-
 		m_resourceManager = std::make_unique<ResourceManager>();
 
-		createNewScene(); // ???
 		
 		m_cameraSystem = std::make_unique<CameraSystem>();
 
@@ -51,17 +47,31 @@ namespace Aozora {
 
 			m_window->onUpdate(); // swap buffer
 
-
+			processActions();
 			auto end = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<float> elapsed = end - start;
 			Time::deltaTime = elapsed.count();
 
 		}
 	}
-	void Application::createNewScene()
+	Scene& Application::getCurrentScene()
 	{
-		m_currentScene = std::make_unique<Scene>();
-		m_sceneRenderer->updatePrimaryScene(m_currentScene.get());
+		return *m_project->m_currentScene.get();
+	}
+	SceneRenderer& Application::getRenderer()
+	{
+		return *m_project->m_sceneRenderer.get();
+	}
+	void Application::queueAction(std::function<void()> func)
+	{
+		m_actionQueue.push(func);
+	}
+	void Application::processActions()
+	{
+		while (!m_actionQueue.empty()) {
+			m_actionQueue.front()();
+			m_actionQueue.pop();
+		}
 	}
 }
 

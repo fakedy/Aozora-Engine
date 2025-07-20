@@ -30,6 +30,9 @@ namespace Aozora {
 
 		OpenglShader m_gBufferShader{ OpenglShader("Resources/Shaders/v_gBuffer.glsl", "Resources/Shaders/f_gBuffer.glsl") };
 		OpenglShader m_poopShader{ OpenglShader("Resources/Shaders/v_poopshader.glsl", "Resources/Shaders/f_poopshader.glsl") };
+
+
+		void renderLights(Scene& scene);
 	};
 
 

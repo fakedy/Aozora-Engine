@@ -27,17 +27,17 @@ namespace Aozora {
 		normalAttachment.dataType = FrameBuffer::DataType::FLOAT;
 		normalAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
 
-		albedoAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA16F;
+		albedoAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA8;
 		albedoAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
 		albedoAttachment.dataType = FrameBuffer::DataType::FLOAT;
 		albedoAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
 
-		emissiveAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA16F;
+		emissiveAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA8;
 		emissiveAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
 		emissiveAttachment.dataType = FrameBuffer::DataType::FLOAT;
 		emissiveAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
 
-		propertiesAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA16F;
+		propertiesAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA8;
 		propertiesAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
 		propertiesAttachment.dataType = FrameBuffer::DataType::FLOAT;
 		propertiesAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
@@ -177,42 +177,44 @@ namespace Aozora {
 			glActiveTexture(GL_TEXTURE4);
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[4]);
 
-			// render lightss
-			auto lightView = scene.getRegistry().view<const LightComponent, TransformComponent>();
-
-			int index = 0;
-			for (auto entity : lightView) {
-				auto& lightComponent = lightView.get<LightComponent>(entity);
-				auto& transformComponent = lightView.get<TransformComponent>(entity);
-				std::string lightPosVar = "lights[" + std::to_string(index) + "].position";
-				std::string lightColorVar = "lights[" + std::to_string(index) + "].color";
-				std::string lightLinearVar = "lights[" + std::to_string(index) + "].linear";
-				std::string lightQuadraticVar = "lights[" + std::to_string(index) + "].quadratic";
-				std::string lightRadiusVar = "lights[" + std::to_string(index) + "].radius";
-				std::string lightPowerVar = "lights[" + std::to_string(index) + "].power";
-				glUniform3fv(glGetUniformLocation(m_defaultShader.ID, lightPosVar.c_str()), 1, &transformComponent.pos[0]);
-				glUniform3fv(glGetUniformLocation(m_defaultShader.ID, lightColorVar.c_str()), 1, &lightComponent.color[0]);
-				glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightLinearVar.c_str()), lightComponent.linear);
-				glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightQuadraticVar.c_str()), lightComponent.quadratic);
-				glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightRadiusVar.c_str()), lightComponent.radius);
-				glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightPowerVar.c_str()), lightComponent.power);
-				index++;
-			}
-			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "activeLights"), index);
-
-			screenQuad.drawGeometry();
+			renderLights(scene);
 
 
 			renderBuffer->unbind();
 
 		}
 
-
-
-
 	}
 	uint32_t DeferredPipeline::getFinalImage()
 	{
 		return renderBuffer->m_colorAttachments[0];
+	}
+	void DeferredPipeline::renderLights(Scene& scene)
+	{
+		// render lightss
+		auto lightView = scene.getRegistry().view<const LightComponent, TransformComponent>();
+
+		int index = 0;
+		for (auto entity : lightView) {
+			auto& lightComponent = lightView.get<LightComponent>(entity);
+			auto& transformComponent = lightView.get<TransformComponent>(entity);
+			std::string lightPosVar = "lights[" + std::to_string(index) + "].position";
+			std::string lightColorVar = "lights[" + std::to_string(index) + "].color";
+			std::string lightLinearVar = "lights[" + std::to_string(index) + "].linear";
+			std::string lightQuadraticVar = "lights[" + std::to_string(index) + "].quadratic";
+			std::string lightRadiusVar = "lights[" + std::to_string(index) + "].radius";
+			std::string lightPowerVar = "lights[" + std::to_string(index) + "].power";
+			glUniform3fv(glGetUniformLocation(m_defaultShader.ID, lightPosVar.c_str()), 1, &transformComponent.pos[0]);
+			glUniform3fv(glGetUniformLocation(m_defaultShader.ID, lightColorVar.c_str()), 1, &lightComponent.color[0]);
+			glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightLinearVar.c_str()), lightComponent.linear);
+			glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightQuadraticVar.c_str()), lightComponent.quadratic);
+			glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightRadiusVar.c_str()), lightComponent.radius);
+			glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightPowerVar.c_str()), lightComponent.power);
+			index++;
+		}
+		glUniform1i(glGetUniformLocation(m_defaultShader.ID, "activeLights"), index);
+
+		screenQuad.drawGeometry();
+
 	}
 }

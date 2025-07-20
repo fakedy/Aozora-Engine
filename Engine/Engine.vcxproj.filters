@@ -209,6 +209,9 @@
     <ClCompile Include="Source\Systems\Model.cpp">
       <Filter>Source\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Systems\Project\Project.cpp">
+      <Filter>Source\Systems\Project</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Systems\Renderers\DeferredPipeline.cpp">
       <Filter>Source\Systems\Renderers</Filter>
     </ClCompile>

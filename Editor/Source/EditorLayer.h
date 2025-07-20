@@ -5,8 +5,7 @@
 #include <entt/entt.hpp>
 #include <Systems/ECS/Components/Components.h>
 #include <Systems/Scene/Scene.h>
-
-
+#include <Systems/Project/Project.h>
 
 
 enum class EditorState { EDIT, PLAY };
@@ -18,8 +17,13 @@ class EditorLayer : public Aozora::Layer
 public:
 	EditorLayer() {
 
+		Aozora::Application::getApplication().m_project = std::make_unique<Aozora::Project>();
+		Aozora::Application::getApplication().m_project->setup();
+
 		Aozora::Scene& scene = Aozora::Application::getApplication().getCurrentScene();
 		m_editorCameraSystem = std::make_unique<Aozora::EditorCameraSystem>();
+
+
 		// maybe dependency injection isnt that bad
 		entt::registry& registry = Aozora::Application::getApplication().getCurrentScene().getRegistry();
 
@@ -33,17 +37,6 @@ public:
 		m_editorViewPortID = Aozora::RenderAPI::createViewport(&scene, Aozora::ViewportType::PrimaryEditor, editorCameraEntity);
 		m_gameViewPortID = Aozora::RenderAPI::createViewport(&scene, Aozora::ViewportType::PrimaryGame);
 
-
-		// temp loading models
-		Aozora::ResourcesAPI::loadModel("Resources/testcube/testcube.obj");
-		Aozora::ResourcesAPI::loadModel("Resources/sponza2/sponza.obj");
-		Aozora::ResourcesAPI::loadModel("Resources/DamagedHelmet/DamagedHelmet.gltf");
-		//Aozora::ResourcesAPI::loadModel("Resources/San_Miguel/san-miguel.obj");
-		Aozora::ResourcesAPI::loadModel("Resources/survival-guitar-backpack/source/Survival_BackPack_2.fbx");
-		Aozora::ResourcesAPI::loadModel("Resources/gpmesh/scene.gltf");
-		//Aozora::ResourcesAPI::loadModel("Resources/living_room/living_room.obj");
-		//Aozora::ResourcesAPI::loadModel("Resources/sibenik/sibenik.obj");
-		Aozora::ResourcesAPI::loadModel("Resources/conference/conference.obj");
 	}
 
 	void onUpdate() override;
@@ -58,6 +51,7 @@ private:
 	EditorState state{ EditorState::EDIT };
 
 	std::unique_ptr<Aozora::EditorCameraSystem> m_editorCameraSystem;
+
 
 
 	// temp stuff

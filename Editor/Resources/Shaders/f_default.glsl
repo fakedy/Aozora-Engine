@@ -96,7 +96,7 @@ void main() {
 
 
 
-	vec3 ambient = vec3(0.005f) * usedMaterial.albedo.rgb; // * usedMaterial.ao;
+	vec3 ambient = vec3(0.1f) * usedMaterial.albedo.rgb; // * usedMaterial.ao;
 	vec3 emission = usedMaterial.emissive.rgb;
 	vec3 color = ambient + emission;
 	vec3 viewDir = normalize(cameraPos - fragPos);
@@ -104,6 +104,8 @@ void main() {
 
 		float distance = length(lights[i].position - fragPos);
 
+
+		// useless check in practise because shaders will still run
 		if(distance < lights[i].radius){
 			vec3 lightDir = normalize(lights[i].position - fragPos);
 			float lightFactor = max(dot(usedMaterial.normal, lightDir), 0.0);
@@ -124,8 +126,7 @@ void main() {
 
 			vec3 diffuse = k_d * usedMaterial.albedo.rgb / pi; // reflective distribution function
 
-			float newQuadratic = (256 - 1.0f) / (lights[i].radius*lights[i].radius);
-			float attenuation = 1.0 / (1.0 + newQuadratic * distance * distance);
+			float attenuation = 1.0 / (1.0 + lights[i].linear * distance + lights[i].quadratic * distance * distance);
 
 
 			vec3 radiance = (specular + diffuse) * lightFactor * lights[i].color * attenuation * lights[i].power;
@@ -137,9 +138,12 @@ void main() {
 
 	}
 
-	
-
-
+	// only needed on sdr monitors
+	/*
+	const float gamma = 2.2;
+	vec3 mapped = color / (color + vec3(1.0));
+	mapped = pow(mapped, vec3(1.0 / gamma));
+	*/
 
 
 	finalColor = vec4(color, usedMaterial.albedo.a);

@@ -9,8 +9,12 @@
 #include "Systems/Scene/Scene.h"
 #include "Systems/CameraSystem.h"
 #include "Systems/Renderers/SceneRenderer.h"
+#include <functional>
+#include <queue>
 
 namespace Aozora {
+
+	class Project;
 
 	class Application
 	{
@@ -22,14 +26,13 @@ namespace Aozora {
 
 		void run();
 
+		// TODO stop with this 
 		// getter for application singleton
 		static Application& getApplication() {
 			return *m_appInstance;
 		}
 
-		Scene& getCurrentScene() {
-			return *m_currentScene.get();
-		}
+		Scene& getCurrentScene();
 
 		ResourceManager& getResourceManager() {
 			return *m_resourceManager.get();
@@ -39,27 +42,29 @@ namespace Aozora {
 			return *m_renderAPI.get();
 		}
 
-		SceneRenderer& getRenderer() {
-			return *m_sceneRenderer.get();
-		}
+		SceneRenderer& getRenderer();
 
-		void createNewScene();
 
 		inline Window& getWindow() { return *m_window; }
 
 		std::unique_ptr<CameraSystem> m_cameraSystem;
-		
+
+		void queueAction(std::function<void()> func);
+		void processActions();
+
+
+		std::unique_ptr<Project> m_project;
 
 	private:
 		static Application* m_appInstance;
 
 		Window* m_window;
 		std::unique_ptr<IrenderAPI> m_renderAPI;
-		std::unique_ptr<SceneRenderer> m_sceneRenderer;
 		std::unique_ptr<ResourceManager> m_resourceManager;
-		std::unique_ptr<Scene> m_currentScene; // hmmm
 		
 		Window::WindowProps props;
+
+		std::queue<std::function<void()>> m_actionQueue;
 		
 
 	};

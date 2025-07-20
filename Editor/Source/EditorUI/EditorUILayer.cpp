@@ -20,6 +20,9 @@ void EditorUILayer::onUpdate(){
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::BeginMenu("New")) {
 				if (ImGui::MenuItem("Project")) {
+
+					// NEW WOOOOOORLD
+					Aozora::ApplicationAPI::newProject();
 				}
 				ImGui::EndMenu();
 			}
