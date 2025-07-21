@@ -21,7 +21,6 @@ namespace Aozora {
 		std::shared_ptr<entt::registry> m_registry;
 
 		const char* m_sceneName{ "New Scene" };
-		std::shared_ptr<CameraComponent> m_activeCamera;
 
 		void update();
 

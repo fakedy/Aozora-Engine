@@ -11,6 +11,7 @@
 #include "Systems/Renderers/SceneRenderer.h"
 #include <functional>
 #include <queue>
+#include <Systems/SceneManager/SceneManager.h>
 
 namespace Aozora {
 
@@ -38,11 +39,17 @@ namespace Aozora {
 			return *m_resourceManager.get();
 		}
 
+		SceneManager& getSceneManager() {
+			return *m_sceneManager.get();
+		}
+
 		IrenderAPI& getRenderAPI() {
 			return *m_renderAPI.get();
 		}
 
-		SceneRenderer& getRenderer();
+		SceneRenderer& getRenderer() {
+			return *m_sceneRenderer.get();
+		}
 
 
 		inline Window& getWindow() { return *m_window; }
@@ -61,6 +68,8 @@ namespace Aozora {
 		Window* m_window;
 		std::unique_ptr<IrenderAPI> m_renderAPI;
 		std::unique_ptr<ResourceManager> m_resourceManager;
+		std::unique_ptr<SceneRenderer> m_sceneRenderer;
+		std::unique_ptr<SceneManager> m_sceneManager;
 		
 		Window::WindowProps props;
 

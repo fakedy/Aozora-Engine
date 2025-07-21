@@ -1,23 +1,39 @@
 #pragma once
 #include <memory>
 #include <entt/entt.hpp>
+#include <Systems/Events/Event.h>
+#include <Systems/Events/Events.h>
 
 
 namespace Aozora {
 
-	class EditorCameraSystem
+	class EditorCameraSystem : public IEventListener
 	{
 	public:
 
 		EditorCameraSystem();
 
-		void update();
+		void update(entt::registry& registry);
 
-
+		void onEvent(Event& e) override;
 
 	private:
 
 
+		float lastX = 1920 / 2.0f;
+		float lastY = 1080 / 2.0f;
+
+		float yaw = -90.0f; // rotate
+		float pitch = 0.0f; // up and down
+
+		float sensitivity = 0.3f;
+
+
+		float movspeed{ 10.0f };
+
+		bool mouseHeld{ false };
+
+		Scene* m_currentScene;
 
 	};
 }

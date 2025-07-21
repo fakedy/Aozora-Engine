@@ -11,7 +11,7 @@ namespace Aozora {
 
 		CameraSystem();
 
-		void update();
+		void update(entt::registry& registry);
 
 
 

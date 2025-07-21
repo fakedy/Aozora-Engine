@@ -15,9 +15,8 @@ namespace Aozora {
 
 	}
 
-	void CameraSystem::update()
+	void CameraSystem::update(entt::registry& registry)
 	{
-		entt::registry& registry = Application::getApplication().getCurrentScene().getRegistry();
 		auto view = registry.view<CameraComponent, TransformComponent>();
 
 		for (const auto entity : view) { // change this we are currently rendering multiple cameras

@@ -18,12 +18,12 @@ namespace Aozora {
 		assert(m_appInstance == nullptr);
 		m_appInstance = this;
 
-
 		props = Window::WindowProps(title, 1920, 1080);
 
 		m_window = Window::create(props);
 		m_renderAPI = std::unique_ptr<IrenderAPI>(IrenderAPI::create());
-
+		m_sceneManager = std::make_unique<SceneManager>();
+		m_sceneRenderer = std::make_unique<SceneRenderer>();
 		m_resourceManager = std::make_unique<ResourceManager>();
 
 		
@@ -38,7 +38,7 @@ namespace Aozora {
 
 		while (!m_window->windowShouldClose()) {
 			auto start = std::chrono::high_resolution_clock::now();
-
+			processActions();
 
 			// TODO render after updated layers
 			for (Layer* layer : *layerStack) {
@@ -47,7 +47,6 @@ namespace Aozora {
 
 			m_window->onUpdate(); // swap buffer
 
-			processActions();
 			auto end = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<float> elapsed = end - start;
 			Time::deltaTime = elapsed.count();
@@ -56,12 +55,9 @@ namespace Aozora {
 	}
 	Scene& Application::getCurrentScene()
 	{
-		return *m_project->m_currentScene.get();
+		return *m_project->m_currentScene;
 	}
-	SceneRenderer& Application::getRenderer()
-	{
-		return *m_project->m_sceneRenderer.get();
-	}
+
 	void Application::queueAction(std::function<void()> func)
 	{
 		m_actionQueue.push(func);

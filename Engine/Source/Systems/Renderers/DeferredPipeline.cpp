@@ -129,6 +129,7 @@ namespace Aozora {
 			glUseProgram(m_gBufferShader.ID);
 			glViewport(0, 0, width, height);
 
+			// get the camera from the cameraID
 			auto& current_camera = cameraView.get<CameraComponent>(camera);
 			current_camera.m_viewPortWidth = width;
 			current_camera.m_viewPortHeight = height;

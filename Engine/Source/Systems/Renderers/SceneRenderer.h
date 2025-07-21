@@ -4,11 +4,13 @@
 #include "Viewport.h"
 #include <Systems/Renderers/DeferredPipeline.h>
 #include "IrenderAPI.h"
+#include <Systems/Events/Event.h>
+#include <Systems/Events/Events.h>
 
 namespace Aozora {
 
 
-	class SceneRenderer {
+	class SceneRenderer : public IEventListener{
 	public:
 
 		SceneRenderer();
@@ -20,11 +22,12 @@ namespace Aozora {
 		uint32_t nextViewportID{ 0 };
 		void render();
 
-		uint32_t createViewport(Scene* scene, ViewportType type, entt::entity editorCameraEntity);
+		uint32_t createViewport(ViewportType type);
 
 		Viewport& getViewport(uint32_t viewportID);
 
-		void updatePrimaryScene(Scene* scene);
+		void updatePrimaryScene(Scene& scene);
 
+		void onEvent(Event& e) override;
 	};
 }

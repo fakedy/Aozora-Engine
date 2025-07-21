@@ -9,20 +9,20 @@
 namespace Aozora {
 
 	// create viewport with set camera and returns the ID
-	uint32_t RenderAPI::createViewport(Scene* scene, ViewportType type, entt::entity editorCameraEntity) {
+	uint32_t RenderAPI::createViewport(ViewportType type, entt::entity editorCameraEntity) {
 
 		SceneRenderer& renderer = Application::getApplication().getRenderer();
 
-		uint32_t viewportID = renderer.createViewport(scene, type, editorCameraEntity);
+		uint32_t viewportID = renderer.createViewport(type);
 		return viewportID;
 	}
 
 	// create viewport without set camera and returns the ID
-	uint32_t RenderAPI::createViewport(Scene* scene, ViewportType type) {
+	uint32_t RenderAPI::createViewport(ViewportType type) {
 
 		SceneRenderer& renderer = Application::getApplication().getRenderer();
 
-		uint32_t viewportID = renderer.createViewport(scene, type, entt::null);
+		uint32_t viewportID = renderer.createViewport(type);
 		return viewportID;
 	}
 

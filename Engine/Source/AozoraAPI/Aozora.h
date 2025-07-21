@@ -9,6 +9,8 @@
 #include <string>
 #include <Systems/Model.h>
 #include <Systems/Mesh.h>
+#include <Systems/Events/Event.h>
+#include <Systems/Events/Events.h>
 
 namespace Aozora {
 
@@ -34,8 +36,8 @@ namespace Aozora {
 	class RenderAPI {
 	public:
 
-		static uint32_t createViewport(Scene* scene, ViewportType type, entt::entity editorCameraEntity);
-		static uint32_t createViewport(Scene* scene, ViewportType type);
+		static uint32_t createViewport(ViewportType type, entt::entity editorCameraEntity);
+		static uint32_t createViewport(ViewportType type);
 		static void resizeViewport(uint32_t ID, uint16_t width, uint32_t height);
 		static uint32_t getViewportTextureID(uint32_t ID);
 
@@ -48,8 +50,9 @@ namespace Aozora {
 		static void newProject();
 		static void loadProject();
 		static void saveProject();
-		static void createNewScene();
+		static uint32_t createNewScene();
 		static void loadScene();
+		static Scene* getScene(uint32_t id);
 
 
 	};

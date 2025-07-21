@@ -1,7 +1,7 @@
 #pragma once
 #include <Systems/Renderers/SceneRenderer.h>
 #include <Systems/Scene/Scene.h>
-#include <AozoraAPI/Aozora.h>
+#include <memory>
 
 namespace Aozora {
 
@@ -10,12 +10,15 @@ namespace Aozora {
 
 		Project();
 
-		std::unique_ptr<Scene> m_currentScene;
-		std::unique_ptr<SceneRenderer> m_sceneRenderer;
+		Scene* m_currentScene;
 
 		void setup();
 
+		void newScene();
+
 	private:
 
+
+		uint32_t sceneID;
 	};
 }

@@ -42,7 +42,8 @@ project "Engine"
 	  ["Imgui"] = { "Vendor/include/imgui/*.cpp"},
       ["Engine"] = { "Engine/*.cpp", "Engine/*.h" },
 	  ["Resources"] = { "Resources/*"},
-      ["AozoraAPI"] = { "AozoraAPI/*"}
+      ["AozoraAPI"] = { "AozoraAPI/*"},
+      ["Systems/AozoraAPI"] = { "Systems/Events/*"}
 	  }
 
 

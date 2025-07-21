@@ -4,6 +4,8 @@
 #include <glm/gtc/quaternion.hpp>
 #include <Systems/ECS/Components/Components.h>
 #include "Application.h"
+#include "Systems/Input.h"
+#include <Systems/Time.h>
 
 #include <iostream>
 
@@ -11,13 +13,13 @@ namespace Aozora {
 
 	EditorCameraSystem::EditorCameraSystem()
 	{
-
+		EventDispatcher::subscribe(EventType::ChangeScene, [this](Event& e) {
+			this->onEvent(e);
+			});
 	}
 
-	void EditorCameraSystem::update()
+	void EditorCameraSystem::update(entt::registry& registry)
 	{
-		// probably gonna use dependency injection instead
-		entt::registry& registry = Application::getApplication().getCurrentScene().getRegistry();
 		auto view = registry.view<CameraComponent, TransformComponent, EditorEntityTag>();
 
 		for (const auto entity : view) {
@@ -26,6 +28,81 @@ namespace Aozora {
 
 			auto& transform = view.get<TransformComponent>(entity);
 
+
+			// TEMPORARY
+			if (Input::getKeyDown(Input::Key::MOUSE_BUTTON_RIGHT)) {
+
+				if (Input::getKeyDown(Input::Key::W)) {
+					transform.pos += camera.m_forward * movspeed * Time::deltaTime;
+				}
+				else
+					if (Input::getKeyDown(Input::Key::S)) {
+						transform.pos -= camera.m_forward * movspeed * Time::deltaTime;
+					}
+
+				if (Input::getKeyDown(Input::Key::D)) {
+					transform.pos += camera.m_right * movspeed * Time::deltaTime;
+				}
+				else
+					if (Input::getKeyDown(Input::Key::A)) {
+						transform.pos -= camera.m_right * movspeed * Time::deltaTime;
+					}
+
+				if (Input::getKeyDown(Input::Key::SPACE)) {
+					transform.pos += camera.m_up * movspeed * Time::deltaTime;
+				}
+				else
+					if (Input::getKeyDown(Input::Key::LEFT_CONTROL)) {
+						transform.pos -= camera.m_up * movspeed * Time::deltaTime;
+					}
+
+				if (Input::getKeyPressed(Input::Key::E)) {
+					movspeed = movspeed + 10.0f;
+				}
+				else if (Input::getKeyPressed(Input::Key::Q)) {
+					movspeed = movspeed - 10.0f;
+				}
+
+				Input::MouseData data = Input::getMousePos();
+				float xOffset = data.x - lastX;
+				float yOffset = lastY - data.y;
+				lastX = data.x;
+				lastY = data.y;
+
+				if (!mouseHeld) { // make sure we dont get sudden camera movement
+
+					xOffset = 0;
+					yOffset = 0;
+
+				}
+
+				xOffset *= sensitivity;
+				yOffset *= sensitivity;
+
+				yaw += xOffset;
+				pitch += yOffset;
+
+				if (pitch > 89.9f) {
+					pitch = 89.9f;
+				}
+				if (pitch < -89.9f) {
+					pitch = -89.9f;
+				}
+
+				mouseHeld = true;
+				transform.rot.x = pitch;
+				transform.rot.y = -yaw;
+				transform.rot.z = 0.0f;
+
+
+			}
+			else {
+
+				mouseHeld = false;
+			}
+
+
+			// camera render code
 			glm::vec3 currentPos = transform.pos;
 
 			glm::quat rotQuart = glm::quat(glm::radians(transform.rot));
@@ -44,5 +121,20 @@ namespace Aozora {
 
 		}
 		
+	}
+	void EditorCameraSystem::onEvent(Event& e)
+	{
+		switch (e.getEvent()) {
+		case(EventType::ChangeScene):
+		{
+			auto& scene = static_cast<ChangeSceneEvent&>(e).getScene();
+			m_currentScene = &scene;
+			break;
+		}
+
+		default:
+			break;
+		}
+
 	}
 }

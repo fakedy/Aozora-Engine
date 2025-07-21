@@ -7,6 +7,8 @@
 #include "Systems/Renderers/DeferredPipeline.h"
 #include <Systems/Mesh.h>
 
+
+
 namespace Aozora {
 
 		enum class ViewportType { Generic, PrimaryGame, PrimaryEditor };
@@ -24,10 +26,14 @@ namespace Aozora {
 		std::unique_ptr<IrenderPipeline> renderPipeline;
 		
 
-		Scene* scene;
-		entt::entity camera;
+		Scene* scene{ nullptr };
+		uint32_t sceneID{ 0 };
+		entt::entity camera; // noooooo
 
 		void resize(uint32_t width, uint32_t height);
+
+		void setScene(Scene& scene);
+
 
 	};
 }

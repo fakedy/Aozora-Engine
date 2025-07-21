@@ -19,6 +19,9 @@
     <Filter Include="Source\Systems\ECS\Components">
       <UniqueIdentifier>{DC70ABB1-4889-92DB-1136-22757D0D2775}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Systems\Events">
+      <UniqueIdentifier>{A158F5DD-0DC5-B0D8-D6B8-483642E4D240}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Systems\Layers">
       <UniqueIdentifier>{7C43D8EC-E8AF-93E7-B1A3-2B451DCFB54F}</UniqueIdentifier>
     </Filter>
@@ -36,6 +39,9 @@
     </Filter>
     <Filter Include="Source\Systems\Scene">
       <UniqueIdentifier>{3AF666F0-2685-F0B9-CFA3-04B5BB110160}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Systems\SceneManager">
+      <UniqueIdentifier>{D597A69C-41A5-D482-CA8B-D06D3698A039}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Systems\Windows">
       <UniqueIdentifier>{97EE82E8-83E8-AB3A-6C55-424B58EE11A7}</UniqueIdentifier>
@@ -86,6 +92,12 @@
     </ClInclude>
     <ClInclude Include="Source\Systems\EditorCameraSystem.h">
       <Filter>Source\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Events\Event.h">
+      <Filter>Source\Systems\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Events\Events.h">
+      <Filter>Source\Systems\Events</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Input.h">
       <Filter>Source\Systems</Filter>
@@ -155,6 +167,9 @@
     </ClInclude>
     <ClInclude Include="Source\Systems\Scene\Scene.h">
       <Filter>Source\Systems\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\SceneManager\SceneManager.h">
+      <Filter>Source\Systems\SceneManager</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Time.h">
       <Filter>Source\Systems</Filter>
@@ -241,6 +256,9 @@
     </ClCompile>
     <ClCompile Include="Source\Systems\Scene\Scene.cpp">
       <Filter>Source\Systems\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\SceneManager\SceneManager.cpp">
+      <Filter>Source\Systems\SceneManager</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Windows\WindowsWindow.cpp">
       <Filter>Source\Systems\Windows</Filter>
