@@ -10,3 +10,5 @@ public:
 private:
 
 };
+
+// not used at this moment, texture loading is within the modelloader

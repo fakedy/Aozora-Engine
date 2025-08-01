@@ -254,9 +254,9 @@ Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene)
     Model ModelLoader::loadModel(const std::string& file)
     {
         ResourceManager& resourceManager = Application::getApplication().getResourceManager();
+        std::cout << "\nLoading model: " << file << "\n";
         const aiScene* scene = importFile(file);
         m_directory = file.substr(0, file.find_last_of('/'));
-        std::cout << "\nLoading model: " << file << "\n";
         std::string filename = file.substr(file.find_last_of('/'), file.find_last_of('.'));
         Model loadedModel;
         loadedModel.name = filename;

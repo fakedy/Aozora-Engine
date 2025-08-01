@@ -11,6 +11,8 @@ namespace Aozora {
     Mesh::Mesh()
     {
     }
+
+    // upload the data to the gpu
     void Mesh::bufferData()
     {
         glGenVertexArrays(1, &VAO);

@@ -16,18 +16,12 @@ namespace Aozora {
 		entt::registry& registry = currentScene.getRegistry();
 		const auto entity = registry.create();
 
-		// this will be way more complicated now pog 
 		// one entity per mesh
 		registry.emplace<Aozora::NameComponent>(entity).name = "Entity";
 		registry.emplace<Aozora::TagComponent>(entity);
 		registry.emplace<Aozora::TransformComponent>(entity);
 		registry.emplace<Aozora::RelationComponent>(entity);
 
-		/*
-		std::cout << "Material count: " << resourceManager.m_loadedmaterials.size() << "\n";
-		std::cout << "Texture count: " << resourceManager.m_loadedTextures.size() << "\n";
-		std::cout << "Mesh count: " << resourceManager.m_loadedMeshes.size() << "\n";
-		*/
 	}
 
 	void SceneAPI::deleteEntity(const entt::entity entity) {
@@ -42,6 +36,7 @@ namespace Aozora {
 
 	}
 
+	// returns a vector of entities
 	std::vector<entt::entity> SceneAPI::getSceneHierarchyEntities()
 	{
 
@@ -93,6 +88,16 @@ namespace Aozora {
 			makeTransformDirty(SceneAPI::getEntityParent(entity));
 		}
 
+	}
+
+	void SceneAPI::takeSnapshot()
+	{
+		Application::getApplication().getCurrentScene().takeSnapshot();
+	}
+
+	void SceneAPI::loadSnapshot()
+	{
+		Application::getApplication().getCurrentScene().loadSnapShot();
 	}
 
 

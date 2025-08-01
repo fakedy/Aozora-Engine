@@ -124,6 +124,18 @@ namespace Aozora {
         return true;
     }
 
+    void ResourceManager::clearResources()
+	{
+		std::cout << "Clearing resources\n";
+		m_loadedTextures.clear();
+		m_meshPathToID.clear();
+		m_loadedMeshes.clear();
+		m_loadedmaterials.clear();
+		m_loadedModels.clear();
+		m_nextMeshID = 0;
+		m_nextMaterialID = 0;
+    }
+
 
 
 }

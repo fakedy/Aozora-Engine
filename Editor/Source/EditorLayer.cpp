@@ -12,11 +12,11 @@ void EditorLayer::onUpdate()
 	auto& app = Aozora::Application::getApplication();
 
 	// no difference yet
-	if (state == EditorState::EDIT) {
+	if (m_currentState == EditorState::EDIT) {
 
 		app.m_cameraSystem->update(app.m_project->m_currentScene->getRegistry());
 		m_editorCameraSystem->update(app.m_project->m_currentScene->getRegistry());
-
+		
 		app.getCurrentScene().update();
 
 		app.getRenderer().render();
@@ -26,6 +26,7 @@ void EditorLayer::onUpdate()
 		app.m_cameraSystem->update(app.m_project->m_currentScene->getRegistry());
 		m_editorCameraSystem->update(app.m_project->m_currentScene->getRegistry());
 
+		app.getScriptSystem().update(app.m_project->m_currentScene->getRegistry());
 		app.getCurrentScene().update();
 
 		app.getRenderer().render();
@@ -34,4 +35,28 @@ void EditorLayer::onUpdate()
 
 
 
+}
+
+void EditorLayer::changeState(EditorState state)
+{
+
+	switch (state)
+	{
+	case EditorState::EDIT:
+		Aozora::SceneAPI::loadSnapshot();
+		break;
+	case EditorState::PLAY:
+		Aozora::SceneAPI::takeSnapshot();
+
+		break;
+	default:
+		break;
+	}
+	m_currentState = state;
+	
+}
+
+EditorState EditorLayer::getState()
+{
+	return m_currentState;
 }

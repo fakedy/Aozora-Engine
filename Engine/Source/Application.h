@@ -12,6 +12,7 @@
 #include <functional>
 #include <queue>
 #include <Systems/SceneManager/SceneManager.h>
+#include <Systems/ScriptManager/ScriptSystem.h>
 
 namespace Aozora {
 
@@ -50,6 +51,9 @@ namespace Aozora {
 		SceneRenderer& getRenderer() {
 			return *m_sceneRenderer.get();
 		}
+		ScriptSystem& getScriptSystem() {
+			return *m_scriptSystem.get();
+		}
 
 
 		inline Window& getWindow() { return *m_window; }
@@ -70,6 +74,7 @@ namespace Aozora {
 		std::unique_ptr<ResourceManager> m_resourceManager;
 		std::unique_ptr<SceneRenderer> m_sceneRenderer;
 		std::unique_ptr<SceneManager> m_sceneManager;
+		std::unique_ptr<ScriptSystem> m_scriptSystem;
 		
 		Window::WindowProps props;
 

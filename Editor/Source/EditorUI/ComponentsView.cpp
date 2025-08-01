@@ -31,7 +31,7 @@ void ComponentsView::draw() {
 						registry.emplace_or_replace<Aozora::RigidBodyComponent>(m_selectedEntity);
 					}
 					if (ImGui::MenuItem("Script")) {
-
+						registry.emplace_or_replace<Aozora::ScriptComponent>(m_selectedEntity);
 					}
 					if (ImGui::MenuItem("Light")) {
 						registry.emplace_or_replace<Aozora::LightComponent>(m_selectedEntity);
@@ -100,6 +100,13 @@ void ComponentsView::draw() {
 				ImGui::DragFloat("Linear", &lightComp.linear, 0.05f);
 				ImGui::DragFloat("Quadratic", &lightComp.quadratic, 0.05f);
 				ImGui::DragFloat("Power", &lightComp.power, 0.05f);
+			}
+		}
+		if (registry.all_of<Aozora::ScriptComponent>(m_selectedEntity)) {
+			if (ImGui::CollapsingHeader("ScriptComponent", ImGuiTreeNodeFlags_DefaultOpen)) {
+
+				auto& scriptComp = registry.get<Aozora::ScriptComponent>(m_selectedEntity);
+				ImGui::Text("Nothing here yet");
 			}
 		}
 

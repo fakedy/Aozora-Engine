@@ -28,12 +28,16 @@ public:
 
 	void onUpdate() override;
 
+	void changeState(EditorState state);
+
+	EditorState getState();
+
 	uint32_t m_gameViewPortID;
 	uint32_t m_editorViewPortID;
 
 private:
 
-	EditorState state{ EditorState::EDIT };
+	EditorState m_currentState{ EditorState::EDIT };
 
 	std::unique_ptr<Aozora::EditorCameraSystem> m_editorCameraSystem;
 

@@ -42,6 +42,21 @@ void EditorUILayer::onUpdate(){
 		if (ImGui::BeginMenu("Help")) {
 			ImGui::EndMenu();
 		}
+
+		// temp location
+		if (m_editorLayer->getState() == EditorState::EDIT) {
+
+			if (ImGui::Button("Play")) {
+				m_editorLayer->changeState(EditorState::PLAY);
+			}
+		}
+		else {
+
+			if (ImGui::Button("Stop")) {
+				m_editorLayer->changeState(EditorState::EDIT);
+			}
+		}
+
 		ImGui::EndMenuBar();
 	}
 

@@ -5,13 +5,15 @@
 #include <Application.h>
 
 
-
 namespace Aozora {
 	Scene::Scene()
 	{
 		m_registry = std::make_shared<entt::registry>();
 
-
+		// create skybox, temporary location, we'll see
+		const entt::entity skyboxEntity = m_registry->create();
+		m_registry->emplace_or_replace<SkyboxComponent>(skyboxEntity);
+		m_registry->emplace_or_replace<EditorEntityTag>(skyboxEntity);
 	}
 	void Scene::update()
 	{
@@ -33,6 +35,54 @@ namespace Aozora {
 	entt::registry& Scene::getRegistry()
 	{
 		return *m_registry;
+	}
+
+	void Scene::takeSnapshot()
+	{
+		outputArchive output;
+		entt::snapshot snapshot{ *m_registry };
+		snapshot.get<entt::entity>(output)
+			.get<NameComponent>(output)
+			.get<TransformComponent>(output)
+			.get<CameraComponent>(output)
+			.get<EditorEntityTag>(output)
+			.get<LightComponent>(output)
+			.get<MeshComponent>(output)
+			.get<RelationComponent>(output)
+			.get<RigidBodyComponent>(output)
+			.get<ScriptComponent>(output)
+			.get<TagComponent>(output)
+			.get<SkyboxComponent>(output);
+		m_snapshotData = output.data;
+	}
+
+	void Scene::loadSnapShot()
+	{
+		if (m_snapshotData.empty()) {
+			return;
+		}
+
+			inputArchive input(m_snapshotData);
+			m_registry->clear();
+			entt::snapshot_loader loader{ *m_registry };
+			// need archive
+			loader.get<entt::entity>(input)
+				.get<NameComponent>(input)
+				.get<TransformComponent>(input)
+				.get<CameraComponent>(input)
+				.get<EditorEntityTag>(input)
+				.get<LightComponent>(input)
+				.get<MeshComponent>(input)
+				.get<RelationComponent>(input)
+				.get<RigidBodyComponent>(input)
+				.get<ScriptComponent>(input)
+				.get<TagComponent>(input)
+				.get<SkyboxComponent>(input).orphans();
+		
+
+			m_snapshotData.clear();
+			m_snapshotData.shrink_to_fit();
+
 	}
 
 	void Scene::updateTransform(entt::entity entity , const glm::mat4& model)

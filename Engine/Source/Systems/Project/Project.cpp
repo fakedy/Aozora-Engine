@@ -17,8 +17,8 @@ namespace Aozora {
 
 
 		ResourcesAPI::loadModel("Resources/testcube/testcube.obj");
-		ResourcesAPI::loadModel("Resources/sponza2/sponza.obj");
-		ResourcesAPI::loadModel("Resources/DamagedHelmet/DamagedHelmet.gltf");
+		//ResourcesAPI::loadModel("Resources/sponza2/sponza.obj");
+		//ResourcesAPI::loadModel("Resources/DamagedHelmet/DamagedHelmet.gltf");
 		//Aozora::ResourcesAPI::loadModel("Resources/San_Miguel/san-miguel.obj");
 		//ResourcesAPI::loadModel("Resources/survival-guitar-backpack/source/Survival_BackPack_2.fbx");
 		ResourcesAPI::loadModel("Resources/gpmesh/scene.gltf");

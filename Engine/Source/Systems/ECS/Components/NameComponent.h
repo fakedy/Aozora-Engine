@@ -1,9 +1,9 @@
 #pragma once
-
+#include <string>
 namespace Aozora {
 
 	struct NameComponent {
-		const char* name;
+		std::string name{};
 	};
 
 }

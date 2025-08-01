@@ -25,6 +25,8 @@ namespace Aozora {
 		int textureLoaded(const std::string path);
 		unsigned int meshLoaded(const std::string path);
 		bool modelLoaded(const std::string path);
+
+		void clearResources();
 		// resources
 		std::unordered_map<std::string, Material::Texture> m_loadedTextures;
 		std::unordered_map<std::string, unsigned int> m_meshPathToID;

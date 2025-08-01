@@ -25,6 +25,9 @@
     <Filter Include="Source\Systems\Layers">
       <UniqueIdentifier>{7C43D8EC-E8AF-93E7-B1A3-2B451DCFB54F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Systems\Logging">
+      <UniqueIdentifier>{F32444A7-DF1E-6DF9-C88B-030AB424D365}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Systems\Project">
       <UniqueIdentifier>{A3E8BEE2-8FE2-E734-784F-7E4564E84DA1}</UniqueIdentifier>
     </Filter>
@@ -42,6 +45,12 @@
     </Filter>
     <Filter Include="Source\Systems\SceneManager">
       <UniqueIdentifier>{D597A69C-41A5-D482-CA8B-D06D3698A039}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Systems\ScriptManager">
+      <UniqueIdentifier>{BC6662C1-A821-526D-51D9-CAB73D739CFD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Systems\Serialization">
+      <UniqueIdentifier>{AAAEBE92-9669-AE3E-3F21-27892BBBF8CE}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Systems\Windows">
       <UniqueIdentifier>{97EE82E8-83E8-AB3A-6C55-424B58EE11A7}</UniqueIdentifier>
@@ -84,6 +93,9 @@
     <ClInclude Include="Source\Systems\ECS\Components\ScriptComponent.h">
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\ECS\Components\SkyboxComponent.h">
+      <Filter>Source\Systems\ECS\Components</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\ECS\Components\TagComponent.h">
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
@@ -110,6 +122,9 @@
     </ClInclude>
     <ClInclude Include="Source\Systems\Layers\LayerStack.h">
       <Filter>Source\Systems\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Logging\Logger.h">
+      <Filter>Source\Systems\Logging</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Material.h">
       <Filter>Source\Systems</Filter>
@@ -171,6 +186,12 @@
     <ClInclude Include="Source\Systems\SceneManager\SceneManager.h">
       <Filter>Source\Systems\SceneManager</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\ScriptManager\ScriptSystem.h">
+      <Filter>Source\Systems\ScriptManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Serialization\Serializer.h">
+      <Filter>Source\Systems\Serialization</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\Time.h">
       <Filter>Source\Systems</Filter>
     </ClInclude>
@@ -215,13 +236,13 @@
     <ClCompile Include="Source\Systems\Layers\LayerStack.cpp">
       <Filter>Source\Systems\Layers</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Systems\Logging\Logger.cpp">
+      <Filter>Source\Systems\Logging</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Systems\Mesh.cpp">
       <Filter>Source\Systems</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\MeshSystem.cpp">
-      <Filter>Source\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Systems\Model.cpp">
       <Filter>Source\Systems</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Project\Project.cpp">
@@ -259,6 +280,9 @@
     </ClCompile>
     <ClCompile Include="Source\Systems\SceneManager\SceneManager.cpp">
       <Filter>Source\Systems\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\ScriptManager\ScriptSystem.cpp">
+      <Filter>Source\Systems\ScriptManager</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Windows\WindowsWindow.cpp">
       <Filter>Source\Systems\Windows</Filter>

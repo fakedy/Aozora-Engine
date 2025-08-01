@@ -10,13 +10,14 @@ namespace Aozora {
 
 
 		uint32_t createScene();
+		void deleteScene(uint32_t id);
 
 		Scene* getScene(uint32_t id);
 
 
 	private:
 
-		std::unordered_map<uint32_t, Scene> m_scenes;
+		std::unordered_map<uint32_t, std::unique_ptr<Scene>> m_scenes;
 
 		int nextSceneID{ 0 };
 
