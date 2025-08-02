@@ -34,6 +34,7 @@ uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
 uniform sampler2D gEmissive;
 uniform sampler2D gProperties;
+uniform sampler2D gDepth;
 
 
 Material usedMaterial;
@@ -74,6 +75,11 @@ float g(vec3 n, vec3 v, float roughness){
 }
 
 void main() {
+
+	float depth = texture(gDepth, textureCoord).r;
+	if(depth >= 1.0){
+		discard;
+	}
 
 
 	vec3 fragPos = texture(gPosition, textureCoord).rgb;
@@ -137,14 +143,6 @@ void main() {
 		}
 
 	}
-
-	// only needed on sdr monitors
-	/*
-	const float gamma = 2.2;
-	vec3 mapped = color / (color + vec3(1.0));
-	mapped = pow(mapped, vec3(1.0 / gamma));
-	*/
-
 
 	finalColor = vec4(color, usedMaterial.albedo.a);
 

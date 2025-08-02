@@ -11,7 +11,6 @@ namespace Aozora {
 
 	void ResourcesAPI::loadModel(std::string path) {
 
-		Scene& currentScene = Application::getApplication().getCurrentScene();
 		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
 
 		resourceManager.loadModel(path);
@@ -19,9 +18,15 @@ namespace Aozora {
 
 	}
 
+	
+	uint32_t ResourcesAPI::loadCubemap(const std::vector<std::string>& paths)
+	{
+		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
+		return resourceManager.loadCubemap(paths);
+	}
+
 	uint32_t ResourcesAPI::instantiateModel(std::string name) {
 
-		Scene& currentScene = Application::getApplication().getCurrentScene();
 		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
 
 

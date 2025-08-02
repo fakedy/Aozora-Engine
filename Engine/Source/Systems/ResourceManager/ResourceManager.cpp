@@ -75,6 +75,54 @@ namespace Aozora {
 
     }
 
+    // opengl dependent
+    unsigned int ResourceManager::loadCubemap(const std::vector<std::string> faces)
+    {
+
+        uint32_t textureID;
+
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+        int width, height, nrChannels;
+
+        int i = 0;
+        for (auto face : faces) {
+
+            std::string filename = face;
+            float* data = stbi_loadf(filename.c_str(), &width, &height, &nrChannels, 0);
+            if (data) {
+
+                if (nrChannels == 4) {
+                    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, data);
+                }
+                else {
+                    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA16F, width, height, 0, GL_RGB, GL_FLOAT, data);
+                }
+
+                stbi_image_free(data);
+
+            }
+            else {
+                std::cerr << "ResourceManager: texture load failed\n";
+                stbi_image_free(data);
+                return 0;
+            }
+            std::cout << "Created face texture\n";
+            i++;
+        }
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        std::cout << "Created cubemap with ID: " << textureID << "\n";
+
+        return textureID;
+    }
+
     unsigned int ResourceManager::createMaterial(Material* material)
     {
         return 0;

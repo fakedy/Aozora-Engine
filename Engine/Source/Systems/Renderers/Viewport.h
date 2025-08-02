@@ -30,6 +30,7 @@ namespace Aozora {
 		uint32_t sceneID{ 0 };
 		entt::entity camera; // noooooo
 
+		bool isActive{ false };
 		void resize(uint32_t width, uint32_t height);
 
 		void setScene(Scene& scene);

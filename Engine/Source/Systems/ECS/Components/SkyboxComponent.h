@@ -5,6 +5,6 @@
 struct SkyboxComponent {
 
 
-
+	uint32_t textureID{0};
 
 };

@@ -5,6 +5,7 @@ namespace Aozora {
 
 	DeferredPipeline::DeferredPipeline(uint32_t width, uint32_t height) {
 
+		// setting up framebuffers for deferred rendering
 
 		FrameBuffer::FrameBufferSpecification gBufferSpecs;
 		FrameBuffer::FrameBufferAttachment positionAttachment;
@@ -78,13 +79,28 @@ namespace Aozora {
 		renderBufferSpecs.attachments.push_back(colorAttachment);
 		renderBufferSpecs.attachments.push_back(depthAttachment);
 
+		FrameBuffer::FrameBufferSpecification postfxBufferSpecs;
+		FrameBuffer::FrameBufferAttachment postfxColorAttachment;
+		postfxBufferSpecs.width = 1920;
+		postfxBufferSpecs.height = 1080;
+
+		postfxColorAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA16F;
+		postfxColorAttachment.textureFilter = FrameBuffer::TextureFilter::Linear;
+		postfxColorAttachment.textureWrap = FrameBuffer::TextureWrap::ClampToEdge;
+		postfxColorAttachment.dataType = FrameBuffer::DataType::FLOAT;
+		postfxColorAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
+
+		postfxBufferSpecs.attachments.push_back(colorAttachment);
+
 		gBuffer = std::make_unique<OpenglFrameBuffer>(gBufferSpecs);
 		renderBuffer = std::make_unique<OpenglFrameBuffer>(renderBufferSpecs);
+		postfxBuffer = std::make_unique<OpenglFrameBuffer>(postfxBufferSpecs);
 
 		gBuffer->buffer();
 		renderBuffer->buffer();
+		postfxBuffer->buffer();
 
-		// i dont care, we dont need normals but whatever
+		// We dont need normals but whatever
 		screenQuad.meshData.vertices = {
 			{ {-1.0f, -1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f} }, // 0: Bottom-left
 			{ { 1.0f, -1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {1.0f, 0.0f} }, // 1: Bottom-right
@@ -99,6 +115,9 @@ namespace Aozora {
 
 		screenQuad.bufferData();
 
+		// illegal type stuff
+		glGenVertexArrays(1, &skybox.VAO);
+
 	}
 
 
@@ -106,9 +125,9 @@ namespace Aozora {
 
 	void DeferredPipeline::resize(uint32_t width, uint32_t height)
 	{
-
 		gBuffer->updateTexture(width, height);
 		renderBuffer->updateTexture(width, height);
+		postfxBuffer->updateTexture(width, height);
 
 	}
 
@@ -116,6 +135,7 @@ namespace Aozora {
 	{
 
 		auto MeshTransformEntities = scene.getRegistry().view<const MeshComponent, TransformComponent>(); // register of all mesh components
+		auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
 		auto cameraView = scene.getRegistry().view<CameraComponent>();
 
 		// check if viewport have a camera
@@ -151,12 +171,23 @@ namespace Aozora {
 				resourceManager.m_loadedMeshes[meshComponent.meshID].draw(m_gBufferShader);
 
 			}
-			glEnable(GL_BLEND);
+			//glEnable(GL_BLEND);
 
 			gBuffer->unbind();
+
+			// copy the depth buffer to the lighting buffer
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer->framebufferID);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderBuffer->framebufferID);
+
+			glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 			renderBuffer->bind();
 			// light pass
-			renderAPI.clear(0.0f, 0.0f, 0.0f, 1.0f);
+
+			glDisable(GL_BLEND);
+			glClearColor(0.0, 0.0, 0.0, 1.0);
+			glClear(GL_COLOR_BUFFER_BIT);
 			glUseProgram(m_defaultShader.ID);
 
 			auto& camera_transform = MeshTransformEntities.get<TransformComponent>(camera);
@@ -166,6 +197,7 @@ namespace Aozora {
 			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gAlbedo"), 2);
 			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gEmissive"), 3);
 			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gProperties"), 4);
+			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gDepth"), 5);
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[0]);
@@ -177,18 +209,48 @@ namespace Aozora {
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[3]);
 			glActiveTexture(GL_TEXTURE4);
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[4]);
+			glActiveTexture(GL_TEXTURE5);
+			glBindTexture(GL_TEXTURE_2D, gBuffer->m_depthTextureID);
 
+			glDepthMask(GL_FALSE);
 			renderLights(scene);
+			glDepthMask(GL_TRUE);
 
+			// render skybox
+			glDepthFunc(GL_LEQUAL);
+			glDisable(GL_CULL_FACE);
+			glUseProgram(m_skyboxShader.ID);
+			glBindVertexArray(skybox.VAO);
+			for (const auto skybox : skyboxes) {
+				glUniform1i(glGetUniformLocation(m_skyboxShader.ID, "skybox"), 0);
+				// Honestly the entire texture pipeline needs to get fixed.
+				auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skybox);
+				glm::mat4 viewWithoutRotation = glm::mat4(glm::mat3(current_camera.getView()));
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.textureID);
+				glUniformMatrix4fv(glGetUniformLocation(m_skyboxShader.ID, "view"), 1, GL_FALSE, &viewWithoutRotation[0][0]);
+				glUniformMatrix4fv(glGetUniformLocation(m_skyboxShader.ID, "proj"), 1, GL_FALSE, &current_camera.getProjection()[0][0]);
 
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+			}
+			glBindVertexArray(0);
+			glDepthFunc(GL_LESS);
+			glEnable(GL_CULL_FACE);
+			glEnable(GL_BLEND);
 			renderBuffer->unbind();
+
+			postfxBuffer->bind();
+			postfxPass();
+			postfxBuffer->unbind();
 
 		}
 
 	}
 	uint32_t DeferredPipeline::getFinalImage()
 	{
-		return renderBuffer->m_colorAttachments[0];
+		return postfxBuffer->m_colorAttachments[0];
 	}
 	void DeferredPipeline::renderLights(Scene& scene)
 	{
@@ -217,5 +279,17 @@ namespace Aozora {
 
 		screenQuad.drawGeometry();
 
+	}
+	void DeferredPipeline::postfxPass()
+	{
+		glClearColor(0.0, 0.0, 0.0, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glUseProgram(m_postfxShader.ID);
+
+		glActiveTexture(GL_TEXTURE0);
+		glUniform1i(glGetUniformLocation(m_postfxShader.ID, "colorTexture"), 0);
+		glBindTexture(GL_TEXTURE_2D, renderBuffer->m_colorAttachments[0]);
+		screenQuad.drawGeometry();
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }

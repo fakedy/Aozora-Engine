@@ -67,36 +67,44 @@ void EditorUILayer::onUpdate(){
 
 
 	// editor window
-	ImGui::Begin("Editor", NULL);
-	ImVec2 contentRegion = ImGui::GetContentRegionAvail();
-	Aozora::RenderAPI::resizeViewport(m_editorLayer->m_editorViewPortID, contentRegion.x, contentRegion.y);
+	if (ImGui::Begin("Editor", NULL)) {
+		Aozora::RenderAPI::setViewportActive(m_editorLayer->m_editorViewPortID, true);
+		ImVec2 contentRegion = ImGui::GetContentRegionAvail();
+		Aozora::RenderAPI::resizeViewport(m_editorLayer->m_editorViewPortID, contentRegion.x, contentRegion.y);
 
 
-	uint32_t editorTextureID = Aozora::RenderAPI::getViewportTextureID(m_editorLayer->m_editorViewPortID);
-	ImGui::Image((void*)(intptr_t)editorTextureID, ImVec2(contentRegion.x, contentRegion.y), ImVec2(0, 1), ImVec2(1, 0));
-	ImGui::End();
-
+		uint32_t editorTextureID = Aozora::RenderAPI::getViewportTextureID(m_editorLayer->m_editorViewPortID);
+		ImGui::Image((void*)(intptr_t)editorTextureID, ImVec2(contentRegion.x, contentRegion.y), ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::End();
+	}
+	else {
+		Aozora::RenderAPI::setViewportActive(m_editorLayer->m_editorViewPortID, false);
+		ImGui::End();
+	}
 
 
 	// game window
-	ImGui::Begin("Game", NULL);
-	// get the imgui space
-	ImVec2 contentRegionGame = ImGui::GetContentRegionAvail();
-	Aozora::RenderAPI::resizeViewport(m_editorLayer->m_gameViewPortID, contentRegionGame.x, contentRegionGame.y);
+	if (ImGui::Begin("Game", NULL)) {
+		Aozora::RenderAPI::setViewportActive(m_editorLayer->m_gameViewPortID, true);
+		// get the imgui space
+		ImVec2 contentRegionGame = ImGui::GetContentRegionAvail();
+		Aozora::RenderAPI::resizeViewport(m_editorLayer->m_gameViewPortID, contentRegionGame.x, contentRegionGame.y);
 
-	uint32_t gameTextureID = Aozora::RenderAPI::getViewportTextureID(m_editorLayer->m_gameViewPortID);
+		uint32_t gameTextureID = Aozora::RenderAPI::getViewportTextureID(m_editorLayer->m_gameViewPortID);
 
-	ImGui::Image((void*)(intptr_t)gameTextureID, ImVec2(contentRegionGame.x, contentRegionGame.y), ImVec2(0, 1), ImVec2(1, 0));
-	ImGui::End();
+		ImGui::Image((void*)(intptr_t)gameTextureID, ImVec2(contentRegionGame.x, contentRegionGame.y), ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::End();
+	}
+	else {
+		Aozora::RenderAPI::setViewportActive(m_editorLayer->m_gameViewPortID, false);
+		ImGui::End();
+	}
 
 	ImGui::PopStyleVar();
 
 	sceneGraph(); // the list of entities in the scene
 
 	ImGui::Begin("workspace"); // file browser
-
-
-
 
 
 	std::vector <std::string> loadedModelNames = Aozora::ResourcesAPI::getLoadedModelNames();

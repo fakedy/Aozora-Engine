@@ -12,8 +12,17 @@ namespace Aozora {
 
 		// create skybox, temporary location, we'll see
 		const entt::entity skyboxEntity = m_registry->create();
-		m_registry->emplace_or_replace<SkyboxComponent>(skyboxEntity);
 		m_registry->emplace_or_replace<EditorEntityTag>(skyboxEntity);
+		std::vector<std::string> paths = {
+			"Resources/cubemap/px.hdr",
+			"Resources/cubemap/nx.hdr",
+			"Resources/cubemap/py.hdr",
+			"Resources/cubemap/ny.hdr",
+			"Resources/cubemap/pz.hdr",
+			"Resources/cubemap/nz.hdr"
+		};
+		uint32_t id = ResourcesAPI::loadCubemap(paths);
+		m_registry->emplace_or_replace<SkyboxComponent>(skyboxEntity).textureID = id;
 	}
 	void Scene::update()
 	{

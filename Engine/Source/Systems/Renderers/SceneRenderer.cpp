@@ -60,9 +60,10 @@ namespace Aozora {
 
 		// loop through unordered_map of viewports
 		for (auto& [ID, viewport] : m_viewports) {
-
+			
+			// make sure viewport is active before doing this.
 			// if viewport have a scene
-			if (viewport.scene != nullptr) {
+			if (viewport.scene != nullptr && viewport.isActive) {
 				viewport.renderPipeline->execute(*m_RenderAPI, *viewport.scene, viewport.camera, viewport.width, viewport.height);
 			}
 		}

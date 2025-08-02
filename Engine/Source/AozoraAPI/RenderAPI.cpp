@@ -38,6 +38,15 @@ namespace Aozora {
 
 	}
 
+	void RenderAPI::setViewportActive(uint32_t ID, bool condition)
+	{
+		SceneRenderer& renderer = Application::getApplication().getRenderer();
+
+		Viewport& viewport = renderer.getViewport(ID);
+
+		viewport.isActive = condition;
+	}
+
 	uint32_t RenderAPI::getViewportTextureID(uint32_t ID)
 	{
 		SceneRenderer& renderer = Application::getApplication().getRenderer();

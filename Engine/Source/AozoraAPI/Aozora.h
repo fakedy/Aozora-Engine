@@ -40,6 +40,7 @@ namespace Aozora {
 		static uint32_t createViewport(ViewportType type, entt::entity editorCameraEntity);
 		static uint32_t createViewport(ViewportType type);
 		static void resizeViewport(uint32_t ID, uint16_t width, uint32_t height);
+		static void setViewportActive(uint32_t ID, bool condition);
 		static uint32_t getViewportTextureID(uint32_t ID);
 
 
@@ -62,6 +63,7 @@ namespace Aozora {
 	public:
 
 		static void loadModel(std::string path);
+		static uint32_t loadCubemap(const std::vector<std::string>& paths);
 		static uint32_t instantiateModel(std::string name);
 
 		static std::vector<std::string> getLoadedModelNames();
