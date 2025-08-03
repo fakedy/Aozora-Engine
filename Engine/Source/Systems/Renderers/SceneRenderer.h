@@ -13,11 +13,11 @@ namespace Aozora {
 	class SceneRenderer : public IEventListener{
 	public:
 
-		SceneRenderer();
+		SceneRenderer(IrenderAPI* api);
 
 
 
-		std::unique_ptr<IrenderAPI> m_RenderAPI;
+		IrenderAPI* m_RenderAPI;
 		std::unordered_map<uint32_t, Viewport> m_viewports;
 		uint32_t nextViewportID{ 0 };
 		void render();

@@ -4,10 +4,10 @@
 
 
 namespace Aozora {
-	SceneRenderer::SceneRenderer()
+	SceneRenderer::SceneRenderer(IrenderAPI* api)
 	{
 
-		m_RenderAPI = std::make_unique<OpenGL>();
+		m_RenderAPI = api;
 
 		EventDispatcher::subscribe(EventType::ChangeScene, [this](Event& e) {
 			this->onEvent(e);

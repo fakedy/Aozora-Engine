@@ -17,8 +17,9 @@ namespace Aozora {
 
 		const void loadModel(const std::string& file);
 
-		unsigned int loadTexture(const std::string path, const std::string& directory);
+		unsigned int loadTexture(const std::string path, const std::string& directory, bool isSrgb);
 		unsigned int loadCubemap(const std::vector<std::string> faces);
+		unsigned int loadCubemap();
 		unsigned int createMaterial(Material* material);
 		unsigned int materialLoaded(unsigned int id);
 

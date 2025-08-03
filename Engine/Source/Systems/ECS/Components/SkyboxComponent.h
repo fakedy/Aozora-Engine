@@ -1,10 +1,13 @@
 #pragma once
 
 
+struct SkyboxTextures {
+	uint32_t skyboxTextureID{ 0 };
+	uint32_t irradianceTextureID{ 0 };
+};
 
 struct SkyboxComponent {
 
-
-	uint32_t textureID{0};
+	SkyboxTextures data;
 
 };

@@ -22,6 +22,7 @@ namespace Aozora {
 
 	private:
 
+		uint32_t toOpenGLTarget(TextureTarget target);
 		uint32_t toOpenGLFilter(TextureFilter filter);
 		uint32_t toOpenGLInternalFormat(TextureFormat internalFormat);
 		uint32_t toOpenGLWrap(TextureWrap wrap);

@@ -21,8 +21,8 @@ namespace Aozora {
 			"Resources/cubemap/pz.hdr",
 			"Resources/cubemap/nz.hdr"
 		};
-		uint32_t id = ResourcesAPI::loadCubemap(paths);
-		m_registry->emplace_or_replace<SkyboxComponent>(skyboxEntity).textureID = id;
+		SkyboxTextures data = ResourcesAPI::loadSkybox(paths);
+		m_registry->emplace_or_replace<SkyboxComponent>(skyboxEntity).data = data;
 	}
 	void Scene::update()
 	{

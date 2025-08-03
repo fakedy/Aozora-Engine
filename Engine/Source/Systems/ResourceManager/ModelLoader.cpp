@@ -211,10 +211,12 @@ Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene)
             // if we have textures we'll create textures with them...
 
             Material::Texture* targetTexture = nullptr;
+            bool isSrgb = false;
             switch (type)
             {
             case aiTextureType_DIFFUSE:
                 targetTexture = &material.diffuseTexture;
+                isSrgb = true;
                 break;
             case aiTextureType_NORMALS:
                 targetTexture = &material.normalTexture;
@@ -239,7 +241,7 @@ Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene)
 
                 aiString str;
                 mat->GetTexture(type, 0, &str);
-                targetTexture->id = resourceManager.loadTexture(str.C_Str(), m_directory);
+                targetTexture->id = resourceManager.loadTexture(str.C_Str(), m_directory, isSrgb);
                 targetTexture->type = typeName;
                 targetTexture->path = str.C_Str();
                 material.activeTextures.push_back(*targetTexture);

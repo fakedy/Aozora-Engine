@@ -6,6 +6,11 @@ namespace Aozora {
 	class FrameBuffer {
 	public:
 
+		enum class TextureTarget {
+			TEXTURE_2D,
+			TEXTURE_CUBE_MAP
+		};
+
 		enum class TextureFormat {
 			RGBA8,
 			RGB8,
@@ -42,6 +47,7 @@ namespace Aozora {
 		};
 
 		struct FrameBufferAttachment {
+			TextureTarget textureTarget;
 			TextureFormat textureFormat;
 			TextureWrap textureWrap;
 			TextureFilter textureFilter;

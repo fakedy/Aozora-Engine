@@ -23,7 +23,7 @@ namespace Aozora {
 		m_window = Window::create(props);
 		m_renderAPI = std::unique_ptr<IrenderAPI>(IrenderAPI::create());
 		m_sceneManager = std::make_unique<SceneManager>();
-		m_sceneRenderer = std::make_unique<SceneRenderer>();
+		m_sceneRenderer = std::make_unique<SceneRenderer>(m_renderAPI.get());
 		m_resourceManager = std::make_unique<ResourceManager>();
 
 		

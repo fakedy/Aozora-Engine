@@ -12,25 +12,43 @@ Aozora::OpenglFrameBuffer::OpenglFrameBuffer(FrameBufferSpecification spec)
 
 	for (const auto& attachment : frameBufferSpec.attachments) {
 
+		if (attachment.textureTarget == FrameBuffer::TextureTarget::TEXTURE_CUBE_MAP) {
+			uint32_t cubemapTextureID;
+			glGenTextures(1, &cubemapTextureID);
+			glBindTexture(toOpenGLTarget(attachment.textureTarget), cubemapTextureID);
+			for (int i = 0; i < 6; i++) {
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, toOpenGLInternalFormat(attachment.textureFormat), frameBufferSpec.width,
+					frameBufferSpec.height, 0, toOpenGLDataFormat(attachment.dataFormat), toOpenGLDataType(attachment.dataType), nullptr);
+			}
+			glTexParameteri(toOpenGLTarget(attachment.textureTarget), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(toOpenGLTarget(attachment.textureTarget), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(toOpenGLTarget(attachment.textureTarget), GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+			glTexParameteri(toOpenGLTarget(attachment.textureTarget), GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(toOpenGLTarget(attachment.textureTarget), GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			m_colorAttachments.push_back(cubemapTextureID);
+			continue;
+		}
+
 		if (attachment.textureFormat == TextureFormat::DEPTH24STENCIL8) {
 			glGenTextures(1, &m_depthTextureID);
-			glBindTexture(GL_TEXTURE_2D, m_depthTextureID);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, frameBufferSpec.width,
+			glBindTexture(toOpenGLTarget(attachment.textureTarget), m_depthTextureID);
+			glTexImage2D(toOpenGLTarget(attachment.textureTarget), 0, GL_DEPTH24_STENCIL8, frameBufferSpec.width,
 				frameBufferSpec.height, 0, toOpenGLDataFormat(attachment.dataFormat), toOpenGLDataType(attachment.dataType), nullptr);
 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, toOpenGLFilter(attachment.textureFilter));
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, toOpenGLFilter(attachment.textureFilter));
+			glTexParameteri(toOpenGLTarget(attachment.textureTarget), GL_TEXTURE_MIN_FILTER, toOpenGLFilter(attachment.textureFilter));
+			glTexParameteri(toOpenGLTarget(attachment.textureTarget), GL_TEXTURE_MAG_FILTER, toOpenGLFilter(attachment.textureFilter));
 		}
 		else {
 
 			uint32_t colorTextureID;
 			glGenTextures(1, &colorTextureID);
-			glBindTexture(GL_TEXTURE_2D, colorTextureID);
-			glTexImage2D(GL_TEXTURE_2D, 0, toOpenGLInternalFormat(attachment.textureFormat), frameBufferSpec.width,
+			glBindTexture(toOpenGLTarget(attachment.textureTarget), colorTextureID);
+			glTexImage2D(toOpenGLTarget(attachment.textureTarget), 0, toOpenGLInternalFormat(attachment.textureFormat), frameBufferSpec.width,
 				frameBufferSpec.height, 0, toOpenGLDataFormat(attachment.dataFormat), toOpenGLDataType(attachment.dataType), nullptr);
 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, toOpenGLFilter(attachment.textureFilter));
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, toOpenGLFilter(attachment.textureFilter));
+			glTexParameteri(toOpenGLTarget(attachment.textureTarget), GL_TEXTURE_MIN_FILTER, toOpenGLFilter(attachment.textureFilter));
+			glTexParameteri(toOpenGLTarget(attachment.textureTarget), GL_TEXTURE_MAG_FILTER, toOpenGLFilter(attachment.textureFilter));
 
 			m_colorAttachments.push_back(colorTextureID);
 		}
@@ -56,6 +74,7 @@ uint32_t Aozora::OpenglFrameBuffer::getFrameBufferID()
 	return framebufferID;
 }
 
+	// Finalize the framebuffer setup by attaching the textures
 void Aozora::OpenglFrameBuffer::buffer()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, framebufferID);
@@ -63,21 +82,32 @@ void Aozora::OpenglFrameBuffer::buffer()
 	std::vector<GLenum> drawBuffers;
 	int index = 0;
 	for (uint32_t attachmentID : m_colorAttachments) {
-
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+index, GL_TEXTURE_2D, attachmentID, 0);
+		// get the target of this attachment
+		FrameBuffer::TextureTarget target = frameBufferSpec.attachments[index].textureTarget;
+		if (target == FrameBuffer::TextureTarget::TEXTURE_CUBE_MAP) {
+			// attach texture image to color attachment
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, GL_TEXTURE_CUBE_MAP_POSITIVE_X, attachmentID, 0);
+		}
+		else {
+			// attach texture image to color attachment
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+index, toOpenGLTarget(target), attachmentID, 0);
+		}
 		drawBuffers.push_back(GL_COLOR_ATTACHMENT0 + index);
 		index++;
 	}
+
+	// enabling multiple render targets
 	if (!drawBuffers.empty()) {
 		glDrawBuffers(drawBuffers.size(), drawBuffers.data());
 	}
-
+	
+	// if we have a depth buffer
 	if (m_depthTextureID != 0) {
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_depthTextureID, 0);
 	}
 
+	// check if framebuffer completed
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		// Log an error: The FBO is not complete!
 		std::cout << "framebuffer not complete\n";
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -115,6 +145,21 @@ void Aozora::OpenglFrameBuffer::updateTexture(unsigned int width, unsigned int h
 		}
 		index++;
 
+	}
+}
+
+uint32_t Aozora::OpenglFrameBuffer::toOpenGLTarget(TextureTarget target)
+{
+	switch (target)
+	{
+	case Aozora::FrameBuffer::TextureTarget::TEXTURE_2D:
+		return GL_TEXTURE_2D;
+		break;
+	case Aozora::FrameBuffer::TextureTarget::TEXTURE_CUBE_MAP:
+		return GL_TEXTURE_CUBE_MAP;
+		break;
+	default:
+		break;
 	}
 }
 

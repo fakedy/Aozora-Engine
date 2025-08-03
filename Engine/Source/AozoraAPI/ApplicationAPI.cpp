@@ -15,6 +15,8 @@ namespace Aozora{
 
 		};
 		Application::getApplication().queueAction(action);
+		// surely there is a gpu memory leak?
+		// i dont clear the models and textures that are sitting on the gpu
 	}
 
 	void ApplicationAPI::loadProject()

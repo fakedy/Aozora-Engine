@@ -22,7 +22,7 @@ namespace Aozora {
     }
 
     // opengl dependent code for loading texture
-    unsigned int ResourceManager::loadTexture(const std::string path, const std::string& directory)
+    unsigned int ResourceManager::loadTexture(const std::string path, const std::string& directory, bool isSrgb)
     {
         std::string filename = std::string(path);
         filename = directory + "/" + filename;
@@ -41,23 +41,23 @@ namespace Aozora {
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
         if (data) {
+            GLenum internalFormat;
+            GLenum dataFormat;
+
             if (nrChannels == 4) {
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-                glGenerateMipmap(GL_TEXTURE_2D);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                internalFormat = isSrgb ? GL_SRGB_ALPHA : GL_RGBA8;
+                dataFormat = GL_RGBA;
             }
             else {
-
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+                internalFormat = isSrgb ? GL_SRGB : GL_RGB8;
+                dataFormat = GL_RGB;
+            }
+                glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
                 glGenerateMipmap(GL_TEXTURE_2D);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            }
         }
         else {
             std::cerr << "ResourceManager: texture load failed\n";
@@ -78,6 +78,12 @@ namespace Aozora {
     // opengl dependent
     unsigned int ResourceManager::loadCubemap(const std::vector<std::string> faces)
     {
+        // faces[0] isnt reliable but it should work fine for now as faces path include the directory to it
+        int isAlreadyLoaded = textureLoaded(faces[0]);
+        if (isAlreadyLoaded != -1) {
+
+            return isAlreadyLoaded;
+        }
 
         uint32_t textureID;
 
@@ -110,6 +116,39 @@ namespace Aozora {
             }
             std::cout << "Created face texture\n";
             i++;
+        }
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        // cache texture
+        Material::Texture targetTexture;
+        m_loadedTextures[faces[0]] = targetTexture;
+        m_loadedTextures[faces[0]].id = textureID;
+        m_loadedTextures[faces[0]].refCount++;
+        std::cout << "Created cubemap with ID: " << textureID << "\n";
+
+        return textureID;
+    }
+
+    unsigned int ResourceManager::loadCubemap()
+    {
+        // TECHNICALLY UNTRACKED TEXTURE
+
+        uint32_t textureID;
+
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+        // can put this in parameters instead but lazy
+        int width = 32;
+        int height = 32;
+
+        for (int i = 0; i < 6; i++) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA16F, 32, 32, 0, GL_RGBA, GL_FLOAT, nullptr);
         }
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -174,6 +213,8 @@ namespace Aozora {
 
     void ResourceManager::clearResources()
 	{
+        // THIS DOES NOT CLEAR THE GPU RESOURCES RIGHT NOW
+        // GPU MEMORY LEAK
 		std::cout << "Clearing resources\n";
 		m_loadedTextures.clear();
 		m_meshPathToID.clear();

@@ -35,6 +35,7 @@ uniform sampler2D gAlbedo;
 uniform sampler2D gEmissive;
 uniform sampler2D gProperties;
 uniform sampler2D gDepth;
+uniform samplerCube irradianceMap;
 
 
 Material usedMaterial;
@@ -65,7 +66,7 @@ vec3 f(vec3 h, vec3 v, vec3 f_0){ // fresnelSchlick
 
 float g(vec3 n, vec3 v, float roughness){
 
-	float k = pow(roughness+1, 2.0f)/8.0f;
+	float k = (roughness*roughness) / 2.0;
 
 	float NdotV = max(dot(n,v), 0.0);
 
@@ -88,7 +89,7 @@ void main() {
 
 	usedMaterial.metallic = texture(gProperties, textureCoord).r;
 
-	usedMaterial.roughness = texture(gProperties, textureCoord).g; // or g i dont know, depends on texture
+	usedMaterial.roughness = texture(gProperties, textureCoord).g; 
 
 	usedMaterial.ao = texture(gProperties, textureCoord).b;
 
@@ -100,12 +101,41 @@ void main() {
 		discard;
 	}
 
-
-
-	vec3 ambient = vec3(0.1f) * usedMaterial.albedo.rgb; // * usedMaterial.ao;
+	vec3 irradiance = texture(irradianceMap, usedMaterial.normal).rgb;
+	vec3 ambient = irradiance * usedMaterial.albedo.rgb; // * usedMaterial.ao;
 	vec3 emission = usedMaterial.emissive.rgb;
 	vec3 color = ambient + emission;
 	vec3 viewDir = normalize(cameraPos - fragPos);
+
+/*
+   // --- Directional Light Calculation
+    vec3 directionLightDir = normalize(vec3(0.5, -1.0, -0.4)); // From above, right, and slightly in front
+    vec3 directionLightColor = vec3(1.0, 0.8, 0.6) * 1.0; // Warm sunset color with intensity
+
+    // PBR calculation for the directional light
+    vec3 L_directional = -directionLightDir; // Direction TO the light
+    vec3 H_directional = normalize(L_directional + viewDir);
+    float NdotL_directional = max(dot(usedMaterial.normal, L_directional), 0.0);
+    
+    // Cook-Torrance BRDF for directional light
+    vec3 F_directional = f(H_directional, viewDir, mix(vec3(0.04), usedMaterial.albedo.rgb, usedMaterial.metallic));
+    float D_directional = ndf(usedMaterial.normal, H_directional, usedMaterial.roughness);
+    float G_directional = g(usedMaterial.normal, viewDir, usedMaterial.roughness) * g(usedMaterial.normal, L_directional, usedMaterial.roughness);
+    
+    vec3 kS_directional = F_directional;
+    vec3 kD_directional = (vec3(1.0) - kS_directional) * (1.0 - usedMaterial.metallic);
+    
+    vec3 specular_directional = (D_directional * G_directional * F_directional) / (4.0 * max(dot(usedMaterial.normal, viewDir), 0.0) * NdotL_directional + 0.0001);
+    vec3 diffuse_directional = kD_directional * usedMaterial.albedo.rgb / pi;
+    
+    vec3 radiance_directional = (diffuse_directional + specular_directional) * directionLightColor * NdotL_directional;
+    color += radiance_directional;
+*/
+
+
+
+
+
 	for(int i = 0; i < activeLights; i++){
 
 		float distance = length(lights[i].position - fragPos);

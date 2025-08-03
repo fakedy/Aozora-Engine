@@ -54,7 +54,7 @@ Aozora::OpenglShader::OpenglShader(const char* vertexPath, const char* fragmentP
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	glGetShaderInfoLog(vertexShader, 512, NULL, info);
 	if (!success) {
-		std::cout << "Vertex´shader compilation failed" << info << std::endl;
+		std::cout << vertexPath <<  "Vertex shader compilation failed" << info << std::endl;
 	}
 
 	glCompileShader(fragmentShader);
@@ -63,7 +63,7 @@ Aozora::OpenglShader::OpenglShader(const char* vertexPath, const char* fragmentP
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	glGetShaderInfoLog(fragmentShader, 512, NULL, info);
 	if (!success) {
-		std::cout << "Fragment shader compilation failed" << info << std::endl;
+		std::cout << fragmentPath << "Fragment shader compilation failed" << info << std::endl;
 	}
 
 	// create the shader program

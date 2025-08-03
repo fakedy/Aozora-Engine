@@ -64,6 +64,8 @@ namespace Aozora {
 
 		static void loadModel(std::string path);
 		static uint32_t loadCubemap(const std::vector<std::string>& paths);
+		static uint32_t loadCubemap();
+		static SkyboxTextures loadSkybox(const std::vector<std::string>& paths);
 		static uint32_t instantiateModel(std::string name);
 
 		static std::vector<std::string> getLoadedModelNames();
