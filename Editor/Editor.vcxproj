@@ -146,6 +146,7 @@
     <ClInclude Include="Source\EditorUI\EditorEntityWindow.h" />
     <ClInclude Include="Source\EditorUI\EditorUILayer.h" />
     <ClInclude Include="Source\EditorUI\StatsView.h" />
+    <ClInclude Include="Source\EditorUI\Workspace.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Editor.cpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="Source\EditorUI\EditorEntityWindow.cpp" />
     <ClCompile Include="Source\EditorUI\EditorUILayer.cpp" />
     <ClCompile Include="Source\EditorUI\StatsView.cpp" />
+    <ClCompile Include="Source\EditorUI\Workspace.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">

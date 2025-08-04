@@ -12,7 +12,7 @@ namespace Aozora {
 		struct WindowProps {
 			std::string title;
 			int width, height;
-			bool vSync;
+			bool vSync{ true };
 
 			WindowProps() : title("Window"), width(1920), height(1080) {}
 			WindowProps(const std::string& title, unsigned int width, unsigned int height) {

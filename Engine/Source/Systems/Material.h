@@ -48,7 +48,7 @@ namespace Aozora {
 		std::string name;
 
 	private:
-		unsigned int ShaderProgram;
+		unsigned int ShaderProgram{0};
 
 	};
 

@@ -104,24 +104,7 @@ void EditorUILayer::onUpdate(){
 
 	sceneGraph(); // the list of entities in the scene
 
-	ImGui::Begin("workspace"); // file browser
-
-
-	std::vector <std::string> loadedModelNames = Aozora::ResourcesAPI::getLoadedModelNames();
-
-	for (std::string modelName : loadedModelNames) {
-		if (ImGui::Selectable(modelName.c_str())) {
-			Aozora::ResourcesAPI::instantiateModel(modelName);
-		}
-
-		// not working for now
-		// ImGui::ImageButtonEx(0,0, ImVec2(32,32), ImVec2(0, 0), ImVec2(1, 1), ImVec4(1,1,1,1), ImVec4(0, 1, 1, 1));
-	}
-
-
-
-
-	ImGui::End();
+	m_workspace->draw();
 
 	componentsView();
 
@@ -137,6 +120,7 @@ void EditorUILayer::onUpdate(){
 }
 
 
+// idk why i didnt just do the draw directly instead of this
 void EditorUILayer::sceneGraph()
 {
 	m_editorEntityWindow->draw();

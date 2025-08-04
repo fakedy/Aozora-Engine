@@ -13,12 +13,17 @@ void StatsView::draw() {
     frameTimeGraph();
 	ImGui::Text("Frame rate: %f fps", io.Framerate);
 	ImGui::End();
+
+
+    
+
+
+
 }
 
 
 void StatsView::frameTimeGraph()
 {
-
 
     ImGuiIO& io = ImGui::GetIO();
 

@@ -12,6 +12,7 @@
 #include "Systems/Renderers/Viewport.h"
 #include <Systems/Scene/Scene.h>
 #include "EditorLayer.h"
+#include "Workspace.h"
 
 class EditorUILayer : public Aozora::Layer {
 public:
@@ -20,6 +21,7 @@ public:
 
 		m_componentsViewWindow = std::make_shared<ComponentsView>();
 		m_editorEntityWindow = std::make_shared<EditorEntityWindow>(m_componentsViewWindow);
+		m_workspace = std::make_shared<Workspace>();
 
 		
 		IMGUI_CHECKVERSION();
@@ -37,7 +39,7 @@ public:
 		style.ScaleAllSizes(scaleFactor);
 
 		io.Fonts->AddFontFromFileTTF("Resources/moon_get-Heavy.ttf", 15.0f * scaleFactor);
-
+		
 
 		// use api?
 		Aozora::Application& m_app = Aozora::Application::getApplication();
@@ -60,9 +62,14 @@ private:
 	std::shared_ptr<EditorEntityWindow> m_editorEntityWindow;
 	std::shared_ptr<ComponentsView> m_componentsViewWindow;
 	std::shared_ptr<StatsView> m_statsViewWindow;
+	std::shared_ptr<Workspace> m_workspace;
 	void sceneGraph();
 	void componentsView();
 	void statsView();
+
+	ImTextureID m_file_3d_texture;
+	ImTextureID m_image_texture;
+	ImTextureID m_folder_texture;
 
 	EditorLayer* m_editorLayer;
 

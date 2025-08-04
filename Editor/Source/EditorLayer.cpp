@@ -24,7 +24,6 @@ void EditorLayer::onUpdate()
 	else {
 
 		app.m_cameraSystem->update(app.m_project->m_currentScene->getRegistry());
-		m_editorCameraSystem->update(app.m_project->m_currentScene->getRegistry());
 
 		app.getScriptSystem().update(app.m_project->m_currentScene->getRegistry());
 		app.getCurrentScene().update();

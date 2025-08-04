@@ -10,7 +10,10 @@ namespace Aozora {
 	{
 		m_registry = std::make_shared<entt::registry>();
 
-		// create skybox, temporary location, we'll see
+		// create skybox
+		/*
+		* Well the good thing is that its in the registry so its easy to query, the bad thing is that its tied to the scene...
+		*/
 		const entt::entity skyboxEntity = m_registry->create();
 		m_registry->emplace_or_replace<EditorEntityTag>(skyboxEntity);
 		std::vector<std::string> paths = {
@@ -48,7 +51,10 @@ namespace Aozora {
 
 	void Scene::takeSnapshot()
 	{
-		outputArchive output;
+		// TODO make it exclude the editor camera
+		data.str("");
+		data.clear();
+		cereal::BinaryOutputArchive output(data); // what a most vexing parse
 		entt::snapshot snapshot{ *m_registry };
 		snapshot.get<entt::entity>(output)
 			.get<NameComponent>(output)
@@ -62,35 +68,37 @@ namespace Aozora {
 			.get<ScriptComponent>(output)
 			.get<TagComponent>(output)
 			.get<SkyboxComponent>(output);
-		m_snapshotData = output.data;
 	}
 
 	void Scene::loadSnapShot()
 	{
-		if (m_snapshotData.empty()) {
+		// check if we have any data
+		if (data.str().empty()) {
 			return;
 		}
 
-			inputArchive input(m_snapshotData);
-			m_registry->clear();
-			entt::snapshot_loader loader{ *m_registry };
-			// need archive
-			loader.get<entt::entity>(input)
-				.get<NameComponent>(input)
-				.get<TransformComponent>(input)
-				.get<CameraComponent>(input)
-				.get<EditorEntityTag>(input)
-				.get<LightComponent>(input)
-				.get<MeshComponent>(input)
-				.get<RelationComponent>(input)
-				.get<RigidBodyComponent>(input)
-				.get<ScriptComponent>(input)
-				.get<TagComponent>(input)
-				.get<SkyboxComponent>(input).orphans();
+		// reset read position
+		data.seekg(0);
+
+		cereal::BinaryInputArchive input(data);
+		m_registry->clear();
+		entt::snapshot_loader loader{ *m_registry };
+		// need archive
+		loader.get<entt::entity>(input)
+			.get<NameComponent>(input)
+			.get<TransformComponent>(input)
+			.get<CameraComponent>(input)
+			.get<EditorEntityTag>(input)
+			.get<LightComponent>(input)
+			.get<MeshComponent>(input)
+			.get<RelationComponent>(input)
+			.get<RigidBodyComponent>(input)
+			.get<ScriptComponent>(input)
+			.get<TagComponent>(input)
+			.get<SkyboxComponent>(input).orphans();
 		
 
-			m_snapshotData.clear();
-			m_snapshotData.shrink_to_fit();
+		data.clear();
 
 	}
 

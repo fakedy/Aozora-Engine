@@ -63,6 +63,9 @@
     <ClInclude Include="Source\Application.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Context.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\CameraSystem.h">
       <Filter>Source\Systems</Filter>
     </ClInclude>
@@ -177,9 +180,6 @@
     <ClInclude Include="Source\Systems\ResourceManager\ResourceManager.h">
       <Filter>Source\Systems\ResourceManager</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Systems\ResourceManager\TextureLoader.h">
-      <Filter>Source\Systems\ResourceManager</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Systems\Scene\Scene.h">
       <Filter>Source\Systems\Scene</Filter>
     </ClInclude>
@@ -188,6 +188,9 @@
     </ClInclude>
     <ClInclude Include="Source\Systems\ScriptManager\ScriptSystem.h">
       <Filter>Source\Systems\ScriptManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Serialization\SerializationGLM.h">
+      <Filter>Source\Systems\Serialization</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Serialization\Serializer.h">
       <Filter>Source\Systems\Serialization</Filter>
@@ -270,9 +273,6 @@
       <Filter>Source\Systems\ResourceManager</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\ResourceManager\ResourceManager.cpp">
-      <Filter>Source\Systems\ResourceManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Systems\ResourceManager\TextureLoader.cpp">
       <Filter>Source\Systems\ResourceManager</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Scene\Scene.cpp">

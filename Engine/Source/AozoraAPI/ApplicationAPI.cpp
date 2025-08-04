@@ -9,14 +9,14 @@ namespace Aozora{
 		auto action = []() {
 			auto& app = Application::getApplication();
 			app.getResourceManager().clearResources();
+			// TODO framebuffers must be cleared
+			// TODO skybox irradiance map is never cleared
 			app.m_project = std::make_unique<Aozora::Project>();
 			app.m_project->setup();
 			app.getRenderer().updatePrimaryScene(*app.m_project->m_currentScene);
 
 		};
 		Application::getApplication().queueAction(action);
-		// surely there is a gpu memory leak?
-		// i dont clear the models and textures that are sitting on the gpu
 	}
 
 	void ApplicationAPI::loadProject()
@@ -25,6 +25,9 @@ namespace Aozora{
 
 	void ApplicationAPI::saveProject()
 	{
+
+		// serialization
+
 	}
 
 	// this doesnt replace the base scene, it just add a new one to a unordered_map of scenes.
@@ -33,8 +36,9 @@ namespace Aozora{
 		return app.getSceneManager().createScene();
 	}
 
-	void ApplicationAPI::loadScene()
+	void ApplicationAPI::loadScene(uint32_t ID)
 	{
+		Aozora::Application::getApplication().m_project->loadScene(ID);
 	}
 
 	Scene* ApplicationAPI::getScene(uint32_t id)

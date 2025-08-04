@@ -49,6 +49,7 @@ void EditorEntityWindow::drawEntityNode(entt::entity entity)
 	if (ImGui::IsItemClicked()) {
 		m_componentsView->setSelectedEntity(entity);
 	}
+	// add right click remove
 
 
 	if (nodeOpen) {

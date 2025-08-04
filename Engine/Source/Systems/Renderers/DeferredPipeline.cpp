@@ -72,11 +72,9 @@ namespace Aozora {
 				auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
 				auto& transformComponent = MeshTransformEntities.get<TransformComponent>(entity);
 
-				// get rid of "glgetuniformlocation"
-				glUniformMatrix4fv(glGetUniformLocation(m_gBufferShader.ID, "model"), 1, GL_FALSE, &transformComponent.model[0][0]);
-				glUniformMatrix4fv(glGetUniformLocation(m_gBufferShader.ID, "view"), 1, GL_FALSE, &current_camera.getView()[0][0]);
-				glUniformMatrix4fv(glGetUniformLocation(m_gBufferShader.ID, "proj"), 1, GL_FALSE, &current_camera.getProjection()[0][0]);
-
+				m_gBufferShader.setMat4("model", transformComponent.model);
+				m_gBufferShader.setMat4("view", current_camera.getView());
+				m_gBufferShader.setMat4("proj", current_camera.getProjection());
 
 				// draw call
 				resourceManager.m_loadedMeshes[meshComponent.meshID].draw(m_gBufferShader);
@@ -102,16 +100,16 @@ namespace Aozora {
 			glUseProgram(m_defaultShader.ID);
 
 			auto& camera_transform = MeshTransformEntities.get<TransformComponent>(camera);
-			glUniform3fv(glGetUniformLocation(m_gBufferShader.ID, "cameraPos"), 1, &camera_transform.pos[0]);
-			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gPosition"), 0);
-			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gNormal"), 1);
-			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gAlbedo"), 2);
-			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gEmissive"), 3);
-			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gProperties"), 4);
-			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "gDepth"), 5);
+			m_defaultShader.setVec3fv("cameraPos", camera_transform.pos);
+			m_defaultShader.setInt("gPosition", 0);
+			m_defaultShader.setInt("gNormal", 1);
+			m_defaultShader.setInt("gAlbedo", 2);
+			m_defaultShader.setInt("gEmissive", 3);
+			m_defaultShader.setInt("gProperties", 4);
+			m_defaultShader.setInt("gDepth", 5);
 
 			auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
-			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skyboxes[0]); // hack
+			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skyboxes.front()); // hack
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[0]);
@@ -127,7 +125,7 @@ namespace Aozora {
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_depthTextureID);
 			glActiveTexture(GL_TEXTURE6);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.data.irradianceTextureID);
-			glUniform1i(glGetUniformLocation(m_defaultShader.ID, "irradianceMap"), 6);
+			m_defaultShader.setInt("irradianceMap", 6);
 
 			glDepthMask(GL_FALSE);
 			renderLights(scene);
@@ -139,14 +137,13 @@ namespace Aozora {
 			glUseProgram(m_skyboxShader.ID);
 			glBindVertexArray(skybox.VAO);
 			for (const auto skybox : skyboxes) {
-				glUniform1i(glGetUniformLocation(m_skyboxShader.ID, "skybox"), 0);
+				m_skyboxShader.setInt("skybox", 0);
 				auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skybox);
 				glm::mat4 viewWithoutRotation = glm::mat4(glm::mat3(current_camera.getView()));
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.data.skyboxTextureID);
-				glUniformMatrix4fv(glGetUniformLocation(m_skyboxShader.ID, "view"), 1, GL_FALSE, &viewWithoutRotation[0][0]);
-				glUniformMatrix4fv(glGetUniformLocation(m_skyboxShader.ID, "proj"), 1, GL_FALSE, &current_camera.getProjection()[0][0]);
-
+				m_skyboxShader.setMat4("view", viewWithoutRotation);
+				m_skyboxShader.setMat4("proj", current_camera.getProjection());
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 				glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
@@ -286,21 +283,22 @@ namespace Aozora {
 		for (auto entity : lightView) {
 			auto& lightComponent = lightView.get<LightComponent>(entity);
 			auto& transformComponent = lightView.get<TransformComponent>(entity);
+			// kinda whack ngl
 			std::string lightPosVar = "lights[" + std::to_string(index) + "].position";
 			std::string lightColorVar = "lights[" + std::to_string(index) + "].color";
 			std::string lightLinearVar = "lights[" + std::to_string(index) + "].linear";
 			std::string lightQuadraticVar = "lights[" + std::to_string(index) + "].quadratic";
 			std::string lightRadiusVar = "lights[" + std::to_string(index) + "].radius";
 			std::string lightPowerVar = "lights[" + std::to_string(index) + "].power";
-			glUniform3fv(glGetUniformLocation(m_defaultShader.ID, lightPosVar.c_str()), 1, &transformComponent.pos[0]);
-			glUniform3fv(glGetUniformLocation(m_defaultShader.ID, lightColorVar.c_str()), 1, &lightComponent.color[0]);
-			glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightLinearVar.c_str()), lightComponent.linear);
-			glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightQuadraticVar.c_str()), lightComponent.quadratic);
-			glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightRadiusVar.c_str()), lightComponent.radius);
-			glUniform1f(glGetUniformLocation(m_defaultShader.ID, lightPowerVar.c_str()), lightComponent.power);
+			m_defaultShader.setVec3fv(lightPosVar, transformComponent.pos);
+			m_defaultShader.setVec3fv(lightColorVar, lightComponent.color);
+			m_defaultShader.setFloat(lightLinearVar, lightComponent.linear);
+			m_defaultShader.setFloat(lightQuadraticVar, lightComponent.quadratic);
+			m_defaultShader.setFloat(lightRadiusVar, lightComponent.radius);
+			m_defaultShader.setFloat(lightPowerVar, lightComponent.power);
 			index++;
 		}
-		glUniform1i(glGetUniformLocation(m_defaultShader.ID, "activeLights"), index);
+		m_defaultShader.setInt("activeLights", index);
 
 		screenQuad.drawGeometry();
 
@@ -312,7 +310,7 @@ namespace Aozora {
 		glUseProgram(m_postfxShader.ID);
 
 		glActiveTexture(GL_TEXTURE0);
-		glUniform1i(glGetUniformLocation(m_postfxShader.ID, "colorTexture"), 0);
+		m_postfxShader.setInt("colorTexture", 0);
 		glBindTexture(GL_TEXTURE_2D, renderBuffer->m_colorAttachments[0]);
 		screenQuad.drawGeometry();
 		glBindTexture(GL_TEXTURE_2D, 0);

@@ -16,6 +16,7 @@ namespace Aozora {
 
 
 	// api
+	// GONNA EXECUTE THIS ENTIRE API, HATE IT
 
 
 	class SceneAPI {
@@ -53,7 +54,7 @@ namespace Aozora {
 		static void loadProject();
 		static void saveProject();
 		static uint32_t createNewScene();
-		static void loadScene();
+		static void loadScene(uint32_t ID);
 		static Scene* getScene(uint32_t id);
 
 
@@ -67,6 +68,7 @@ namespace Aozora {
 		static uint32_t loadCubemap();
 		static SkyboxTextures loadSkybox(const std::vector<std::string>& paths);
 		static uint32_t instantiateModel(std::string name);
+		static uint32_t loadTexture(std::string name, bool persistent);
 
 		static std::vector<std::string> getLoadedModelNames();
 		static Model* getModel(std::string name);

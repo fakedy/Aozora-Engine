@@ -4,176 +4,123 @@ layout (location = 0) out vec4 finalColor;
 
 in vec2 textureCoord;
 
+// --- UNIFORMS & STRUCTS ---
 uniform vec3 cameraPos;
-
-struct Material{
-	vec4 albedo;
-	float metallic;
-	float roughness;
-	float ao;
-	vec4 emissive;
-	vec3 normal;
-};
-
-struct Light {
-	vec3 position;
-	vec3 color;
-	float linear;
-	float quadratic;
-	float radius;
-	float power;
-};
-
-const int maxLights = 32; //temp
-uniform Light lights[maxLights];
-uniform int activeLights;
-
-
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
 uniform sampler2D gEmissive;
 uniform sampler2D gProperties;
-uniform sampler2D gDepth;
 uniform samplerCube irradianceMap;
 
+struct Light {
+    vec3 position;
+    vec3 color;
+    float linear;
+    float quadratic;
+    float radius;
+    float power;
+};
+const int maxLights = 32;
+uniform Light lights[maxLights];
+uniform int activeLights;
 
-Material usedMaterial;
 
-const float pi = 3.1415926535f;
+const float PI = 3.14159265359;
 
-float ndf(vec3 n, vec3 h, float roughness){
+// --- PBR HELPER FUNCTIONS ---
 
-	float a = roughness*roughness;
-	float a2 = a*a;
-
-	float NdotH = max(dot(n,h), 0.0);
-	float NdotH2 = NdotH * NdotH;
-
-	float calc = ( (NdotH2) * (a2 - 1.0) + 1.0);
-
-	float ndf = a2 / (pi * (calc*calc));
-
-	return ndf;
+// D: Normal Distribution Function (Trowbridge-Reitz GGX)
+float DistributionGGX(vec3 N, vec3 H, float roughness)
+{
+    float a = roughness * roughness;
+    float a2 = a * a;
+    float NdotH = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH * NdotH;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    return a2 / (PI * denom * denom);
 }
 
-vec3 f(vec3 h, vec3 v, vec3 f_0){ // fresnelSchlick
-
-	vec3 f = f_0 + (1-f_0)*pow(clamp(1 - (dot(h,v)), 0.0f, 1.0f), 5.0f);
-
-	return f;
+// G: Geometry Function (Schlick-GGX)
+float GeometrySchlickGGX(float NdotV, float roughness)
+{
+    float r = (roughness + 1.0);
+    float k = (r * r) / 8.0;
+    return NdotV / (NdotV * (1.0 - k) + k);
+}
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
+{
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+    return ggx1 * ggx2;
 }
 
-float g(vec3 n, vec3 v, float roughness){
-
-	float k = (roughness*roughness) / 2.0;
-
-	float NdotV = max(dot(n,v), 0.0);
-
-	float g = NdotV / (NdotV * (1.0 - k) + k);
-
-	return g;
+// F: Fresnel-Schlick Approximation
+vec3 fresnelSchlick(float cosTheta, vec3 F0)
+{
+    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
-void main() {
 
-	float depth = texture(gDepth, textureCoord).r;
-	if(depth >= 1.0){
-		discard;
-	}
+void main() 
+{
+    // --- 1. UNPACK G-BUFFER DATA ---
+    vec3 fragPos = texture(gPosition, textureCoord).rgb;
+    vec3 normal = normalize(texture(gNormal, textureCoord).rgb);
+    vec4 albedo = texture(gAlbedo, textureCoord);
+    vec3 emissive = texture(gEmissive, textureCoord).rgb;
+    float metallic = texture(gProperties, textureCoord).r;
+    float roughness = texture(gProperties, textureCoord).g;
+    float ao = texture(gProperties, textureCoord).b;
 
+    if(albedo.a < 0.05f) {
+        discard;
+    }
 
-	vec3 fragPos = texture(gPosition, textureCoord).rgb;
+    // --- 2. SETUP CORE VECTORS AND F0 ---
+    vec3 V = normalize(cameraPos - fragPos);
+    vec3 F0 = mix(vec3(0.04), albedo.rgb, metallic);
 
-	usedMaterial.albedo = texture(gAlbedo, textureCoord).rgba;
+    // --- 3. CALCULATE DIRECT LIGHTING ---
+    vec3 Lo = vec3(0.0); 
+    for(int i = 0; i < activeLights; ++i)
+    {
+        vec3 L = normalize(lights[i].position - fragPos);
+        vec3 H = normalize(V + L);
+        float distance = length(lights[i].position - fragPos);
+        float attenuation = 1.0 / (distance * distance);
+        vec3 radiance = lights[i].color * lights[i].power * attenuation;
 
-	usedMaterial.metallic = texture(gProperties, textureCoord).r;
+        // Cook-Torrance BRDF
+        float NDF = DistributionGGX(normal, H, roughness);
+        float G = GeometrySmith(normal, V, L, roughness);
+        vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
-	usedMaterial.roughness = texture(gProperties, textureCoord).g; 
+        vec3 numerator = NDF * G * F;
+        float denominator = 4.0 * max(dot(normal, V), 0.0) * max(dot(normal, L), 0.0) + 0.001;
+        vec3 specular = numerator / denominator;
 
-	usedMaterial.ao = texture(gProperties, textureCoord).b;
+        vec3 kS = F;
+        vec3 kD = (vec3(1.0) - kS) * (1.0 - metallic);
 
-	usedMaterial.emissive = texture(gEmissive, textureCoord).rgba;
+        float NdotL = max(dot(normal, L), 0.0);
+        Lo += (kD * albedo.rgb / PI + specular) * radiance * NdotL;
+    }
 
-	usedMaterial.normal = normalize(texture(gNormal, textureCoord).rgb);
+    // --- 4. CALCULATE AMBIENT LIGHTING ---
+    vec3 F_ambient = fresnelSchlick(max(dot(normal, V), 0.0), F0);
+    vec3 kS_ambient = F_ambient;
+    vec3 kD_ambient = (vec3(1.0) - kS_ambient) * (1.0 - metallic);
 
-	if(usedMaterial.albedo.a < 0.05f){
-		discard;
-	}
-
-	vec3 irradiance = texture(irradianceMap, usedMaterial.normal).rgb;
-	vec3 ambient = irradiance * usedMaterial.albedo.rgb; // * usedMaterial.ao;
-	vec3 emission = usedMaterial.emissive.rgb;
-	vec3 color = ambient + emission;
-	vec3 viewDir = normalize(cameraPos - fragPos);
-
-/*
-   // --- Directional Light Calculation
-    vec3 directionLightDir = normalize(vec3(0.5, -1.0, -0.4)); // From above, right, and slightly in front
-    vec3 directionLightColor = vec3(1.0, 0.8, 0.6) * 1.0; // Warm sunset color with intensity
-
-    // PBR calculation for the directional light
-    vec3 L_directional = -directionLightDir; // Direction TO the light
-    vec3 H_directional = normalize(L_directional + viewDir);
-    float NdotL_directional = max(dot(usedMaterial.normal, L_directional), 0.0);
+    vec3 irradiance = texture(irradianceMap, normal).rgb;
+    vec3 diffuse_ambient = irradiance * albedo.rgb;
     
-    // Cook-Torrance BRDF for directional light
-    vec3 F_directional = f(H_directional, viewDir, mix(vec3(0.04), usedMaterial.albedo.rgb, usedMaterial.metallic));
-    float D_directional = ndf(usedMaterial.normal, H_directional, usedMaterial.roughness);
-    float G_directional = g(usedMaterial.normal, viewDir, usedMaterial.roughness) * g(usedMaterial.normal, L_directional, usedMaterial.roughness);
-    
-    vec3 kS_directional = F_directional;
-    vec3 kD_directional = (vec3(1.0) - kS_directional) * (1.0 - usedMaterial.metallic);
-    
-    vec3 specular_directional = (D_directional * G_directional * F_directional) / (4.0 * max(dot(usedMaterial.normal, viewDir), 0.0) * NdotL_directional + 0.0001);
-    vec3 diffuse_directional = kD_directional * usedMaterial.albedo.rgb / pi;
-    
-    vec3 radiance_directional = (diffuse_directional + specular_directional) * directionLightColor * NdotL_directional;
-    color += radiance_directional;
-*/
+    vec3 ambient = kD_ambient * diffuse_ambient; // * ao;
 
-
-
-
-
-	for(int i = 0; i < activeLights; i++){
-
-		float distance = length(lights[i].position - fragPos);
-
-
-		// useless check in practise because shaders will still run
-		if(distance < lights[i].radius){
-			vec3 lightDir = normalize(lights[i].position - fragPos);
-			float lightFactor = max(dot(usedMaterial.normal, lightDir), 0.0);
-
-			vec3 h = normalize(lightDir + viewDir);
-			vec3 f_0 = mix(vec3(0.04f), usedMaterial.albedo.rgb, usedMaterial.metallic);
-			float d = ndf(usedMaterial.normal, h, usedMaterial.roughness);
-			vec3 f = f(h, viewDir, f_0); // fresnelSchlick
-			float g = g(usedMaterial.normal, viewDir, usedMaterial.roughness) * g(usedMaterial.normal, lightDir, usedMaterial.roughness); // GeometrySmith
-
-			vec3 dfg = d*f*g;
-			float NdotV = max(dot(viewDir, usedMaterial.normal), 0.0);
-			float NdotL = max(dot(lightDir, usedMaterial.normal), 0.0);
-			vec3 specular = dfg / ((4.0 * NdotV * NdotL) + 0.0001); // Cook-Torrance BRDF equation, specular
-
-			vec3 k_s = f; 
-			vec3 k_d = (vec3(1.0f) - k_s) * (1.0 - usedMaterial.metallic);
-
-			vec3 diffuse = k_d * usedMaterial.albedo.rgb / pi; // reflective distribution function
-
-			float attenuation = 1.0 / (1.0 + lights[i].linear * distance + lights[i].quadratic * distance * distance);
-
-
-			vec3 radiance = (specular + diffuse) * lightFactor * lights[i].color * attenuation * lights[i].power;
-
-
-
-			color += radiance;
-		}
-
-	}
-
-	finalColor = vec4(color, usedMaterial.albedo.a);
-
+    // --- 5. FINAL COLOR ---
+    // Combine all lighting components. The result is linear, HDR color.
+    vec3 color = ambient + Lo + emissive;
+    finalColor = vec4(color, albedo.a);
 }

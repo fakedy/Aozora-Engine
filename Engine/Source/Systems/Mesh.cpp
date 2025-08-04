@@ -50,18 +50,18 @@ namespace Aozora {
     void Mesh::draw(Shader &shader)
     {
         auto& material = ResourcesAPI::getMaterial(materialID);
-        glUniform4fv(glGetUniformLocation(shader.ID, "albedo"), 1, &material.baseColor[0]);
-        glUniform1f(glGetUniformLocation(shader.ID, "metallic"), material.metallic);
-        glUniform1f(glGetUniformLocation(shader.ID, "roughness"), material.roughness);
-        glUniform1f(glGetUniformLocation(shader.ID, "ao"), material.ao);
-        glUniform4fv(glGetUniformLocation(shader.ID, "emissive"), 1, &material.emissive[0]);
+        shader.setVec4fv("albedo", material.baseColor);
+        shader.setFloat("metallic", material.metallic);
+        shader.setFloat("roughness", material.roughness);
+        shader.setFloat("ao", material.ao);
+        shader.setVec4fv("emissive", material.emissive);
         // bad
-        glUniform1i(glGetUniformLocation(shader.ID, "has_texture_diffuse"), 0);
-        glUniform1i(glGetUniformLocation(shader.ID, "has_texture_normal"), 0);
-        glUniform1i(glGetUniformLocation(shader.ID, "has_texture_emissive"), 0);
-        glUniform1i(glGetUniformLocation(shader.ID, "has_texture_ao"), 0);
-        glUniform1i(glGetUniformLocation(shader.ID, "has_texture_metallic"), 0);
-        glUniform1i(glGetUniformLocation(shader.ID, "has_texture_roughness"), 0);
+        shader.setInt("has_texture_diffuse", 0);
+        shader.setInt("has_texture_normal", 0);
+        shader.setInt("has_texture_emissive", 0);
+        shader.setInt("has_texture_ao", 0);
+        shader.setInt("has_texture_metallic", 0);
+        shader.setInt("has_texture_roughness", 0);
 
 
         for (unsigned int i = 0; i < material.activeTextures.size(); i++) {
@@ -102,8 +102,8 @@ namespace Aozora {
 
             glActiveTexture(GL_TEXTURE0 + textureUnit); // activate the texture
             // quite slow
-            glUniform1i(glGetUniformLocation(shader.ID, ("has_" + name).c_str()), 1);
-            glUniform1i(glGetUniformLocation(shader.ID, (name).c_str()), textureUnit);
+            shader.setInt(("has_" + name), 1);
+            shader.setInt(name, textureUnit);
             glBindTexture(GL_TEXTURE_2D, material.activeTextures[i].id);
         }
 

@@ -19,7 +19,6 @@ namespace Aozora {
 
 	}
 
-	
 	uint32_t ResourcesAPI::loadCubemap(const std::vector<std::string>& paths)
 	{
 		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
@@ -58,6 +57,12 @@ namespace Aozora {
 		createEntityFromNodes(model.originNode, entt::null);
 
 		return 0;
+	}
+
+	uint32_t ResourcesAPI::loadTexture(std::string name, bool persistent)
+	{
+		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
+		return resourceManager.loadTexture(name, false, persistent);
 	}
 
 	// with the nodes we create the actually entities

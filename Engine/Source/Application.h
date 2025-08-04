@@ -66,15 +66,15 @@ namespace Aozora {
 
 		std::unique_ptr<Project> m_project;
 
-	private:
-		static Application* m_appInstance;
-
-		Window* m_window;
 		std::unique_ptr<IrenderAPI> m_renderAPI;
 		std::unique_ptr<ResourceManager> m_resourceManager;
 		std::unique_ptr<SceneRenderer> m_sceneRenderer;
 		std::unique_ptr<SceneManager> m_sceneManager;
 		std::unique_ptr<ScriptSystem> m_scriptSystem;
+	private:
+		static Application* m_appInstance;
+
+		Window* m_window;
 		
 		Window::WindowProps props;
 

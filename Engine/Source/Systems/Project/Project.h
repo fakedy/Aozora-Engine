@@ -16,6 +16,8 @@ namespace Aozora {
 
 		void newScene();
 
+		void loadScene(uint32_t sceneID);
+
 	private:
 
 

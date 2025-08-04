@@ -54,14 +54,14 @@ namespace Aozora {
 		glUseProgram(m_irradianceShader.ID);
 		glBindVertexArray(irradianceBox.VAO);
 
-		glUniform1i(glGetUniformLocation(m_irradianceShader.ID, "environmentMap"), 0);
+		m_irradianceShader.setInt("environmentMap", 0);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, sourceID);
 
 		glViewport(0, 0, 32, 32);
 		// set projection matrix
 		glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
-		glUniformMatrix4fv(glGetUniformLocation(m_irradianceShader.ID, "proj"), 1, GL_FALSE, &proj[0][0]);
+		m_irradianceShader.setMat4("proj", proj);
 
 		// one for each face
 		glm::mat4 captureViews[] =
@@ -79,7 +79,7 @@ namespace Aozora {
 		for (uint32_t i = 0; i < 6; i++) {
 
 			// set view matrix
-			glUniformMatrix4fv(glGetUniformLocation(m_irradianceShader.ID, "view"), 1, GL_FALSE, &captureViews[i][0][0]);
+			m_irradianceShader.setMat4("view", captureViews[i]);
 
 			// attach the cubemap face to FBO
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, targetID, 0);

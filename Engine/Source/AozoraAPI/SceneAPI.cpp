@@ -33,6 +33,8 @@ namespace Aozora {
 
 		registry.destroy(entity);
 
+		// TODO DELETE THE RELATIONS OR FACE DEATH
+
 
 	}
 

@@ -1,6 +1,5 @@
 #pragma once
 #include "ModelLoader.h"
-#include "TextureLoader.h"
 #include "unordered_map"
 #include <memory>
 #include <iostream>
@@ -17,7 +16,8 @@ namespace Aozora {
 
 		const void loadModel(const std::string& file);
 
-		unsigned int loadTexture(const std::string path, const std::string& directory, bool isSrgb);
+		unsigned int loadTexture(const std::string fileName, const std::string& directory, bool isSrgb, bool persistent = false);
+		unsigned int loadTexture(const std::string path, bool isSrgb, bool persistent = false);
 		unsigned int loadCubemap(const std::vector<std::string> faces);
 		unsigned int loadCubemap();
 		unsigned int createMaterial(Material* material);
@@ -31,6 +31,10 @@ namespace Aozora {
 		void clearResources();
 		// resources
 		std::unordered_map<std::string, Material::Texture> m_loadedTextures;
+
+		// test for storing persistent vs non persistent textures
+		std::unordered_map<std::string, Material::Texture> m_loadedPersistentTextures;
+		
 		std::unordered_map<std::string, unsigned int> m_meshPathToID;
 		std::unordered_map<unsigned int, Mesh> m_loadedMeshes;
 		std::unordered_map<unsigned int, Material> m_loadedmaterials;
@@ -42,8 +46,6 @@ namespace Aozora {
 
 	private:
 
-
-		TextureLoader m_textureLoader = TextureLoader();
 		ModelLoader m_modelLoader = ModelLoader();
 
 

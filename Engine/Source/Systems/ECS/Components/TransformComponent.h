@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
-
+#include <cereal/cereal.hpp>
+#include <Systems/Serialization/SerializationGLM.h>
 
 namespace Aozora {
 
@@ -11,5 +12,14 @@ namespace Aozora {
 		glm::vec3 scale = glm::vec3(1.0f);
 
 		bool isDirty{ true };
+
+		template<class Archive>
+		void serialize(Archive& archive) {
+			archive(CEREAL_NVP(model),
+				CEREAL_NVP(pos),
+				CEREAL_NVP(rot),
+				CEREAL_NVP(scale),
+				CEREAL_NVP(isDirty));
+		}
 	};
 }

@@ -1,5 +1,7 @@
 #pragma once
 #include <memory>
+#include <cereal/cereal.hpp>
+#include <Systems/Serialization/SerializationGLM.h>
 namespace Aozora {
 
 	struct CameraComponent {
@@ -60,6 +62,20 @@ namespace Aozora {
 		bool perspective{ true };
 
 		bool m_isActive{ true };
+
+		template<class Archive>
+		void serialize(Archive& archive) {
+			archive(CEREAL_NVP(m_viewPortWidth),
+				CEREAL_NVP(m_viewPortHeight),
+				CEREAL_NVP(m_fovY),
+				CEREAL_NVP(m_proj),
+				CEREAL_NVP(m_view),
+				CEREAL_NVP(m_up),
+				CEREAL_NVP(m_right),
+				CEREAL_NVP(m_forward),
+				CEREAL_NVP(perspective),
+				CEREAL_NVP(m_isActive));
+		}
 
 	private:
 

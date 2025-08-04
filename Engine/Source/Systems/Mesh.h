@@ -12,6 +12,7 @@ namespace Aozora {
 	public:
 
 		Mesh();
+		
 
 		struct Vertex {
 			glm::vec3 Position{};
