@@ -6,7 +6,7 @@ StatsView::StatsView()
 
 }
 
-void StatsView::draw() {
+void StatsView::draw(const Aozora::Context& context) {
     ImGuiIO& io = ImGui::GetIO();
 	ImGui::Begin("Stats"); 
 	ImGui::Text("Frame time: %f ms", io.DeltaTime);

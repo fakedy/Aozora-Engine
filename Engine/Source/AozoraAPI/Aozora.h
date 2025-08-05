@@ -2,14 +2,13 @@
 // Includes used by applications
 
 #include "Application.h"
-#include "Systems/Layers/ImguiLayer.h"
 #include "Systems/Layers/Layer.h"
 #include "Systems/Renderers/Viewport.h"
 #include "entt/entt.hpp"
 #include <string>
 #include <Systems/Model.h>
 #include <Systems/Mesh.h>
-#include <Systems/Events/Event.h>
+#include <Systems/Events/EventSystem.h>
 #include <Systems/Events/Events.h>
 
 namespace Aozora {
@@ -40,19 +39,12 @@ namespace Aozora {
 
 		static uint32_t createViewport(ViewportType type, entt::entity editorCameraEntity);
 		static uint32_t createViewport(ViewportType type);
-		static void resizeViewport(uint32_t ID, uint16_t width, uint32_t height);
-		static void setViewportActive(uint32_t ID, bool condition);
-		static uint32_t getViewportTextureID(uint32_t ID);
 
 
 	};
 
 	class ApplicationAPI {
 	public:
-
-		static void newProject();
-		static void loadProject();
-		static void saveProject();
 		static uint32_t createNewScene();
 		static void loadScene(uint32_t ID);
 		static Scene* getScene(uint32_t id);
@@ -73,6 +65,7 @@ namespace Aozora {
 		static std::vector<std::string> getLoadedModelNames();
 		static Model* getModel(std::string name);
 
+		// cant remove this yet i need to fix my rendering pipeline
 		static Material& getMaterial(uint32_t id);
 
 	};

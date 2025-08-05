@@ -66,6 +66,8 @@ namespace Aozora {
 		glfwSetCursorPosCallback(m_window, Input::mouseCallback);
 		glfwSetMouseButtonCallback(m_window, Input::mouseButtonCallback);
 
+		glfwSwapInterval(0);
+
 	}
 
 

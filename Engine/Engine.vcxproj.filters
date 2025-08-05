@@ -108,7 +108,7 @@
     <ClInclude Include="Source\Systems\EditorCameraSystem.h">
       <Filter>Source\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Systems\Events\Event.h">
+    <ClInclude Include="Source\Systems\Events\EventSystem.h">
       <Filter>Source\Systems\Events</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Events\Events.h">
@@ -116,9 +116,6 @@
     </ClInclude>
     <ClInclude Include="Source\Systems\Input.h">
       <Filter>Source\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Systems\Layers\ImguiLayer.h">
-      <Filter>Source\Systems\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Layers\Layer.h">
       <Filter>Source\Systems\Layers</Filter>
@@ -229,12 +226,6 @@
     </ClCompile>
     <ClCompile Include="Source\Systems\Input.cpp">
       <Filter>Source\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Systems\Layers\ImguiLayer.cpp">
-      <Filter>Source\Systems\Layers</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Systems\Layers\Layer.cpp">
-      <Filter>Source\Systems\Layers</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Layers\LayerStack.cpp">
       <Filter>Source\Systems\Layers</Filter>

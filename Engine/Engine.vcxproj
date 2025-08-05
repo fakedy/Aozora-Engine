@@ -167,10 +167,9 @@
     <ClInclude Include="Source\Systems\ECS\Components\TagComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\TransformComponent.h" />
     <ClInclude Include="Source\Systems\EditorCameraSystem.h" />
-    <ClInclude Include="Source\Systems\Events\Event.h" />
+    <ClInclude Include="Source\Systems\Events\EventSystem.h" />
     <ClInclude Include="Source\Systems\Events\Events.h" />
     <ClInclude Include="Source\Systems\Input.h" />
-    <ClInclude Include="Source\Systems\Layers\ImguiLayer.h" />
     <ClInclude Include="Source\Systems\Layers\Layer.h" />
     <ClInclude Include="Source\Systems\Layers\LayerStack.h" />
     <ClInclude Include="Source\Systems\Logging\Logger.h" />
@@ -209,8 +208,6 @@
     <ClCompile Include="Source\Systems\CameraSystem.cpp" />
     <ClCompile Include="Source\Systems\EditorCameraSystem.cpp" />
     <ClCompile Include="Source\Systems\Input.cpp" />
-    <ClCompile Include="Source\Systems\Layers\ImguiLayer.cpp" />
-    <ClCompile Include="Source\Systems\Layers\Layer.cpp" />
     <ClCompile Include="Source\Systems\Layers\LayerStack.cpp" />
     <ClCompile Include="Source\Systems\Logging\Logger.cpp" />
     <ClCompile Include="Source\Systems\Mesh.cpp" />

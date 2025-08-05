@@ -13,7 +13,8 @@ namespace Aozora {
 	public:
         SceneManager* sceneManager{ nullptr };
         IrenderAPI* renderAPI{ nullptr };
-        SceneRenderer* sceneRenderer{ nullptr };
+        Graphics::SceneRenderer* sceneRenderer{ nullptr };
         ScriptSystem* scriptSystem{ nullptr };
+        ResourceManager* resourcemanager{ nullptr };
 	};
 }

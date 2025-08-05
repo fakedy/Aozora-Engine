@@ -3,6 +3,7 @@
 #include <vector>
 #include "AozoraAPI/Aozora.h"
 #include "imgui/imgui.h"
+#include <Context.h>
 
 class Workspace {
 
@@ -35,7 +36,7 @@ public:
 
 
 
-	void draw();
+	void draw(const Aozora::Context& context);
 
 private:
 

@@ -4,7 +4,7 @@
 #include "glm/glm.hpp"
 #include <Systems/Time.h>
 
-void EditorLayer::onUpdate()
+void EditorLayer::onUpdate(const Aozora::Context& context)
 {
 
 	// update systems here instead of application

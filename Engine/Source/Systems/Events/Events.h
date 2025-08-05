@@ -1,5 +1,5 @@
 #pragma once
-#include <Systems/Events/Event.h>
+#include <Systems/Events/EventSystem.h>
 
 
 namespace Aozora {
@@ -22,6 +22,16 @@ namespace Aozora {
 	protected:
 
 		Project& m_project;
+	};
+
+	class createProjectRequest : public Event {
+
+	public:
+
+		createProjectRequest() : Event(EventType::ProjectCreated) {}
+
+	protected:
+
 	};
 
 	class ChangeSceneEvent : public Event {

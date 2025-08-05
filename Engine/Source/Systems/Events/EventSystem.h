@@ -1,6 +1,4 @@
 #pragma once
-
-
 #include <vector>
 #include <map>
 #include <functional>
@@ -15,13 +13,16 @@ namespace Aozora {
 		ProjectCreated,
 		SceneCreated,
 		ChangeScene,
+		CreateProjectRequest,
+		ViewportResize
 	};
 
 	class Event {
 	public:
 
+		virtual ~Event() = default;
 		virtual 
-		EventType getEvent() const {
+			EventType getEventType() const {
 			return m_type;
 		}
 
@@ -51,7 +52,7 @@ namespace Aozora {
 		}
 
 		static void dispatch(Event& event) {
-			EventType type = event.getEvent();
+			EventType type = event.getEventType();
 			if (s_listeners.find(type) != s_listeners.end()) {
 				for (auto& callback : s_listeners[type]) {
 					callback(event);

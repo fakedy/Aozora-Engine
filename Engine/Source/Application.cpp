@@ -23,13 +23,18 @@ namespace Aozora {
 		m_window = Window::create(props);
 		m_renderAPI = std::unique_ptr<IrenderAPI>(IrenderAPI::create());
 		m_sceneManager = std::make_unique<SceneManager>();
-		m_sceneRenderer = std::make_unique<SceneRenderer>(m_renderAPI.get());
+		m_sceneRenderer = std::make_unique<Graphics::SceneRenderer>(m_renderAPI.get());
 		m_resourceManager = std::make_unique<ResourceManager>();
 
 		
 		m_cameraSystem = std::make_unique<CameraSystem>();
 
 		layerStack = new LayerStack();
+
+		context.renderAPI = m_renderAPI.get();
+		context.sceneManager = m_sceneManager.get();
+		context.sceneRenderer = m_sceneRenderer.get();
+		context.resourcemanager = m_resourceManager.get();
 
 	}
 
@@ -42,7 +47,7 @@ namespace Aozora {
 
 			// TODO render after updated layers
 			for (Layer* layer : *layerStack) {
-				layer->onUpdate(); // update layers
+				layer->onUpdate(context); // update layers
 			}
 
 			m_window->onUpdate(); // swap buffer
@@ -68,6 +73,21 @@ namespace Aozora {
 			m_actionQueue.front()();
 			m_actionQueue.pop();
 		}
+	}
+
+	void Application::createNewProject()
+	{
+		auto action = [this]() {
+			m_resourceManager->clearResources();
+			m_project.reset();
+			m_project = std::make_unique<Project>();
+			m_project->setup();
+			getRenderer().updatePrimaryScene(*m_project->m_currentScene);
+			ProjectCreatedEvent event(*m_project);
+			EventDispatcher::dispatch(event);
+			};
+
+		queueAction(action);
 	}
 }
 

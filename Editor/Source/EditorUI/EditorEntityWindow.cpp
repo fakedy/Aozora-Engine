@@ -4,7 +4,7 @@
 #include <string>
 #include <AozoraAPI/Aozora.h>
 
-void EditorEntityWindow::draw()
+void EditorEntityWindow::draw(const Aozora::Context& context)
 {
 	ImGui::Begin("SceneGraph");
 

@@ -1,6 +1,6 @@
 #include "Workspace.h"
 
-void Workspace::draw()
+void Workspace::draw(const Aozora::Context& context)
 {
 
 	ImGui::Begin("workspace", NULL, ImGuiWindowFlags_MenuBar); // file browser

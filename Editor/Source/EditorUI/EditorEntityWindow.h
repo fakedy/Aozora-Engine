@@ -2,7 +2,7 @@
 #include "AozoraAPI/Aozora.h"
 #include "ComponentsView.h"
 #include "Systems/ResourceManager/ResourceManager.h"
-
+#include <Context.h>
 
 class EditorEntityWindow {
 public:
@@ -10,7 +10,7 @@ public:
 		m_componentsView = componentsView;
 	}
 
-	void draw();
+	void draw(const Aozora::Context& context);
 
 	void drawEntityNode(entt::entity entity);
 

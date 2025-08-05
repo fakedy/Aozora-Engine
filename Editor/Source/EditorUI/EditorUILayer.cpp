@@ -1,7 +1,7 @@
 #include "EditorUILayer.h"
 #include "Application.h"
 
-void EditorUILayer::onUpdate(){
+void EditorUILayer::onUpdate(const Aozora::Context& context){
 
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
@@ -22,7 +22,7 @@ void EditorUILayer::onUpdate(){
 				if (ImGui::MenuItem("Project")) {
 
 					// NEW WOOOOOORLD
-					Aozora::ApplicationAPI::newProject();
+					//Aozora::ApplicationAPI::newProject();
 				}
 				ImGui::EndMenu();
 			}
@@ -68,50 +68,50 @@ void EditorUILayer::onUpdate(){
 
 	// editor window
 	if (ImGui::Begin("Editor", NULL)) {
-		Aozora::RenderAPI::setViewportActive(m_editorLayer->m_editorViewPortID, true);
+		
+		context.sceneRenderer->setViewportActive(m_editorLayer->m_editorViewPortID, true);
 		ImVec2 contentRegion = ImGui::GetContentRegionAvail();
-		Aozora::RenderAPI::resizeViewport(m_editorLayer->m_editorViewPortID, contentRegion.x, contentRegion.y);
+		context.sceneRenderer->resizeViewport(m_editorLayer->m_editorViewPortID, contentRegion.x, contentRegion.y);
 
+		uint32_t editorTextureID = context.sceneRenderer->getViewportTextureID(m_editorLayer->m_editorViewPortID);
 
-		uint32_t editorTextureID = Aozora::RenderAPI::getViewportTextureID(m_editorLayer->m_editorViewPortID);
 		ImGui::Image((void*)(intptr_t)editorTextureID, ImVec2(contentRegion.x, contentRegion.y), ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();
 	}
 	else {
-		Aozora::RenderAPI::setViewportActive(m_editorLayer->m_editorViewPortID, false);
+		context.sceneRenderer->setViewportActive(m_editorLayer->m_editorViewPortID, false);
 		ImGui::End();
 	}
 
 
 	// game window
 	if (ImGui::Begin("Game", NULL)) {
-		Aozora::RenderAPI::setViewportActive(m_editorLayer->m_gameViewPortID, true);
+		context.sceneRenderer->setViewportActive(m_editorLayer->m_gameViewPortID, true);
 		// get the imgui space
 		ImVec2 contentRegionGame = ImGui::GetContentRegionAvail();
-		Aozora::RenderAPI::resizeViewport(m_editorLayer->m_gameViewPortID, contentRegionGame.x, contentRegionGame.y);
+		context.sceneRenderer->resizeViewport(m_editorLayer->m_gameViewPortID, contentRegionGame.x, contentRegionGame.y);
 
-		uint32_t gameTextureID = Aozora::RenderAPI::getViewportTextureID(m_editorLayer->m_gameViewPortID);
-
+		uint32_t gameTextureID = context.sceneRenderer->getViewportTextureID(m_editorLayer->m_gameViewPortID);
 		ImGui::Image((void*)(intptr_t)gameTextureID, ImVec2(contentRegionGame.x, contentRegionGame.y), ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();
 	}
 	else {
-		Aozora::RenderAPI::setViewportActive(m_editorLayer->m_gameViewPortID, false);
+		context.sceneRenderer->setViewportActive(m_editorLayer->m_gameViewPortID, false);
 		ImGui::End();
 	}
 
 	ImGui::PopStyleVar();
 
-	sceneGraph(); // the list of entities in the scene
+	m_editorEntityWindow->draw(context); // the list of entities in the scene
 
-	m_workspace->draw();
+	m_workspace->draw(context);
 
-	componentsView();
+	m_componentsViewWindow->draw(context);
 
 	ImGui::Begin("Console");
 	ImGui::End();
 
-	statsView();
+	m_statsViewWindow->draw(context);
 
 
 	ImGui::Render();
@@ -119,21 +119,5 @@ void EditorUILayer::onUpdate(){
 
 }
 
-
-// idk why i didnt just do the draw directly instead of this
-void EditorUILayer::sceneGraph()
-{
-	m_editorEntityWindow->draw();
-}
-
-void EditorUILayer::componentsView()
-{
-	m_componentsViewWindow->draw();
-}
-
-void EditorUILayer::statsView()
-{
-	m_statsViewWindow->draw();
-}
 
 

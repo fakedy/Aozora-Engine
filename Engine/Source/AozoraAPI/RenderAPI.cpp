@@ -11,7 +11,7 @@ namespace Aozora {
 	// create viewport with set camera and returns the ID
 	uint32_t RenderAPI::createViewport(ViewportType type, entt::entity editorCameraEntity) {
 
-		SceneRenderer& renderer = Application::getApplication().getRenderer();
+		Graphics::SceneRenderer& renderer = Application::getApplication().getRenderer();
 
 		uint32_t viewportID = renderer.createViewport(type);
 		return viewportID;
@@ -20,41 +20,12 @@ namespace Aozora {
 	// create viewport without set camera and returns the ID
 	uint32_t RenderAPI::createViewport(ViewportType type) {
 
-		SceneRenderer& renderer = Application::getApplication().getRenderer();
+		Graphics::SceneRenderer& renderer = Application::getApplication().getRenderer();
 
 		uint32_t viewportID = renderer.createViewport(type);
 		return viewportID;
 	}
 
-	void RenderAPI::resizeViewport(uint32_t ID, uint16_t width, uint32_t height)
-	{
-
-		SceneRenderer& renderer = Application::getApplication().getRenderer();
-
-		Viewport& viewport = renderer.getViewport(ID);
-		
-		viewport.resize(width, height);
-
-
-	}
-
-	void RenderAPI::setViewportActive(uint32_t ID, bool condition)
-	{
-		SceneRenderer& renderer = Application::getApplication().getRenderer();
-
-		Viewport& viewport = renderer.getViewport(ID);
-
-		viewport.isActive = condition;
-	}
-
-	uint32_t RenderAPI::getViewportTextureID(uint32_t ID)
-	{
-		SceneRenderer& renderer = Application::getApplication().getRenderer();
-
-		Viewport& viewport = renderer.getViewport(ID);
-
-		return viewport.renderPipeline->getFinalImage();
-	}
 
 
 }

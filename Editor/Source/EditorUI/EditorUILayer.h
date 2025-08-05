@@ -13,6 +13,7 @@
 #include <Systems/Scene/Scene.h>
 #include "EditorLayer.h"
 #include "Workspace.h"
+#include <Context.h>
 
 class EditorUILayer : public Aozora::Layer {
 public:
@@ -55,7 +56,7 @@ public:
 
 	}
 
-	void onUpdate() override;
+	void onUpdate(const Aozora::Context& context) override;
 
 
 private:
@@ -63,9 +64,6 @@ private:
 	std::shared_ptr<ComponentsView> m_componentsViewWindow;
 	std::shared_ptr<StatsView> m_statsViewWindow;
 	std::shared_ptr<Workspace> m_workspace;
-	void sceneGraph();
-	void componentsView();
-	void statsView();
 
 	ImTextureID m_file_3d_texture;
 	ImTextureID m_image_texture;

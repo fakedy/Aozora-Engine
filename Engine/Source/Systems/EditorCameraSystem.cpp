@@ -124,7 +124,7 @@ namespace Aozora {
 	}
 	void EditorCameraSystem::onEvent(Event& e)
 	{
-		switch (e.getEvent()) {
+		switch (e.getEventType()) {
 		case(EventType::ChangeScene):
 		{
 			auto& scene = static_cast<ChangeSceneEvent&>(e).getScene();

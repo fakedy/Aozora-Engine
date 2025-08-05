@@ -46,7 +46,6 @@ namespace Aozora {
     }
 
 
-    // need a total rework of this system with chacing the uniformlocations
     void Mesh::draw(Shader &shader)
     {
         auto& material = ResourcesAPI::getMaterial(materialID);

@@ -4,7 +4,6 @@
 #include "Systems/Windows/Window.h"
 #include "Systems/Renderers/IrenderAPI.h"
 #include "Systems/Layers/LayerStack.h"
-#include "Systems/Layers/ImguiLayer.h"
 #include "Systems/ResourceManager/ResourceManager.h"
 #include "Systems/Scene/Scene.h"
 #include "Systems/CameraSystem.h"
@@ -13,6 +12,7 @@
 #include <queue>
 #include <Systems/SceneManager/SceneManager.h>
 #include <Systems/ScriptManager/ScriptSystem.h>
+#include <Context.h>
 
 namespace Aozora {
 
@@ -48,13 +48,14 @@ namespace Aozora {
 			return *m_renderAPI.get();
 		}
 
-		SceneRenderer& getRenderer() {
+		Graphics::SceneRenderer& getRenderer() {
 			return *m_sceneRenderer.get();
 		}
 		ScriptSystem& getScriptSystem() {
 			return *m_scriptSystem.get();
 		}
 
+		void createNewProject();
 
 		inline Window& getWindow() { return *m_window; }
 
@@ -68,14 +69,14 @@ namespace Aozora {
 
 		std::unique_ptr<IrenderAPI> m_renderAPI;
 		std::unique_ptr<ResourceManager> m_resourceManager;
-		std::unique_ptr<SceneRenderer> m_sceneRenderer;
+		std::unique_ptr<Graphics::SceneRenderer> m_sceneRenderer;
 		std::unique_ptr<SceneManager> m_sceneManager;
 		std::unique_ptr<ScriptSystem> m_scriptSystem;
 	private:
 		static Application* m_appInstance;
 
 		Window* m_window;
-		
+		Aozora::Context context;
 		Window::WindowProps props;
 
 		std::queue<std::function<void()>> m_actionQueue;

@@ -235,6 +235,11 @@ namespace Aozora {
 
         return -1;
     }
+
+    Material& ResourceManager::getMaterial(uint32_t id)
+    {
+        return m_loadedmaterials[id];
+    }
     
 
     // Check if texture is loaded, if it is loaded return it's id, else return -1

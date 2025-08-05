@@ -22,7 +22,7 @@ public:
 
 	}
 
-	void onUpdate() override;
+	void onUpdate(const Aozora::Context& context) override;
 
 	void changeState(EditorState state);
 

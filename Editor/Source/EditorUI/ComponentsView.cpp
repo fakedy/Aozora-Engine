@@ -10,7 +10,7 @@ ComponentsView::ComponentsView()
 
 }
 
-void ComponentsView::draw() {
+void ComponentsView::draw(const Aozora::Context& context) {
 
 	
 	entt::registry& registry = Aozora::Application::getApplication().getCurrentScene().getRegistry();
@@ -82,7 +82,7 @@ void ComponentsView::draw() {
 				ImGui::Text("Mesh ID: %i", meshComp.meshID);
 
 
-				Aozora::Material& mat = Aozora::ResourcesAPI::getMaterial(meshComp.materialID);
+				Aozora::Material& mat = context.resourcemanager->getMaterial(meshComp.materialID);
 				ImGui::Text("Material name: %s", mat.name);
 				ImGui::Text("Material ID: %i", meshComp.materialID);
 				ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.05f);

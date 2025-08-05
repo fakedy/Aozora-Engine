@@ -1,9 +1,10 @@
 #include "SceneRenderer.h"
 #include "OpenGL.h"
 #include <Systems/ECS/Components/Components.h>
+#include <functional>
 
 
-namespace Aozora {
+namespace Aozora::Graphics {
 	SceneRenderer::SceneRenderer(IrenderAPI* api)
 	{
 
@@ -12,6 +13,13 @@ namespace Aozora {
 		EventDispatcher::subscribe(EventType::ChangeScene, [this](Event& e) {
 			this->onEvent(e);
 		});
+
+		PSO gbufferPSO;
+		gbufferPSO.commands = []() {
+			glEnable(GL_DEPTH_TEST);
+			glDepthMask(GL_TRUE);
+			glDisable(GL_BLEND);
+		};
 	}
 
 	void SceneRenderer::updatePrimaryScene(Scene& scene)
@@ -38,7 +46,7 @@ namespace Aozora {
 	// doesnt get called because who knows
 	void SceneRenderer::onEvent(Event& e)
 	{
-		switch (e.getEvent()) {
+		switch (e.getEventType()) {
 		case(EventType::ChangeScene):
 		{
 			auto& scene = static_cast<ChangeSceneEvent&>(e).getScene();
@@ -53,6 +61,12 @@ namespace Aozora {
 
 	}
 
+	// prototyping
+	/*
+	* If i get this straight, we can create a command for all the transparent and all the opaque objects?
+	* and use glMultiDrawIndirect 
+	*/
+
 
 
 
@@ -64,6 +78,13 @@ namespace Aozora {
 			// make sure viewport is active before doing this.
 			// if viewport have a scene
 			if (viewport.scene != nullptr && viewport.isActive) {
+
+				// submit render command
+
+				std::vector<RenderCommand> commands;
+
+
+				
 				viewport.renderPipeline->execute(*m_RenderAPI, *viewport.scene, viewport.camera, viewport.width, viewport.height);
 			}
 		}
@@ -82,8 +103,28 @@ namespace Aozora {
 		return viewportID;
 	}
 
+	void SceneRenderer::setViewportActive(uint32_t ID, bool condition)
+	{
+		Viewport& viewport = getViewport(ID);
+
+		viewport.isActive = condition;
+	}
+
+	void SceneRenderer::resizeViewport(uint32_t ID, uint16_t width, uint32_t height)
+	{
+		Viewport& viewport = getViewport(ID);
+
+		viewport.resize(width, height);
+	}
+
 	Viewport& SceneRenderer::getViewport(uint32_t viewportID)
 	{
 		return m_viewports.find(viewportID)->second;
+	}
+	uint32_t SceneRenderer::getViewportTextureID(uint32_t ID)
+	{
+		Viewport& viewport = getViewport(ID);
+
+		return viewport.renderPipeline->getFinalImage();
 	}
 }

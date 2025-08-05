@@ -22,6 +22,7 @@ namespace Aozora {
 		unsigned int loadCubemap();
 		unsigned int createMaterial(Material* material);
 		unsigned int materialLoaded(unsigned int id);
+		Material& getMaterial(uint32_t id);
 
 		// check functions
 		int textureLoaded(const std::string path);
