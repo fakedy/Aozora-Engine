@@ -13,6 +13,9 @@
     <Filter Include="Source\Systems">
       <UniqueIdentifier>{5D37F96B-4905-ED71-3299-5D981E06C9D6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Systems\AssetManager">
+      <UniqueIdentifier>{07CB6479-73D8-925F-FCBE-8E4A68CB5E16}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Systems\ECS">
       <UniqueIdentifier>{27926AAA-1376-2B00-7CD6-255368D91582}</UniqueIdentifier>
     </Filter>
@@ -65,6 +68,9 @@
     </ClInclude>
     <ClInclude Include="Source\Context.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\AssetManager\AssetManager.h">
+      <Filter>Source\Systems\AssetManager</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\CameraSystem.h">
       <Filter>Source\Systems</Filter>
@@ -212,8 +218,8 @@
     <ClCompile Include="Source\AozoraAPI\ResourcesAPI.cpp">
       <Filter>Source\AozoraAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\AozoraAPI\SceneAPI.cpp">
-      <Filter>Source\AozoraAPI</Filter>
+    <ClCompile Include="Source\Systems\AssetManager\AssetManager.cpp">
+      <Filter>Source\Systems\AssetManager</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\CameraSystem.cpp">
       <Filter>Source\Systems</Filter>

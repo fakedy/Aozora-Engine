@@ -39,14 +39,15 @@ void EditorLayer::onUpdate(const Aozora::Context& context)
 
 void EditorLayer::changeState(EditorState state)
 {
+	auto& app = Aozora::Application::getApplication();
 
 	switch (state)
 	{
 	case EditorState::EDIT:
-		Aozora::SceneAPI::loadSnapshot();
+		app.getSceneManager().getCurrentActiveScene()->loadSnapShot();
 		break;
 	case EditorState::PLAY:
-		Aozora::SceneAPI::takeSnapshot();
+		app.getSceneManager().getCurrentActiveScene()->takeSnapshot();
 
 		break;
 	default:

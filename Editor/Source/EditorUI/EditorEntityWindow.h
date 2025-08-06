@@ -12,7 +12,7 @@ public:
 
 	void draw(const Aozora::Context& context);
 
-	void drawEntityNode(entt::entity entity);
+	void drawEntityNode(entt::entity entity, const Aozora::Context& context);
 
 private:
 	std::shared_ptr<ComponentsView> m_componentsView;

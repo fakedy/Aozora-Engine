@@ -83,23 +83,6 @@ void EditorUILayer::onUpdate(const Aozora::Context& context){
 		ImGui::End();
 	}
 
-
-	// game window
-	if (ImGui::Begin("Game", NULL)) {
-		context.sceneRenderer->setViewportActive(m_editorLayer->m_gameViewPortID, true);
-		// get the imgui space
-		ImVec2 contentRegionGame = ImGui::GetContentRegionAvail();
-		context.sceneRenderer->resizeViewport(m_editorLayer->m_gameViewPortID, contentRegionGame.x, contentRegionGame.y);
-
-		uint32_t gameTextureID = context.sceneRenderer->getViewportTextureID(m_editorLayer->m_gameViewPortID);
-		ImGui::Image((void*)(intptr_t)gameTextureID, ImVec2(contentRegionGame.x, contentRegionGame.y), ImVec2(0, 1), ImVec2(1, 0));
-		ImGui::End();
-	}
-	else {
-		context.sceneRenderer->setViewportActive(m_editorLayer->m_gameViewPortID, false);
-		ImGui::End();
-	}
-
 	ImGui::PopStyleVar();
 
 	m_editorEntityWindow->draw(context); // the list of entities in the scene

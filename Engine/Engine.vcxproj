@@ -153,6 +153,7 @@
     <ClInclude Include="Source\AozoraAPI\Aozora.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Context.h" />
+    <ClInclude Include="Source\Systems\AssetManager\AssetManager.h" />
     <ClInclude Include="Source\Systems\CameraSystem.h" />
     <ClInclude Include="Source\Systems\ECS\Components\CameraComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\Components.h" />
@@ -203,7 +204,7 @@
     <ClCompile Include="Source\AozoraAPI\ApplicationAPI.cpp" />
     <ClCompile Include="Source\AozoraAPI\RenderAPI.cpp" />
     <ClCompile Include="Source\AozoraAPI\ResourcesAPI.cpp" />
-    <ClCompile Include="Source\AozoraAPI\SceneAPI.cpp" />
+    <ClCompile Include="Source\Systems\AssetManager\AssetManager.cpp" />
     <ClCompile Include="Source\Systems\CameraSystem.cpp" />
     <ClCompile Include="Source\Systems\EditorCameraSystem.cpp" />
     <ClCompile Include="Source\Systems\Input.cpp" />

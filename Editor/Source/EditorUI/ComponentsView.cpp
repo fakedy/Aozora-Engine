@@ -13,7 +13,7 @@ ComponentsView::ComponentsView()
 void ComponentsView::draw(const Aozora::Context& context) {
 
 	
-	entt::registry& registry = Aozora::Application::getApplication().getCurrentScene().getRegistry();
+	entt::registry& registry = context.sceneManager->getCurrentActiveScene()->getRegistry();
 
 	auto view = registry.view<Aozora::NameComponent>();
 	ImGui::Begin("Components View", NULL, ImGuiWindowFlags_MenuBar); // will display components
@@ -54,13 +54,13 @@ void ComponentsView::draw(const Aozora::Context& context) {
 				ImGui::Text("Transform component");
 
 				if (ImGui::DragFloat3("Transform", glm::value_ptr(transformComp.pos), 0.1f)) {
-					Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
+					context.sceneManager->getCurrentActiveScene()->makeTransformDirty(m_selectedEntity);
 				}
 				if (ImGui::DragFloat3("Scale", glm::value_ptr(transformComp.scale), 0.1f)) {
-					Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
+					context.sceneManager->getCurrentActiveScene()->makeTransformDirty(m_selectedEntity);
 				}
 				if (ImGui::DragFloat3("Rotation", glm::value_ptr(transformComp.rot), 0.1f)) {
-					Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
+					context.sceneManager->getCurrentActiveScene()->makeTransformDirty(m_selectedEntity);
 				}
 			}
 		}

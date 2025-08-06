@@ -43,6 +43,20 @@ namespace Aozora {
 		entt::entity createEntityFromNodes(Model::Node* node, entt::entity parent);
 		void instantiateEntity(std::string name);
 
+		void deleteEntity(const entt::entity entity);
+
+		// returns a vector of entities
+		std::vector<entt::entity> getSceneHierarchyEntities();
+
+		std::string getEntityName(entt::entity entity);
+
+		std::vector<entt::entity>& getEntityChildren(entt::entity entity);
+
+		entt::entity& getEntityParent(entt::entity entity);
+
+
+		void makeTransformDirty(entt::entity entity);
+
 	private:
 
 		void updateTransform(entt::entity entity, const glm::mat4& model);

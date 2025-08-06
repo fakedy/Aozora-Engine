@@ -31,13 +31,13 @@ namespace Aozora {
 	{
 
 		// recursive update, going from parents and updating their children i guess.
-		const std::vector<entt::entity>& view = Aozora::SceneAPI::getSceneHierarchyEntities();
+		const std::vector<entt::entity>& view = getSceneHierarchyEntities();
 
 		auto transforms = m_registry->view<TransformComponent>();
 		for (entt::entity entity : view) {
 			auto& transform = transforms.get<TransformComponent>(entity);
 
-			if (transform.isDirty && Aozora::SceneAPI::getEntityParent(entity) == entt::null) {
+			if (transform.isDirty && getEntityParent(entity) == entt::null) {
 				updateTransform(entity, glm::mat4(1.0f));
 			}
 		}
@@ -127,7 +127,7 @@ namespace Aozora {
 		tempModel = model * tempModel;
 		transform.model = tempModel;
 		
-		const std::vector<entt::entity>& children = Aozora::SceneAPI::getEntityChildren(entity);
+		const std::vector<entt::entity>& children = getEntityChildren(entity);
 		transform.isDirty = false;
 		// update children
 		for (const auto entity : children) {
@@ -182,6 +182,63 @@ namespace Aozora {
 		Model& model = resourceManager.m_loadedModels.at(name);
 
 		createEntityFromNodes(model.originNode, entt::null);
+
+	}
+
+	void Scene::deleteEntity(const entt::entity entity) {
+
+		m_registry->destroy(entity);
+
+		// TODO DELETE THE RELATIONS OR FACE DEATH
+
+
+	}
+
+	// returns a vector of entities
+	std::vector<entt::entity> Scene::getSceneHierarchyEntities()
+	{
+		// everything but editor related entities
+		// want to sort this by name first
+		// https://github.com/skypjack/entt/wiki/Crash-Course:-entity-component-system/465d90e0f5961adc460cd9d1e9358370987fbcd3#sorting-is-it-possible
+		auto view = m_registry->view<NameComponent>(entt::exclude<EditorEntityTag>);
+
+		return { view.begin(), view.end() };
+	}
+
+	std::string Scene::getEntityName(entt::entity entity)
+	{
+		auto target = m_registry->get<NameComponent>(entity);
+		return target.name;
+	}
+
+	std::vector<entt::entity>& Scene::getEntityChildren(entt::entity entity)
+	{
+		auto& relationComponent = m_registry->get<RelationComponent>(entity);
+
+		return relationComponent.children;
+
+	}
+
+	entt::entity& Scene::getEntityParent(entt::entity entity)
+	{
+
+		
+		auto& relationComponent = m_registry->get<RelationComponent>(entity);
+
+		return relationComponent.parent;
+
+	}
+	void Scene::makeTransformDirty(entt::entity entity)
+	{
+
+		
+		auto& transformComponent = m_registry->get<TransformComponent>(entity);
+		transformComponent.isDirty = true;
+
+		auto& parent = getEntityParent(entity);
+		if (parent != entt::null) {
+			makeTransformDirty(getEntityParent(entity));
+		}
 
 	}
 }

@@ -18,22 +18,6 @@ namespace Aozora {
 	// GONNA EXECUTE THIS ENTIRE API, HATE IT
 
 
-	class SceneAPI {
-	public:
-
-		static void addEntity();
-		static void deleteEntity(const entt::entity entity);
-		static std::vector<entt::entity> getSceneHierarchyEntities();
-		static std::string getEntityName(entt::entity entity);
-		static std::vector<entt::entity>& getEntityChildren(entt::entity entity);
-		static entt::entity& getEntityParent(entt::entity entity);
-		static void makeTransformDirty(entt::entity entity);
-		static void takeSnapshot();
-		static void loadSnapshot();
-
-
-	};
-
 	class RenderAPI {
 	public:
 

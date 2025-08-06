@@ -10,7 +10,6 @@ void Workspace::draw(const Aozora::Context& context)
 			if (ImGui::BeginMenu("New")) {
 				if (ImGui::MenuItem("Scene")) {
 					context.sceneManager->createScene();
-					Aozora::ApplicationAPI::createNewScene();
 				}
 				if (ImGui::MenuItem("Folder")) {
 					// create new asset folder or something idk

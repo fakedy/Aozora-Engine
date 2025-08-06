@@ -17,7 +17,6 @@ class EditorLayer : public Aozora::Layer
 public:
 	EditorLayer() {
 		m_editorViewPortID = Aozora::RenderAPI::createViewport(Aozora::ViewportType::PrimaryEditor);
-		m_gameViewPortID = Aozora::RenderAPI::createViewport(Aozora::ViewportType::PrimaryGame);
 		m_editorCameraSystem = std::make_unique<Aozora::EditorCameraSystem>();
 
 	}
@@ -28,7 +27,6 @@ public:
 
 	EditorState getState();
 
-	uint32_t m_gameViewPortID;
 	uint32_t m_editorViewPortID;
 
 private:
