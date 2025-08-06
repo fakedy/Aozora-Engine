@@ -9,6 +9,7 @@ void Workspace::draw(const Aozora::Context& context)
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::BeginMenu("New")) {
 				if (ImGui::MenuItem("Scene")) {
+					context.sceneManager->createScene();
 					Aozora::ApplicationAPI::createNewScene();
 				}
 				if (ImGui::MenuItem("Folder")) {
@@ -45,7 +46,7 @@ void Workspace::draw(const Aozora::Context& context)
 		ImGui::SameLine(0.0f, assetSpacing);
 		ImGui::BeginGroup();
     		if (ImGui::ImageButton(modelName.c_str(), m_file_3d_texture, ImVec2(thumbnailSize, thumbnailSize))) {
-			Aozora::ResourcesAPI::instantiateModel(modelName);
+			context.sceneManager->getCurrentActiveScene()->instantiateEntity(modelName);
 		}
 		ImGui::TextWrapped("%s", modelName.c_str());
 		ImGui::EndGroup();

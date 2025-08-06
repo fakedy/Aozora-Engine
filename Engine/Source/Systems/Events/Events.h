@@ -1,5 +1,6 @@
 #pragma once
 #include <Systems/Events/EventSystem.h>
+#include <entt/entt.hpp>
 
 
 namespace Aozora {
@@ -64,5 +65,30 @@ namespace Aozora {
 		int id;
 		int width;
 		int height;
+	};
+
+
+	class EntityCreatedWithMeshEvent : public Event {
+
+	public:
+
+		EntityCreatedWithMeshEvent(entt::entity entity, uint32_t meshID, Scene* scene) : Event(EventType::NewMesh), m_entity(entity), m_meshID(meshID), m_scene(scene) {}
+
+		entt::entity getEntity() const{
+			return m_entity;
+		}
+		uint32_t getID() const {
+			return m_meshID;
+		}
+
+		Scene* getScene() const {
+			return m_scene;
+		}
+
+	protected:
+
+		entt::entity m_entity;
+		uint32_t m_meshID{0};
+		Scene* m_scene;
 	};
 }

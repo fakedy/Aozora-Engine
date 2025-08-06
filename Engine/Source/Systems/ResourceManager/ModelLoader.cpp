@@ -244,7 +244,9 @@ Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene)
                 targetTexture->id = resourceManager.loadTexture(str.C_Str(), m_directory, isSrgb);
                 targetTexture->type = typeName;
                 targetTexture->path = str.C_Str();
-                material.activeTextures.push_back(*targetTexture);
+                // this really shouldnt exist here but whatever
+                targetTexture->handle = glGetTextureHandleARB(targetTexture->id);
+                glMakeTextureHandleResidentARB(targetTexture->handle);
             }
 
         }

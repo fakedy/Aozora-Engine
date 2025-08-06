@@ -6,6 +6,11 @@ namespace Aozora {
 	{
 		// scene id 0 should be the base scene for the project
 		m_scenes[nextSceneID] = std::make_unique<Scene>();
+
+		// temp stuff
+		if (nextSceneID == 0) {
+			m_activeScene = getScene(0);
+		}
 		nextSceneID++;
 		return nextSceneID - 1; // lol
 	}
@@ -21,5 +26,9 @@ namespace Aozora {
 		}
 		std::cout << "Scene doesnt exist\n";
 		return nullptr;
+	}
+	Scene* SceneManager::getCurrentActiveScene()
+	{
+		return m_activeScene;
 	}
 }

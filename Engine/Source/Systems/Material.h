@@ -22,6 +22,7 @@ namespace Aozora {
 
 		struct Texture {
 			unsigned int id{};
+			uint64_t handle{};
 			unsigned int refCount{};
 			TextureType type{};
 			std::string path{};
@@ -41,14 +42,14 @@ namespace Aozora {
 		float metallic{ 0.0f };
 		float specular{ 0.0f };
 		float roughness{ 0.0f };
-		float ao{ 0.0f };
+		float ao{ 1.0f };
 		glm::fvec4 emissive{ glm::fvec4(0.0f,0.0f,0.0f, 0.0f) };
 
 		uint32_t ID;
+	
 		std::string name;
 
 	private:
-		unsigned int ShaderProgram{0};
 
 	};
 

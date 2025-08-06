@@ -1,8 +1,6 @@
 #include "SceneRenderer.h"
 #include "OpenGL.h"
 #include <Systems/ECS/Components/Components.h>
-#include <functional>
-
 
 namespace Aozora::Graphics {
 	SceneRenderer::SceneRenderer(IrenderAPI* api)
@@ -13,13 +11,10 @@ namespace Aozora::Graphics {
 		EventDispatcher::subscribe(EventType::ChangeScene, [this](Event& e) {
 			this->onEvent(e);
 		});
+		EventDispatcher::subscribe(EventType::NewMesh, [this](Event& e) {
+			this->onEvent(e);
+			});
 
-		PSO gbufferPSO;
-		gbufferPSO.commands = []() {
-			glEnable(GL_DEPTH_TEST);
-			glDepthMask(GL_TRUE);
-			glDisable(GL_BLEND);
-		};
 	}
 
 	void SceneRenderer::updatePrimaryScene(Scene& scene)
@@ -42,8 +37,6 @@ namespace Aozora::Graphics {
 		}
 	}
 
-
-	// doesnt get called because who knows
 	void SceneRenderer::onEvent(Event& e)
 	{
 		switch (e.getEventType()) {
@@ -54,21 +47,26 @@ namespace Aozora::Graphics {
 			std::cout << "scene changed\n";
 			break;
 		}
+		case(EventType::NewMesh):
+		{
+			auto* scene = static_cast<EntityCreatedWithMeshEvent&>(e).getScene();
+			// find viewport with this scene
+			// kinda whack
+			for (auto& [ID, viewport] : m_viewports) {
+				if (viewport.scene == scene) {
+					viewport.renderPipeline->genMegaBuffer(*scene);
+				}
+			}
+
+			std::cout << "Update MegaBuffer\n";
+			break;
+		}
 
 		default:
 			break;
 		}
 
 	}
-
-	// prototyping
-	/*
-	* If i get this straight, we can create a command for all the transparent and all the opaque objects?
-	* and use glMultiDrawIndirect 
-	*/
-
-
-
 
 	void SceneRenderer::render() {
 
@@ -79,17 +77,14 @@ namespace Aozora::Graphics {
 			// if viewport have a scene
 			if (viewport.scene != nullptr && viewport.isActive) {
 
-				// submit render command
 
-				std::vector<RenderCommand> commands;
-
-
-				
 				viewport.renderPipeline->execute(*m_RenderAPI, *viewport.scene, viewport.camera, viewport.width, viewport.height);
 			}
 		}
 	}
 
+	// note
+	// make this class listen on all scenes, if a scene add a mesh we update the megabuffer
 
 	uint32_t SceneRenderer::createViewport(ViewportType type)
 	{

@@ -41,10 +41,10 @@ namespace Aozora {
 		unsigned int EBO{};
 
 		MeshData meshData;
+
+		bool isBuffered{ false };
 		void bufferData();
-		void draw(Shader& shader);
 		void drawGeometry();
-	private:
 
 	};
 }

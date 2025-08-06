@@ -14,12 +14,16 @@ namespace Aozora {
 
 		Scene* getScene(uint32_t id);
 
+		Scene* getCurrentActiveScene();
+
 
 	private:
 
 		std::unordered_map<uint32_t, std::unique_ptr<Scene>> m_scenes;
 
 		int nextSceneID{ 0 };
+
+		Scene* m_activeScene = nullptr;
 
 
 

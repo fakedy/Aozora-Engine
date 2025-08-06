@@ -14,7 +14,8 @@ namespace Aozora {
 		SceneCreated,
 		ChangeScene,
 		CreateProjectRequest,
-		ViewportResize
+		ViewportResize,
+		NewMesh
 	};
 
 	class Event {

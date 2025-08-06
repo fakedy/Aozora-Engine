@@ -19,6 +19,8 @@ namespace Aozora {
 		uint32_t getFinalImage() override;
 		std::unique_ptr<FrameBuffer> renderBuffer;
 
+		void genMegaBuffer(Scene& scene);
+		void updateMegaBuffer(Scene& scene);
 
 	private:
 		std::unique_ptr<FrameBuffer> gBuffer;
@@ -26,6 +28,35 @@ namespace Aozora {
 		std::unique_ptr<FrameBuffer> irradianceBuffer;
 		Mesh screenQuad;
 		Mesh skybox;
+
+		uint32_t m_indirectBuffer;
+		uint32_t m_VAO;
+		uint32_t m_VBO;
+		uint32_t m_EBO;
+
+		uint32_t objectSSBO;
+
+		struct ObjectData {
+			glm::mat4 model;
+			uint64_t diffuseTextureHandle;
+			uint64_t emissiveTextureHandle;
+			uint64_t aoTextureHandle;
+			uint64_t metallicTextureHandle;
+			uint64_t roughnessTextureHandle;
+			uint64_t normalTextureHandle;
+			glm::vec4 albedo;
+			glm::vec4 emissive;
+			glm::vec3 normal;
+			float pad1;
+
+			float metallic;
+			float roughness;
+			float ao;
+			float pad2;
+		};
+		
+
+		
 
 		// maybe call a function in the api to create a shader from given strings.
 		OpenglShader m_defaultShader{ OpenglShader("Resources/Shaders/v_default.glsl", "Resources/Shaders/f_default.glsl") };
@@ -41,6 +72,7 @@ namespace Aozora {
 
 		void renderLights(Scene& scene);
 		void postfxPass();
+
 	};
 
 

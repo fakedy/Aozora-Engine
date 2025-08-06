@@ -23,11 +23,4 @@ namespace Aozora{
 	}
 
 
-
-
-
-
-
-
-
 }

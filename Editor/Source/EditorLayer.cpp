@@ -10,12 +10,13 @@ void EditorLayer::onUpdate(const Aozora::Context& context)
 	// update systems here instead of application
 
 	auto& app = Aozora::Application::getApplication();
+	auto current_scene = app.getSceneManager().getCurrentActiveScene();
 
 	// no difference yet
 	if (m_currentState == EditorState::EDIT) {
 
-		app.m_cameraSystem->update(app.m_project->m_currentScene->getRegistry());
-		m_editorCameraSystem->update(app.m_project->m_currentScene->getRegistry());
+		app.m_cameraSystem->update(current_scene->getRegistry());
+		m_editorCameraSystem->update(current_scene->getRegistry());
 		
 		app.getCurrentScene().update();
 
@@ -23,9 +24,9 @@ void EditorLayer::onUpdate(const Aozora::Context& context)
 	}
 	else {
 
-		app.m_cameraSystem->update(app.m_project->m_currentScene->getRegistry());
+		app.m_cameraSystem->update(current_scene->getRegistry());
 
-		app.getScriptSystem().update(app.m_project->m_currentScene->getRegistry());
+		app.getScriptSystem().update(current_scene->getRegistry());
 		app.getCurrentScene().update();
 
 		app.getRenderer().render();

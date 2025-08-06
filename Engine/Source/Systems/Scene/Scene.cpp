@@ -102,6 +102,17 @@ namespace Aozora {
 
 	}
 
+	void Scene::addEntity()
+	{
+		const auto entity = m_registry->create();
+
+		// one entity per mesh
+		m_registry->emplace<Aozora::NameComponent>(entity).name = "Entity";
+		m_registry->emplace<Aozora::TagComponent>(entity);
+		m_registry->emplace<Aozora::TransformComponent>(entity);
+		m_registry->emplace<Aozora::RelationComponent>(entity);
+	}
+
 	void Scene::updateTransform(entt::entity entity , const glm::mat4& model)
 	{
 		auto view = m_registry->view<TransformComponent>();
@@ -122,6 +133,55 @@ namespace Aozora {
 		for (const auto entity : children) {
 			updateTransform(entity, transform.model);
 		}
+
+	}
+	entt::entity Scene::createEntityFromNodes(Model::Node* node, entt::entity parent)
+	{
+
+		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
+
+		const auto entity = m_registry->create();
+
+		m_registry->emplace<Aozora::NameComponent>(entity).name = node->name.c_str();
+		m_registry->emplace<Aozora::TagComponent>(entity);
+		m_registry->emplace<Aozora::TransformComponent>(entity);
+		if (node->hasMesh) {
+			// add a mesh component to the entity with the id of the mesh
+			auto& meshComp = m_registry->emplace<Aozora::MeshComponent>(entity);
+			meshComp.meshID = node->meshID;
+			meshComp.materialID = resourceManager.m_loadedMeshes.at(node->meshID).materialID;
+			if (!resourceManager.m_loadedMeshes.at(node->meshID).isBuffered) {
+				// 
+				EntityCreatedWithMeshEvent event = EntityCreatedWithMeshEvent(entity, node->meshID, this);
+				EventDispatcher::dispatch(event);
+			}
+		}
+
+		Aozora::RelationComponent& relationComponent = m_registry->emplace<Aozora::RelationComponent>(entity, parent);
+
+		for (Model::Node* childNode : node->childrenNodes) {
+
+			entt::entity childEntity = createEntityFromNodes(childNode, entity);
+			relationComponent.children.push_back(childEntity);
+
+		}
+		return entity;
+	}
+	void Scene::instantiateEntity(std::string name)
+	{
+		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
+
+
+
+		// check if it is loaded
+		if (resourceManager.m_loadedModels.find(name) == resourceManager.m_loadedModels.end()) {
+			// do some error or something idk
+
+		}
+
+		Model& model = resourceManager.m_loadedModels.at(name);
+
+		createEntityFromNodes(model.originNode, entt::null);
 
 	}
 }

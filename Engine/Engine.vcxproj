@@ -175,7 +175,6 @@
     <ClInclude Include="Source\Systems\Logging\Logger.h" />
     <ClInclude Include="Source\Systems\Material.h" />
     <ClInclude Include="Source\Systems\Mesh.h" />
-    <ClInclude Include="Source\Systems\MeshSystem.h" />
     <ClInclude Include="Source\Systems\Model.h" />
     <ClInclude Include="Source\Systems\Project\Project.h" />
     <ClInclude Include="Source\Systems\Renderers\DeferredPipeline.h" />
@@ -200,18 +199,17 @@
     <ClInclude Include="Source\Systems\Windows\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\APPLICATION.CPP" />
     <ClCompile Include="Source\AozoraAPI\ApplicationAPI.cpp" />
     <ClCompile Include="Source\AozoraAPI\RenderAPI.cpp" />
     <ClCompile Include="Source\AozoraAPI\ResourcesAPI.cpp" />
     <ClCompile Include="Source\AozoraAPI\SceneAPI.cpp" />
-    <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Systems\CameraSystem.cpp" />
     <ClCompile Include="Source\Systems\EditorCameraSystem.cpp" />
     <ClCompile Include="Source\Systems\Input.cpp" />
     <ClCompile Include="Source\Systems\Layers\LayerStack.cpp" />
     <ClCompile Include="Source\Systems\Logging\Logger.cpp" />
     <ClCompile Include="Source\Systems\Mesh.cpp" />
-    <ClCompile Include="Source\Systems\MeshSystem.cpp" />
     <ClCompile Include="Source\Systems\Project\Project.cpp" />
     <ClCompile Include="Source\Systems\Renderers\DeferredPipeline.cpp" />
     <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp" />

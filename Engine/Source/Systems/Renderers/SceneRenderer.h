@@ -41,30 +41,5 @@ namespace Aozora::Graphics {
 
 		void onEvent(Event& e) override;
 
-		struct PSO {
-		public:
-			// pipeline state object
-			/*
-			* Role of the PSO is to set the necessary states before drawing.
-			*/
-
-			std::function<void()> commands;
-
-			void bind() {
-				// set the necessary states
-
-
-				commands();
-
-			}
-		};
-
-		struct RenderCommand {
-			uint32_t countL;
-			uint32_t instanceCount;
-			uint32_t firstIndex;
-			uint32_t baseVertex;
-			uint32_t baseInstance;
-		};
 	};
 }

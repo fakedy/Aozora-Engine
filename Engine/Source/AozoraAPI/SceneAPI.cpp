@@ -9,18 +9,10 @@ namespace Aozora {
 
 	void SceneAPI::addEntity() {
 
-
+		// will get rid of all scene stuff
+		// but i havent fixed a way to identify which scene we're acting on
 		Scene& currentScene = Application::getApplication().getCurrentScene();
-		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
-
-		entt::registry& registry = currentScene.getRegistry();
-		const auto entity = registry.create();
-
-		// one entity per mesh
-		registry.emplace<Aozora::NameComponent>(entity).name = "Entity";
-		registry.emplace<Aozora::TagComponent>(entity);
-		registry.emplace<Aozora::TransformComponent>(entity);
-		registry.emplace<Aozora::RelationComponent>(entity);
+		currentScene.addEntity();
 
 	}
 
