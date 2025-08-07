@@ -11,22 +11,6 @@ namespace Aozora {
 	{
 		m_registry = std::make_shared<entt::registry>();
 
-		// create skybox
-		/*
-		* Well the good thing is that its in the registry so its easy to query, the bad thing is that its tied to the scene...
-		*/
-		const entt::entity skyboxEntity = m_registry->create();
-		m_registry->emplace_or_replace<EditorEntityTag>(skyboxEntity);
-		std::vector<std::string> paths = {
-			"Resources/cubemap/px.hdr",
-			"Resources/cubemap/nx.hdr",
-			"Resources/cubemap/py.hdr",
-			"Resources/cubemap/ny.hdr",
-			"Resources/cubemap/pz.hdr",
-			"Resources/cubemap/nz.hdr"
-		};
-		SkyboxTextures data = ResourcesAPI::loadSkybox(paths);
-		m_registry->emplace_or_replace<SkyboxComponent>(skyboxEntity).data = data;
 	}
 	void Scene::update()
 	{

@@ -89,6 +89,9 @@ namespace Aozora {
 		m_resourceManager->clearResources();
 		m_sceneManager->clearScenes();
 
+		// would init a new project directory
+		m_assetManager->createProject("MyProject");
+
 		m_projectManager->createProject("MyProject");
 
 		uint32_t sceneID = m_sceneManager->createScene();
@@ -103,9 +106,24 @@ namespace Aozora {
 		cameraComponent = &registry.emplace<Aozora::CameraComponent>(editorCameraEntity);
 		registry.emplace<Aozora::EditorEntityTag>(editorCameraEntity);
 
+
+		// create skybox
+		const entt::entity skyboxEntity = registry.create();
+		registry.emplace_or_replace<EditorEntityTag>(skyboxEntity);
+		std::vector<std::string> paths = {
+			"Resources/cubemap/px.hdr",
+			"Resources/cubemap/nx.hdr",
+			"Resources/cubemap/py.hdr",
+			"Resources/cubemap/ny.hdr",
+			"Resources/cubemap/pz.hdr",
+			"Resources/cubemap/nz.hdr"
+		};
+		SkyboxTextures data = ResourcesAPI::loadSkybox(paths);
+		registry.emplace_or_replace<SkyboxComponent>(skyboxEntity).data = data;
+
+
 		m_sceneRenderer->updatePrimaryScene(*scene);
 		Aozora::ResourcesAPI::loadModel("Resources/testcube/testcube.obj");
-
 
 	}
 
