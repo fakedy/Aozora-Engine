@@ -3,6 +3,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <GLFW/glfw3.h>
 #include <Application.h>
+#include <Systems/Logging/Logger.h>
 
 
 namespace Aozora {
@@ -152,7 +153,7 @@ namespace Aozora {
 			meshComp.materialID = resourceManager.m_loadedMeshes.at(node->meshID).materialID;
 			if (!resourceManager.m_loadedMeshes.at(node->meshID).isBuffered) {
 				// 
-				EntityCreatedWithMeshEvent event = EntityCreatedWithMeshEvent(entity, node->meshID, this);
+				EntityCreatedWithMeshEvent* event = new EntityCreatedWithMeshEvent(entity, node->meshID, this);
 				EventDispatcher::dispatch(event);
 			}
 		}
@@ -171,12 +172,13 @@ namespace Aozora {
 	{
 		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
 
+		Log::info(std::format("Instantiating {}", name));
 
-
-		// check if it is loaded
+		// check if it is in ram
 		if (resourceManager.m_loadedModels.find(name) == resourceManager.m_loadedModels.end()) {
-			// do some error or something idk
-
+			// model not ram
+			// load model from disk from assetmanager
+			Log::info(std::format("Model: {} not in ram.", name));
 		}
 
 		Model& model = resourceManager.m_loadedModels.at(name);

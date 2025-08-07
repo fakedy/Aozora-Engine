@@ -1,6 +1,7 @@
 #include "EditorUILayer.h"
 #include "Application.h"
 
+
 void EditorUILayer::onUpdate(const Aozora::Context& context){
 
 	ImGui_ImplOpenGL3_NewFrame();
@@ -21,13 +22,24 @@ void EditorUILayer::onUpdate(const Aozora::Context& context){
 			if (ImGui::BeginMenu("New")) {
 				if (ImGui::MenuItem("Project")) {
 
-					// NEW WOOOOOORLD
-					//Aozora::ApplicationAPI::newProject();
+					// create pop up to prevent accidental project deletion
+					Aozora::CreateProjectRequest* event = new Aozora::CreateProjectRequest();
+					Aozora::EventDispatcher::dispatch(event);
+					
+					// have this dispatch an event or something that request a project change
 				}
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Open")) {
 				if (ImGui::MenuItem("Project")) {
+					Aozora::SaveProjectRequest* event = new Aozora::SaveProjectRequest();
+					Aozora::EventDispatcher::dispatch(event);
+				}
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Save")) {
+				if (ImGui::MenuItem("Project")) {
+
 				}
 				ImGui::EndMenu();
 			}

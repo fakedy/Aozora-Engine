@@ -7,6 +7,7 @@
 #include <Systems/Events/EventSystem.h>
 #include <Systems/Events/Events.h>
 #include <Systems/Project/Project.h>
+#include <Systems/Scene/Scene.h>
 class Editor : public Aozora::Application {
 
 public:
@@ -16,13 +17,11 @@ public:
 	Editor() : Application("Aozora Editor") { // calls the constructor of Application
 
 
-		
-		createNewProject();
-
-
-		EditorLayer* editlayer = new EditorLayer();
+		EditorLayer* editlayer = new EditorLayer(getSceneManager());
 		layerStack->addLayer(editlayer);
 		layerStack->addOverlay(new EditorUILayer(editlayer));
+
+		createProject();
 
 
 		run(); // run the app

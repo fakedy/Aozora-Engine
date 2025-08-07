@@ -25,11 +25,21 @@ namespace Aozora {
 		Project& m_project;
 	};
 
-	class createProjectRequest : public Event {
+	class CreateProjectRequest : public Event {
 
 	public:
 
-		createProjectRequest() : Event(EventType::ProjectCreated) {}
+		CreateProjectRequest() : Event(EventType::CreateProjectRequest) {}
+
+	protected:
+
+	};
+
+	class SaveProjectRequest : public Event {
+
+	public:
+
+		SaveProjectRequest() : Event(EventType::SaveProjectRequest) {}
 
 	protected:
 

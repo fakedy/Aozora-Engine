@@ -1,7 +1,7 @@
 #include "ResourceManager.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
-
+#include <Systems/Logging/Logger.h>
 
 namespace Aozora {
 
@@ -12,7 +12,7 @@ namespace Aozora {
         // storing shorted filename and whole path for the map is confusing
         std::string filename = file.substr(file.find_last_of('/'), file.find_last_of('.'));
         if (modelLoaded(filename)) {
-            std::cout << "model already loaded\n";
+            Log::info("model already loaded");
             return;
         }
         Model loadedModel = m_modelLoader.loadModel(file);
@@ -34,7 +34,7 @@ namespace Aozora {
             return isAlreadyLoaded;
         }
 
-        std::cout << "Loading texture file: " << filename << "\n";
+        Log::info("Loading texture file: " + filename);
         int width, height, nrChannels;
         unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
         glGenTextures(1, &texture);
@@ -59,7 +59,7 @@ namespace Aozora {
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         }
         else {
-            std::cerr << "ResourceManager: texture load failed\n";
+            Log::error("ResourceManager::loadTexture failed");
             return 0;
         }
         stbi_image_free(data);
@@ -74,7 +74,7 @@ namespace Aozora {
             m_loadedTextures[filename].refCount++;
         }
 
-        std::cout << "Created texture with ID: " << texture << "\n";
+        Log::info(std::format("Created texture with ID: {}", texture));
 
         return texture;
 
@@ -93,7 +93,7 @@ namespace Aozora {
             return isAlreadyLoaded;
         }
 
-        std::cout << "Loading texture file: " << filename << "\n";
+        Log::info("Loading texture file: " + filename);
         int width, height, nrChannels;
         unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
         glGenTextures(1, &texture);
@@ -118,7 +118,7 @@ namespace Aozora {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         }
         else {
-            std::cerr << "ResourceManager: texture load failed\n";
+            Log::error("ResourceManager::loadTexture failed");
             return 0;
         }
         stbi_image_free(data);
@@ -134,8 +134,7 @@ namespace Aozora {
             m_loadedTextures[filename].refCount++;
         }
 
-        std::cout << "Created texture with ID: " << texture << "\n";
-
+        Log::info(std::format("Created texture with ID: {}", texture));
         return texture;
 
     }
@@ -172,11 +171,10 @@ namespace Aozora {
 
             }
             else {
-                std::cerr << "ResourceManager: texture load failed\n";
+                Log::error("ResourceManager::loadCubemap failed");
                 stbi_image_free(data);
                 return 0;
             }
-            std::cout << "Created face texture\n";
             i++;
         }
 
@@ -186,8 +184,7 @@ namespace Aozora {
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-        std::cout << "Created cubemap with ID: " << textureID << "\n";
-
+        Log::info(std::format("Created cubemap with ID: {}", textureID));
         return textureID;
     }
 
@@ -214,7 +211,7 @@ namespace Aozora {
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-        std::cout << "Created cubemap with ID: " << textureID << "\n";
+        Log::info(std::format("Created empty cubemap with ID: {}", textureID));
 
         return textureID;
     }
@@ -257,7 +254,7 @@ namespace Aozora {
     {
         auto it = m_meshPathToID.find(path);
         if (it != m_meshPathToID.end()) {
-            std::cout << "Mesh already loaded\n";
+            Log::info("Mesh already loaded");
             return it->second;
         }
 
@@ -275,7 +272,8 @@ namespace Aozora {
 
     void ResourceManager::clearResources()
 	{
-		std::cout << "Clearing resources\n";
+        Log::info("Clearing resources");
+
 
         // list of textures to delete
         std::vector<GLuint> texturesToDelete;
@@ -307,6 +305,8 @@ namespace Aozora {
 		m_nextMeshID = 0;
 		m_nextMaterialID = 0;
     }
+
+
 
 
 

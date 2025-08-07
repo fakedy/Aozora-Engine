@@ -25,7 +25,9 @@ namespace Aozora {
 		m_sceneManager = std::make_unique<SceneManager>();
 		m_sceneRenderer = std::make_unique<Graphics::SceneRenderer>(m_renderAPI.get());
 		m_resourceManager = std::make_unique<ResourceManager>();
-
+		m_assetManager = std::make_unique<Resources::AssetManager>();
+		m_projectManager = std::make_unique<ProjectManager>(*m_sceneManager.get());
+		
 		
 		m_cameraSystem = std::make_unique<CameraSystem>();
 
@@ -35,6 +37,16 @@ namespace Aozora {
 		context.sceneManager = m_sceneManager.get();
 		context.sceneRenderer = m_sceneRenderer.get();
 		context.resourcemanager = m_resourceManager.get();
+		context.projectManager = m_projectManager.get();
+		//context.assetManager = m_assetManager;
+
+	
+		EventDispatcher::subscribe(EventType::CreateProjectRequest, [this](Event& e) {
+			this->onEvent(e);
+			});
+		EventDispatcher::subscribe(EventType::SaveProjectRequest, [this](Event& e) {
+			this->onEvent(e);
+			});
 
 	}
 
@@ -44,6 +56,7 @@ namespace Aozora {
 		while (!m_window->windowShouldClose()) {
 			auto start = std::chrono::high_resolution_clock::now();
 			processActions();
+			EventDispatcher::flush();
 
 			// TODO render after updated layers
 			for (Layer* layer : *layerStack) {
@@ -58,10 +71,6 @@ namespace Aozora {
 
 		}
 	}
-	Scene& Application::getCurrentScene()
-	{
-		return *m_project->m_currentScene;
-	}
 
 	void Application::queueAction(std::function<void()> func)
 	{
@@ -75,19 +84,54 @@ namespace Aozora {
 		}
 	}
 
-	void Application::createNewProject()
+	void Application::createProject()
 	{
-		auto action = [this]() {
-			m_resourceManager->clearResources();
-			m_project.reset();
-			m_project = std::make_unique<Project>();
-			m_project->setup();
-			getRenderer().updatePrimaryScene(*m_project->m_currentScene);
-			ProjectCreatedEvent event(*m_project);
-			EventDispatcher::dispatch(event);
-			};
+		m_resourceManager->clearResources();
+		m_sceneManager->clearScenes();
 
-		queueAction(action);
+		m_projectManager->createProject("MyProject");
+
+		uint32_t sceneID = m_sceneManager->createScene();
+		Scene* scene = m_sceneManager->getScene(sceneID);
+		// creating the editor camera
+		// will be invisible to the scene graph
+		Aozora::CameraComponent* cameraComponent;
+		Aozora::TransformComponent* transformComponent;
+		auto& registry = scene->getRegistry();
+		const entt::entity editorCameraEntity = registry.create();
+		transformComponent = &registry.emplace<Aozora::TransformComponent>(editorCameraEntity);
+		cameraComponent = &registry.emplace<Aozora::CameraComponent>(editorCameraEntity);
+		registry.emplace<Aozora::EditorEntityTag>(editorCameraEntity);
+
+		m_sceneRenderer->updatePrimaryScene(*scene);
+		Aozora::ResourcesAPI::loadModel("Resources/testcube/testcube.obj");
+
+
 	}
+
+	void Application::saveProject()
+	{
+	}
+
+	// move to editor
+	void Application::onEvent(Event& e)
+	{
+
+		switch (e.getEventType())
+		{
+		case(Aozora::EventType::CreateProjectRequest): 
+			createProject();
+			break;
+
+		case(Aozora::EventType::SaveProjectRequest):
+			
+			break;
+		
+		default:
+			break;
+		}
+
+	}
+
 }
 

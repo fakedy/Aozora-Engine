@@ -9,7 +9,8 @@ void Workspace::draw(const Aozora::Context& context)
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::BeginMenu("New")) {
 				if (ImGui::MenuItem("Scene")) {
-					context.sceneManager->createScene();
+					// create asset of scene not a live scene in scenemanager
+					//context.sceneManager->createScene();
 				}
 				if (ImGui::MenuItem("Folder")) {
 					// create new asset folder or something idk

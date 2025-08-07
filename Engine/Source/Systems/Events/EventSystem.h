@@ -2,6 +2,7 @@
 #include <vector>
 #include <map>
 #include <functional>
+#include <cassert>
 
 
 
@@ -14,6 +15,7 @@ namespace Aozora {
 		SceneCreated,
 		ChangeScene,
 		CreateProjectRequest,
+		SaveProjectRequest,
 		ViewportResize,
 		NewMesh
 	};
@@ -52,18 +54,33 @@ namespace Aozora {
 			s_listeners[type].push_back(callback);
 		}
 
-		static void dispatch(Event& event) {
-			EventType type = event.getEventType();
-			if (s_listeners.find(type) != s_listeners.end()) {
-				for (auto& callback : s_listeners[type]) {
-					callback(event);
+		static void dispatch(Event* event) {
+			assert(event != nullptr && "Attempted to dispatch a null event!");
+			m_eventQueue.emplace_back(event);
+		}
+
+		static void flush() {
+
+			for (const auto& event : m_eventQueue) {
+
+				if (event) {
+
+					EventType type = event->getEventType();
+					if (s_listeners.find(type) != s_listeners.end()) {
+						for (auto& callback : s_listeners[type]) {
+							callback(*event);
+						}
+					}
 				}
 			}
+			m_eventQueue.clear();
 		}
+
 		
 	private:
 
 		inline static std::map<EventType, std::vector<EventCallbackFunc>> s_listeners;
+		inline static std::vector<std::unique_ptr<Event>> m_eventQueue;
 
 	};
 

@@ -10,17 +10,6 @@ namespace Aozora {
 
 		Project();
 
-		Scene* m_currentScene;
 
-		void setup();
-
-		void newScene();
-
-		void loadScene(uint32_t sceneID);
-
-	private:
-
-
-		uint32_t sceneID;
 	};
 }

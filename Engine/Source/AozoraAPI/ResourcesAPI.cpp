@@ -8,8 +8,6 @@
 
 namespace Aozora {
 
-	entt::entity createEntityFromNodes(Model::Node* node, entt::entity parent);
-
 	void ResourcesAPI::loadModel(std::string path) {
 
 		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
@@ -47,11 +45,6 @@ namespace Aozora {
 		return resourceManager.loadTexture(name, false, persistent);
 	}
 
-	// with the nodes we create the actually entities
-	entt::entity createEntityFromNodes(Model::Node* node, entt::entity parent) {
-
-		return entt::null;
-	}
 
 
 	std::vector<std::string> ResourcesAPI::getLoadedModelNames()

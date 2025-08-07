@@ -178,6 +178,7 @@
     <ClInclude Include="Source\Systems\Mesh.h" />
     <ClInclude Include="Source\Systems\Model.h" />
     <ClInclude Include="Source\Systems\Project\Project.h" />
+    <ClInclude Include="Source\Systems\Project\ProjectManager.h" />
     <ClInclude Include="Source\Systems\Renderers\DeferredPipeline.h" />
     <ClInclude Include="Source\Systems\Renderers\FrameBuffer.h" />
     <ClInclude Include="Source\Systems\Renderers\IrenderAPI.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="Source\Systems\Logging\Logger.cpp" />
     <ClCompile Include="Source\Systems\Mesh.cpp" />
     <ClCompile Include="Source\Systems\Project\Project.cpp" />
+    <ClCompile Include="Source\Systems\Project\ProjectManager.cpp" />
     <ClCompile Include="Source\Systems\Renderers\DeferredPipeline.cpp" />
     <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglFrameBuffer.cpp" />

@@ -5,6 +5,8 @@
 #include "Systems/Renderers/IrenderAPI.h"
 #include "Systems/Layers/LayerStack.h"
 #include "Systems/ResourceManager/ResourceManager.h"
+#include "Systems/AssetManager/AssetManager.h"
+#include "Systems/Project/ProjectManager.h"
 #include "Systems/Scene/Scene.h"
 #include "Systems/CameraSystem.h"
 #include "Systems/Renderers/SceneRenderer.h"
@@ -13,12 +15,14 @@
 #include <Systems/SceneManager/SceneManager.h>
 #include <Systems/ScriptManager/ScriptSystem.h>
 #include <Context.h>
+#include <Systems/Events/Events.h>
+#include <Systems/Events/EventSystem.h>
 
 namespace Aozora {
 
 	class Project;
 
-	class Application
+	class Application : public IEventListener
 	{
 
 	public:
@@ -33,8 +37,6 @@ namespace Aozora {
 		static Application& getApplication() {
 			return *m_appInstance;
 		}
-
-		Scene& getCurrentScene();
 
 		ResourceManager& getResourceManager() {
 			return *m_resourceManager.get();
@@ -55,7 +57,6 @@ namespace Aozora {
 			return *m_scriptSystem.get();
 		}
 
-		void createNewProject();
 
 		inline Window& getWindow() { return *m_window; }
 
@@ -63,12 +64,15 @@ namespace Aozora {
 
 		void queueAction(std::function<void()> func);
 		void processActions();
+		
+		void createProject();
 
-
-		std::unique_ptr<Project> m_project;
 
 		std::unique_ptr<IrenderAPI> m_renderAPI;
 		std::unique_ptr<ResourceManager> m_resourceManager;
+		std::unique_ptr<Resources::AssetManager> m_assetManager;
+		std::unique_ptr<ProjectManager> m_projectManager;
+
 		std::unique_ptr<Graphics::SceneRenderer> m_sceneRenderer;
 		std::unique_ptr<SceneManager> m_sceneManager;
 		std::unique_ptr<ScriptSystem> m_scriptSystem;
@@ -81,7 +85,8 @@ namespace Aozora {
 
 		std::queue<std::function<void()>> m_actionQueue;
 		
-
+		void saveProject();
+		void onEvent(Event& e);
 	};
 
 }

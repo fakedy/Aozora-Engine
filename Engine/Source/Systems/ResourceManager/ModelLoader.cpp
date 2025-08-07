@@ -5,6 +5,7 @@
 #include "Systems/Material.h"
 #include "Systems/ResourceManager/ResourceManager.h"
 #include <Application.h>
+#include <Systems/Logging/Logger.h>
 
 
 namespace Aozora {
@@ -258,7 +259,7 @@ Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene)
     Model ModelLoader::loadModel(const std::string& file)
     {
         ResourceManager& resourceManager = Application::getApplication().getResourceManager();
-        std::cout << "\nLoading model: " << file << "\n";
+        Log::info(std::format("Loading model: {}", file));
         const aiScene* scene = importFile(file);
         m_directory = file.substr(0, file.find_last_of('/'));
         std::string filename = file.substr(file.find_last_of('/'), file.find_last_of('.'));

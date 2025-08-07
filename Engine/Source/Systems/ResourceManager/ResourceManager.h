@@ -5,6 +5,8 @@
 #include <iostream>
 #include <glad/glad.h>
 #include "Systems/Model.h"
+#include <Systems/Events/Events.h>
+#include <Systems/Events/EventSystem.h>
 
 
 namespace Aozora {
@@ -12,7 +14,10 @@ namespace Aozora {
 	class ResourceManager {
 	public:
 
-		ResourceManager() {};
+		ResourceManager() {
+		
+
+		};
 
 		const void loadModel(const std::string& file);
 
@@ -29,7 +34,6 @@ namespace Aozora {
 		unsigned int meshLoaded(const std::string path);
 		bool modelLoaded(const std::string path);
 
-		void clearResources();
 		// resources
 		std::unordered_map<std::string, Material::Texture> m_loadedTextures;
 
@@ -44,11 +48,11 @@ namespace Aozora {
 		unsigned int m_nextMeshID{ 0 };
 		unsigned int m_nextMaterialID{ 0 };
 
+		void clearResources();
 
 	private:
 
 		ModelLoader m_modelLoader = ModelLoader();
-
 
 
 	};

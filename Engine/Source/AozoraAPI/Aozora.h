@@ -29,8 +29,6 @@ namespace Aozora {
 
 	class ApplicationAPI {
 	public:
-		static uint32_t createNewScene();
-		static void loadScene(uint32_t ID);
 		static Scene* getScene(uint32_t id);
 
 
@@ -52,17 +50,5 @@ namespace Aozora {
 		static Material& getMaterial(uint32_t id);
 
 	};
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

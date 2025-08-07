@@ -1,6 +1,8 @@
 #pragma once
 #include <unordered_map>
 #include <Systems/Scene/Scene.h>
+#include <Systems/Events/Events.h>
+#include <Systems/Events/EventSystem.h>
 
 
 namespace Aozora {
@@ -8,6 +10,9 @@ namespace Aozora {
 	class SceneManager {
 	public:
 
+		SceneManager() {
+
+		}
 
 		uint32_t createScene();
 		void deleteScene(uint32_t id);
@@ -16,6 +21,7 @@ namespace Aozora {
 
 		Scene* getCurrentActiveScene();
 
+		void clearScenes();
 
 	private:
 

@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include <Systems/Logging/Logger.h>
 
 namespace Aozora {
 
@@ -24,11 +25,20 @@ namespace Aozora {
 		if (it != m_scenes.end()) {
 			return it->second.get();
 		}
-		std::cout << "Scene doesnt exist\n";
+
+		Log::error("SceneManager::getScene fail on Scene doesnt exist");
 		return nullptr;
 	}
 	Scene* SceneManager::getCurrentActiveScene()
 	{
 		return m_activeScene;
+	}
+	
+	void SceneManager::clearScenes()
+	{
+		nextSceneID = 0;
+		m_scenes.clear();
+		Log::info("Clearing scenes");
+
 	}
 }

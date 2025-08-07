@@ -6,8 +6,9 @@
 #include <Systems/ECS/Components/Components.h>
 #include <Systems/Scene/Scene.h>
 #include <Systems/Project/Project.h>
-
-
+#include <Systems/Events/EventSystem.h>
+#include <Systems/Events/Events.h>
+#include <Systems/SceneManager/SceneManager.h>
 enum class EditorState { EDIT, PLAY };
 
 
@@ -15,9 +16,10 @@ enum class EditorState { EDIT, PLAY };
 class EditorLayer : public Aozora::Layer
 {
 public:
-	EditorLayer() {
+	EditorLayer(Aozora::SceneManager& sceneManager) : m_sceneManager(sceneManager){
 		m_editorViewPortID = Aozora::RenderAPI::createViewport(Aozora::ViewportType::PrimaryEditor);
 		m_editorCameraSystem = std::make_unique<Aozora::EditorCameraSystem>();
+
 
 	}
 
@@ -31,6 +33,7 @@ public:
 
 private:
 
+	Aozora::SceneManager& m_sceneManager;
 	EditorState m_currentState{ EditorState::EDIT };
 
 	std::unique_ptr<Aozora::EditorCameraSystem> m_editorCameraSystem;

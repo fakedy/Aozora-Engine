@@ -1,6 +1,7 @@
 #include "SceneRenderer.h"
 #include "OpenGL.h"
 #include <Systems/ECS/Components/Components.h>
+#include <Systems/Logging/Logger.h>
 
 namespace Aozora::Graphics {
 	SceneRenderer::SceneRenderer(IrenderAPI* api)
@@ -8,9 +9,6 @@ namespace Aozora::Graphics {
 
 		m_RenderAPI = api;
 
-		EventDispatcher::subscribe(EventType::ChangeScene, [this](Event& e) {
-			this->onEvent(e);
-		});
 		EventDispatcher::subscribe(EventType::NewMesh, [this](Event& e) {
 			this->onEvent(e);
 			});
@@ -21,32 +19,20 @@ namespace Aozora::Graphics {
 	{
 
 		auto view = scene.getRegistry().view<CameraComponent, EditorEntityTag>();
-
-
+		
 		for (auto& [ID, viewport] : m_viewports) {
 
-			if (viewport.type == ViewportType::PrimaryGame || viewport.type == ViewportType::PrimaryEditor) {
-				viewport.scene = &scene;
+			if (viewport.type == ViewportType::PrimaryEditor) {
+				viewport.setScene(scene);
 				viewport.camera = view.front(); // temp
 			}
-
-			if (viewport.type == ViewportType::PrimaryEditor) {
-
-				viewport.camera = view.front(); // should ideally be the only editor camera
-			}
 		}
+		Log::info("Updated primary scene");
 	}
 
 	void SceneRenderer::onEvent(Event& e)
 	{
 		switch (e.getEventType()) {
-		case(EventType::ChangeScene):
-		{
-			auto& scene = static_cast<ChangeSceneEvent&>(e).getScene();
-			updatePrimaryScene(scene);
-			std::cout << "scene changed\n";
-			break;
-		}
 		case(EventType::NewMesh):
 		{
 			auto* scene = static_cast<EntityCreatedWithMeshEvent&>(e).getScene();
@@ -57,10 +43,9 @@ namespace Aozora::Graphics {
 					viewport.renderPipeline->genMegaBuffer(*scene);
 				}
 			}
-
-			std::cout << "Update MegaBuffer\n";
 			break;
 		}
+
 
 		default:
 			break;
@@ -76,8 +61,6 @@ namespace Aozora::Graphics {
 			// make sure viewport is active before doing this.
 			// if viewport have a scene
 			if (viewport.scene != nullptr && viewport.isActive) {
-
-
 				viewport.renderPipeline->execute(*m_RenderAPI, *viewport.scene, viewport.camera, viewport.width, viewport.height);
 			}
 		}

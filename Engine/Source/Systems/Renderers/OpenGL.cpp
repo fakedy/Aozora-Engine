@@ -9,6 +9,7 @@
 #include "Application.h"
 #include "Systems/Renderers/FrameBuffer.h"
 #include "Systems/Renderers/Opengl/OpenglFrameBuffer.h"
+#include <Systems/Logging/Logger.h>
 
 namespace Aozora {
 
@@ -45,7 +46,8 @@ namespace Aozora {
 
 	uint32_t OpenGL::bakeCubemapIrradiance(uint32_t sourceID, uint32_t targetID)
 	{
-		std::cout << "Baking Cubemap Irradiance Texture\n";
+		Log::info("Baking Cubemap Irradiance Texture");
+		
 		// setup FBO
 		uint32_t captureFBO;
 		glGenFramebuffers(1, &captureFBO);
@@ -85,7 +87,7 @@ namespace Aozora {
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, targetID, 0);
 
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-				std::cout << "framebuffer not complete\n";
+				Log::error("framebuffer not complete");
 			}
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -7,6 +7,7 @@
 void EditorLayer::onUpdate(const Aozora::Context& context)
 {
 
+
 	// update systems here instead of application
 
 	auto& app = Aozora::Application::getApplication();
@@ -17,8 +18,8 @@ void EditorLayer::onUpdate(const Aozora::Context& context)
 
 		app.m_cameraSystem->update(current_scene->getRegistry());
 		m_editorCameraSystem->update(current_scene->getRegistry());
-		
-		app.getCurrentScene().update();
+
+		app.getSceneManager().getCurrentActiveScene()->update();
 
 		app.getRenderer().render();
 	}
@@ -27,7 +28,7 @@ void EditorLayer::onUpdate(const Aozora::Context& context)
 		app.m_cameraSystem->update(current_scene->getRegistry());
 
 		app.getScriptSystem().update(current_scene->getRegistry());
-		app.getCurrentScene().update();
+		app.getSceneManager().getCurrentActiveScene()->update();
 
 		app.getRenderer().render();
 
@@ -61,3 +62,4 @@ EditorState EditorLayer::getState()
 {
 	return m_currentState;
 }
+
