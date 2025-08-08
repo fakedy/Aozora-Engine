@@ -212,12 +212,6 @@
     <ClCompile Include="Source\APPLICATION.CPP">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\AozoraAPI\ApplicationAPI.cpp">
-      <Filter>Source\AozoraAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\AozoraAPI\RenderAPI.cpp">
-      <Filter>Source\AozoraAPI</Filter>
-    </ClCompile>
     <ClCompile Include="Source\AozoraAPI\ResourcesAPI.cpp">
       <Filter>Source\AozoraAPI</Filter>
     </ClCompile>

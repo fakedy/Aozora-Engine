@@ -5,6 +5,13 @@
 #include <Systems/Events/EventSystem.h>
 
 
+/*
+* The role of the scenemanager is to hold active scenes
+* the getCurrentActivescene() doesnt actually make sense since we'll probably have several active scenes,
+* an example would be like in unreal engine where you can create a blueprint
+* It's also convenient for any viewport rendering with assets like a material or model viewer.
+*/
+
 namespace Aozora {
 
 	class SceneManager {

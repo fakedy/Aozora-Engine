@@ -85,8 +85,14 @@ void ComponentsView::draw(const Aozora::Context& context) {
 				Aozora::Material& mat = context.resourcemanager->getMaterial(meshComp.materialID);
 				ImGui::Text("Material name: %s", mat.name);
 				ImGui::Text("Material ID: %i", meshComp.materialID);
-				ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.05f);
-				ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.05f);
+				// not sure this is correct but lets see
+				// I need to check how i actually did my refCount
+				if (context.resourcemanager->getMaterial(meshComp.materialID).diffuseTexture.refCount == 0) {
+					ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.05f);
+				}
+				if (context.resourcemanager->getMaterial(meshComp.materialID).emissiveTexture.refCount == 0) {
+					ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.05f);
+				}
 			}
 		}
 
@@ -104,9 +110,10 @@ void ComponentsView::draw(const Aozora::Context& context) {
 		}
 		if (registry.all_of<Aozora::ScriptComponent>(m_selectedEntity)) {
 			if (ImGui::CollapsingHeader("ScriptComponent", ImGuiTreeNodeFlags_DefaultOpen)) {
-
 				auto& scriptComp = registry.get<Aozora::ScriptComponent>(m_selectedEntity);
-				ImGui::Text("Nothing here yet");
+				ImGui::Text("Script: %s", scriptComp.name);
+				ImGui::Text("Script ID: %i", scriptComp.scriptID); // will be able to select a script by filling this ID
+				ImGui::Checkbox("isActive", &scriptComp.isActive);
 			}
 		}
 

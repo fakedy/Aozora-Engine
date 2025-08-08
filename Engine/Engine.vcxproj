@@ -202,8 +202,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\APPLICATION.CPP" />
-    <ClCompile Include="Source\AozoraAPI\ApplicationAPI.cpp" />
-    <ClCompile Include="Source\AozoraAPI\RenderAPI.cpp" />
     <ClCompile Include="Source\AozoraAPI\ResourcesAPI.cpp" />
     <ClCompile Include="Source\Systems\AssetManager\AssetManager.cpp" />
     <ClCompile Include="Source\Systems\CameraSystem.cpp" />

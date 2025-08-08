@@ -18,21 +18,7 @@ namespace Aozora {
 	// GONNA EXECUTE THIS ENTIRE API, HATE IT
 
 
-	class RenderAPI {
-	public:
 
-		static uint32_t createViewport(ViewportType type, entt::entity editorCameraEntity);
-		static uint32_t createViewport(ViewportType type);
-
-
-	};
-
-	class ApplicationAPI {
-	public:
-		static Scene* getScene(uint32_t id);
-
-
-	};
 
 	class ResourcesAPI {
 	public:

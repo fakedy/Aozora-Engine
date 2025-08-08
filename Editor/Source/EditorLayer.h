@@ -16,10 +16,9 @@ enum class EditorState { EDIT, PLAY };
 class EditorLayer : public Aozora::Layer
 {
 public:
-	EditorLayer(Aozora::SceneManager& sceneManager) : m_sceneManager(sceneManager){
-		m_editorViewPortID = Aozora::RenderAPI::createViewport(Aozora::ViewportType::PrimaryEditor);
+	EditorLayer(Aozora::SceneManager& sceneManager, Aozora::Graphics::SceneRenderer& sceneRenderer) : m_sceneManager(sceneManager){
+		m_editorViewPortID = sceneRenderer.createViewport(Aozora::ViewportType::PrimaryEditor);
 		m_editorCameraSystem = std::make_unique<Aozora::EditorCameraSystem>();
-
 
 	}
 

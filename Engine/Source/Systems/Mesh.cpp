@@ -13,7 +13,8 @@ namespace Aozora {
     // upload the data to the gpu
     void Mesh::bufferData()
     {
-        // legacy stuff
+        // legacy stuff because we now mainly draw through indirect rendering with bindless textures
+        // Also still used for rendering a screenquad etc but ill remove that and just store the vertex data in the vertex shaders
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &EBO);

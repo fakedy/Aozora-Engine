@@ -5,9 +5,14 @@
 #include <Systems/Events/Events.h>
 
 
+/*
+* Basically this is a system that handle the editor camera logic
+*/
+
+
 namespace Aozora {
 
-	class EditorCameraSystem : public IEventListener
+	class EditorCameraSystem
 	{
 	public:
 
@@ -15,7 +20,6 @@ namespace Aozora {
 
 		void update(entt::registry& registry);
 
-		void onEvent(Event& e) override;
 
 	private:
 

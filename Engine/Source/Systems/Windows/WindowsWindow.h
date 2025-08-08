@@ -4,6 +4,8 @@
 #include "GLFW/glfw3.h"
 
 
+// to be honest I dont think ill ever use anything other than GLFW, and from what I know GLFW is also available on linux
+
 namespace Aozora {
 	class WindowsWindow : public Window {
 	public:

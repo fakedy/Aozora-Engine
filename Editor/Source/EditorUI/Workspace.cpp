@@ -48,7 +48,7 @@ void Workspace::draw(const Aozora::Context& context)
     		if (ImGui::ImageButton(modelName.c_str(), m_file_3d_texture, ImVec2(thumbnailSize, thumbnailSize))) {
 			context.sceneManager->getCurrentActiveScene()->instantiateEntity(modelName);
 		}
-		ImGui::TextWrapped("%s", modelName.c_str());
+		ImGui::TextWrapped("%s", modelName.c_str()); // i expected this to cut the name short to prevent oversize, but didnt do what i thought.
 		ImGui::EndGroup();
 	}
 
