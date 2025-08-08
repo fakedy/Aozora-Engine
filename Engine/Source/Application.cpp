@@ -123,7 +123,7 @@ namespace Aozora {
 
 
 		m_sceneRenderer->updatePrimaryScene(*scene);
-		Aozora::ResourcesAPI::loadModel("Resources/testcube/testcube.obj");
+		m_resourceManager->loadModel("Resources/testcube/testcube.obj");
 
 	}
 

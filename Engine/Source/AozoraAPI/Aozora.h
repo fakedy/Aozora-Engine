@@ -23,17 +23,13 @@ namespace Aozora {
 	class ResourcesAPI {
 	public:
 
-		static void loadModel(std::string path);
 		static uint32_t loadCubemap(const std::vector<std::string>& paths);
 		static uint32_t loadCubemap();
 		static SkyboxTextures loadSkybox(const std::vector<std::string>& paths);
 		static uint32_t loadTexture(std::string name, bool persistent);
 
 		static std::vector<std::string> getLoadedModelNames();
-		static Model* getModel(std::string name);
 
-		// cant remove this yet i need to fix my rendering pipeline
-		static Material& getMaterial(uint32_t id);
 
 	};
 

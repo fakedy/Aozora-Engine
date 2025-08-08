@@ -8,14 +8,6 @@
 
 namespace Aozora {
 
-	void ResourcesAPI::loadModel(std::string path) {
-
-		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
-
-		resourceManager.loadModel(path);
-
-
-	}
 
 	uint32_t ResourcesAPI::loadCubemap(const std::vector<std::string>& paths)
 	{
@@ -58,21 +50,6 @@ namespace Aozora {
 
 		return nameVector;
 	}
-	Model* ResourcesAPI::getModel(std::string name)
-	{
-		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
-		if (resourceManager.m_loadedModels.find(name) == resourceManager.m_loadedModels.end()) {
-			// do some error idk
-			return nullptr;
-		}
-		else {
-			return &resourceManager.m_loadedModels.at(name);
-		}
-	}
-	Material& ResourcesAPI::getMaterial(uint32_t id)
-	{
-		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
 
-		return resourceManager.m_loadedmaterials[id];
-	}
+
 }
