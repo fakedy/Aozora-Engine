@@ -42,6 +42,11 @@ namespace Aozora {
 			return *m_resourceManager.get();
 		}
 
+
+		Resources::AssetManager& getAssetManager() {
+			return *m_assetManager.get();
+		}
+
 		SceneManager& getSceneManager() {
 			return *m_sceneManager.get();
 		}

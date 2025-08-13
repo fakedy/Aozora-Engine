@@ -4,7 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <Application.h>
 #include <Systems/Logging/Logger.h>
-
+#include <Systems/AssetManager/AssetManager.h>
 
 namespace Aozora {
 	Scene::Scene()
@@ -120,63 +120,55 @@ namespace Aozora {
 		}
 
 	}
-	entt::entity Scene::createEntityFromNodes(Model::Node* node, entt::entity parent)
+	entt::entity Scene::createEntityFromNodes(Model& model, Model::Node& node, entt::entity parent)
 	{
 
 		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
 
 		const auto entity = m_registry->create();
 
-		m_registry->emplace<Aozora::NameComponent>(entity).name = node->name.c_str();
+		m_registry->emplace<Aozora::NameComponent>(entity).name = node.name.c_str();
 		m_registry->emplace<Aozora::TagComponent>(entity);
 		m_registry->emplace<Aozora::TransformComponent>(entity);
-		if (node->hasMesh) {
+		if (node.hasMesh) {
 			// add a mesh component to the entity with the id of the mesh
 			auto& meshComp = m_registry->emplace<Aozora::MeshComponent>(entity);
-			meshComp.meshID = node->meshID;
-			meshComp.materialID = resourceManager.m_loadedMeshes.at(node->meshID).materialID;
-			if (!resourceManager.m_loadedMeshes.at(node->meshID).isBuffered) {
+			meshComp.meshID = node.meshID;
+			meshComp.materialID = resourceManager.m_loadedMeshes.at(node.meshID).materialID;
+			if (!resourceManager.m_loadedMeshes.at(node.meshID).isBuffered) {
 				// 
-				EntityCreatedWithMeshEvent* event = new EntityCreatedWithMeshEvent(entity, node->meshID, this);
+				EntityCreatedWithMeshEvent* event = new EntityCreatedWithMeshEvent(entity, node.meshID, this);
 				EventDispatcher::dispatch(event);
 			}
 		}
 
 		Aozora::RelationComponent& relationComponent = m_registry->emplace<Aozora::RelationComponent>(entity, parent);
 
-		for (Model::Node* childNode : node->childrenNodes) {
+		for (uint32_t childNode : node.childrenNodes) {
 
-			entt::entity childEntity = createEntityFromNodes(childNode, entity);
+			entt::entity childEntity = createEntityFromNodes(model, model.allNodes[childNode], entity);
 			relationComponent.children.push_back(childEntity);
 
 		}
 		return entity;
 	}
-	void Scene::instantiateEntity(std::string name)
+	void Scene::instantiateEntity(uint64_t hash)
 	{
 		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
+		// temp
+		Resources::AssetManager& assetManager = Application::getApplication().getAssetManager();
 
-		Log::info(std::format("Instantiating {}", name));
+		Log::info(std::format("Instantiating {}", hash));
 
-		// check if it is in ram
-		if (resourceManager.m_loadedModels.find(name) == resourceManager.m_loadedModels.end()) {
-			// model not ram
-			// load model from disk from assetmanager
-			Log::info(std::format("Model: {} not in ram.", name));
-		}
+		Model& model = resourceManager.m_loadedModels.at(hash);
 
-		Model& model = resourceManager.m_loadedModels.at(name);
-
-		createEntityFromNodes(model.originNode, entt::null);
+		createEntityFromNodes(model, model.allNodes[0], entt::null);
 
 	}
 
 	void Scene::deleteEntity(const entt::entity entity) {
 
 		m_registry->destroy(entity);
-
-		// TODO DELETE THE RELATIONS OR FACE DEATH
-
 
 	}
 

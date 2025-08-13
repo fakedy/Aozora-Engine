@@ -35,20 +35,33 @@ void Workspace::draw(const Aozora::Context& context)
 	}
 
 
-	// want to create virtual workspace, meaning folders but its all virtual.
-	// so what I'll probably do is create a form of structure were we can query all the "assets" in the current "directory"
-	std::vector <std::string> loadedModelNames = Aozora::ResourcesAPI::getLoadedModelNames();
-
 	int thumbnailSize = 64;
 	float assetSpacing = 4.0f;
 	float windowWidth = ImGui::GetContentRegionAvail().x; // to figure out where we create new row
-	for (std::string modelName : loadedModelNames) {
+	
+	for (Aozora::Resources::Asset& asset : context.assetManager->getLoadedAssets()) {
+		if (asset.hidden) { // skip hidden assets
+			continue;
+		}
 		ImGui::SameLine(0.0f, assetSpacing);
 		ImGui::BeginGroup();
-    		if (ImGui::ImageButton(modelName.c_str(), m_file_3d_texture, ImVec2(thumbnailSize, thumbnailSize))) {
-			context.sceneManager->getCurrentActiveScene()->instantiateEntity(modelName);
+		switch (asset.type)
+		{
+		case(Aozora::Resources::AssetType::Model):
+			if (ImGui::ImageButton(asset.name.c_str(), m_file_3d_texture, ImVec2(thumbnailSize, thumbnailSize))) {
+				context.sceneManager->getCurrentActiveScene()->instantiateEntity(asset.hash);
+			}
+			break;
+		case(Aozora::Resources::AssetType::Texture):
+			break;
+		case(Aozora::Resources::AssetType::Material):
+			break;
+		case(Aozora::Resources::AssetType::Scene):
+			break;
+		default:
+			break;
 		}
-		ImGui::TextWrapped("%s", modelName.c_str()); // i expected this to cut the name short to prevent oversize, but didnt do what i thought.
+		ImGui::TextWrapped("%s", asset.name.c_str()); // i expected this to cut the name short to prevent oversize, but didnt do what i thought.
 		ImGui::EndGroup();
 	}
 

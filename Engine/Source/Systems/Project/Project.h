@@ -8,7 +8,9 @@ namespace Aozora {
 	class Project {
 	public:
 
-		Project();
+		Project() {
+
+		}
 
 
 	};

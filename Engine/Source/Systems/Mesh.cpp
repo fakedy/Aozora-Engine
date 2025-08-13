@@ -4,6 +4,8 @@
 #include <iostream>
 #include <AozoraAPI/Aozora.h>
 
+
+
 namespace Aozora {
 
     Mesh::Mesh() {

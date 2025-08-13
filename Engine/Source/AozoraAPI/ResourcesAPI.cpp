@@ -37,19 +37,4 @@ namespace Aozora {
 		return resourceManager.loadTexture(name, false, persistent);
 	}
 
-
-
-	std::vector<std::string> ResourcesAPI::getLoadedModelNames()
-	{
-		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
-		std::vector<std::string> nameVector;
-		nameVector.reserve(resourceManager.m_loadedModels.size());
-		for (const auto& pair : resourceManager.m_loadedModels) {
-			nameVector.push_back(pair.first);
-		}
-
-		return nameVector;
-	}
-
-
 }

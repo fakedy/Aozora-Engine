@@ -40,8 +40,8 @@ namespace Aozora {
 		void addEntity();
 
 
-		entt::entity createEntityFromNodes(Model::Node* node, entt::entity parent);
-		void instantiateEntity(std::string name);
+		entt::entity createEntityFromNodes(Model& model, Model::Node& node, entt::entity parent);
+		void instantiateEntity(uint64_t hash);
 
 		void deleteEntity(const entt::entity entity);
 

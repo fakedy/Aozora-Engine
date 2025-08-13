@@ -1,29 +1,23 @@
 #include "ResourceManager.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
 #include <Systems/Logging/Logger.h>
 
 namespace Aozora {
 
 
-    const void ResourceManager::loadModel(const std::string& file)
+    const void ResourceManager::loadModel(uint64_t hash)
     {
-        // imho its bad that i do this filename thing again.
-        // storing shorted filename and whole path for the map is confusing
-        std::string filename = file.substr(file.find_last_of('/'), file.find_last_of('.'));
-        if (modelLoaded(filename)) {
-            Log::info("model already loaded");
-            return;
-        }
-        Model loadedModel = m_modelLoader.loadModel(file);
+        // cause crash if it doesnt load
+       // m_assetManager.loadAsset(hash);
 
-        m_loadedModels.emplace(loadedModel.name, std::move(loadedModel));
+        
 
+        //m_loadedModels.emplace(loadedModel.name, std::move(loadedModel));
     }
 
     // opengl dependent code for loading texture
     unsigned int ResourceManager::loadTexture(const std::string path, bool isSrgb, bool persistent)
     {
+        /*
         std::string filename = std::string(path);
         unsigned int texture = 0;
 
@@ -77,11 +71,13 @@ namespace Aozora {
         Log::info(std::format("Created texture with ID: {}", texture));
 
         return texture;
-
+        */
+        return 0;
     }
     // opengl dependent code for loading texture
     unsigned int ResourceManager::loadTexture(const std::string fileName, const std::string& directory, bool isSrgb, bool persistent)
     {
+        /*
         std::string filename = std::string(fileName);
         filename = directory + "/" + filename;
         unsigned int texture = 0;
@@ -136,11 +132,13 @@ namespace Aozora {
 
         Log::info(std::format("Created texture with ID: {}", texture));
         return texture;
-
+        */
+        return 0;
     }
     // opengl dependent
     unsigned int ResourceManager::loadCubemap(const std::vector<std::string> faces)
     {
+        /*
 
         // TECHNICALLY UNTRACKED TEXTURE
 
@@ -186,10 +184,13 @@ namespace Aozora {
 
         Log::info(std::format("Created cubemap with ID: {}", textureID));
         return textureID;
+        */
+        return 0;
     }
 
     unsigned int ResourceManager::loadCubemap()
     {
+        /*
         // TECHNICALLY UNTRACKED TEXTURE
 
         uint32_t textureID;
@@ -214,6 +215,8 @@ namespace Aozora {
         Log::info(std::format("Created empty cubemap with ID: {}", textureID));
 
         return textureID;
+        */
+        return 0;
     }
 
     unsigned int ResourceManager::createMaterial(Material* material)
@@ -261,9 +264,9 @@ namespace Aozora {
         return -1;
     }
 
-    bool ResourceManager::modelLoaded(const std::string path) {
+    bool ResourceManager::modelLoaded(uint64_t hash) {
 
-        auto it = m_loadedModels.find(path);
+        auto it = m_loadedModels.find(hash);
         if (it == m_loadedModels.end()) {
             return false;
         }

@@ -58,6 +58,15 @@
     <Filter Include="Source\Systems\Windows">
       <UniqueIdentifier>{97EE82E8-83E8-AB3A-6C55-424B58EE11A7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="vendor">
+      <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\include">
+      <UniqueIdentifier>{269ED467-126C-C86D-FBFF-3894E76CA4D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\include\xxHash">
+      <UniqueIdentifier>{E94DFDC6-55BA-B8C1-1EAE-501F8AD9DA29}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\AozoraAPI\Aozora.h">
@@ -70,6 +79,12 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\AssetManager\AssetManager.h">
+      <Filter>Source\Systems\AssetManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\AssetManager\ModelLoader.h">
+      <Filter>Source\Systems\AssetManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\AssetManager\TextureLoader.h">
       <Filter>Source\Systems\AssetManager</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\CameraSystem.h">
@@ -177,9 +192,6 @@
     <ClInclude Include="Source\Systems\Renderers\Viewport.h">
       <Filter>Source\Systems\Renderers</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Systems\ResourceManager\ModelLoader.h">
-      <Filter>Source\Systems\ResourceManager</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Systems\ResourceManager\ResourceManager.h">
       <Filter>Source\Systems\ResourceManager</Filter>
     </ClInclude>
@@ -197,6 +209,9 @@
     </ClInclude>
     <ClInclude Include="Source\Systems\Serialization\Serializer.h">
       <Filter>Source\Systems\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Texture.h">
+      <Filter>Source\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Time.h">
       <Filter>Source\Systems</Filter>
@@ -218,6 +233,12 @@
     <ClCompile Include="Source\Systems\AssetManager\AssetManager.cpp">
       <Filter>Source\Systems\AssetManager</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Systems\AssetManager\ModelLoader.cpp">
+      <Filter>Source\Systems\AssetManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\AssetManager\TextureLoader.cpp">
+      <Filter>Source\Systems\AssetManager</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Systems\CameraSystem.cpp">
       <Filter>Source\Systems</Filter>
     </ClCompile>
@@ -235,9 +256,6 @@
     </ClCompile>
     <ClCompile Include="Source\Systems\Mesh.cpp">
       <Filter>Source\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Systems\Project\Project.cpp">
-      <Filter>Source\Systems\Project</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Project\ProjectManager.cpp">
       <Filter>Source\Systems\Project</Filter>
@@ -259,9 +277,6 @@
     </ClCompile>
     <ClCompile Include="Source\Systems\Renderers\Viewport.cpp">
       <Filter>Source\Systems\Renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Systems\ResourceManager\ModelLoader.cpp">
-      <Filter>Source\Systems\ResourceManager</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\ResourceManager\ResourceManager.cpp">
       <Filter>Source\Systems\ResourceManager</Filter>
@@ -298,6 +313,9 @@
     </ClCompile>
     <ClCompile Include="Vendor\include\imgui\imgui_widgets.cpp">
       <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\include\xxHash\xxhash.c">
+      <Filter>vendor\include\xxHash</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

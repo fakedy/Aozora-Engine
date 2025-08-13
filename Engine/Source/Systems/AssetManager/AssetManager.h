@@ -1,26 +1,35 @@
 #pragma once
 #include <filesystem>
 #include <unordered_map>
+#include "ModelLoader.h"
+#include <functional>
+#include <Systems/AssetManager/TextureLoader.h>
+#include <cereal/cereal.hpp>
+#include <cereal/types/unordered_map.hpp>
 
 namespace Aozora::Resources {
+
+		enum class AssetType {
+			Scene,
+			Model,
+			Texture,
+			Material,
+			Mesh
+		};
+		struct Asset {
+			AssetType type;
+			std::string parentDir{"Assets"}; // default to Assets
+			std::string name;
+			uint32_t icon; // can hold an ID to a texture for possible custom icon
+			uint32_t hash;
+			bool hidden{ false };
+		};
 
 	class AssetManager {
 	public:
 
 
 		AssetManager();
-		enum class Type {
-			Scene,
-			Model,
-			Texture,
-			Material
-		};
-		struct Asset {
-			Type type;
-			std::string parentDir{"Assets"}; // default to Assets
-			std::string name;
-			uint32_t icon; // can hold an ID to a texture for possible custom icon
-		};
 
 		// GOALS -----------
 		// load from disk here, store models in binary format.
@@ -31,14 +40,31 @@ namespace Aozora::Resources {
 
 
 		bool createProject(std::string name);
-		void createScene();
 
 		Asset& getAsset(uint32_t ID);
 
+		void loadAsset(const std::string& path);
+
+		Model loadModel(uint64_t hash);
+
+		std::vector<std::reference_wrapper<Asset>> getLoadedAssets();
+
+		template<class Archive>
+		void serialize(Archive& archive) {
+			archive(CEREAL_NVP(m_importRegistry));
+		}
+
 	private:
 
-		std::unordered_map<uint32_t, Asset> m_assets; // for fast asset access
+		std::unordered_map<uint64_t, Asset> m_assets; // for fast asset access
+		std::unordered_map<std::string, uint64_t> m_importRegistry;
+		uint32_t m_nextAssetID{ 0 };
 
+		TextureLoader m_textureLoader = TextureLoader(m_importRegistry);
+		ModelLoader m_modelLoader = ModelLoader(m_importRegistry, m_textureLoader);
+
+		std::string m_workingDirectory{};
+		std::string m_projectDir{};
 
 	};
 }

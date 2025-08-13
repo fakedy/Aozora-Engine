@@ -13,7 +13,7 @@ void EditorLayer::onUpdate(const Aozora::Context& context)
 	auto& app = Aozora::Application::getApplication();
 	auto current_scene = app.getSceneManager().getCurrentActiveScene();
 
-	// no difference yet
+	// We dont swap to the game camera during Game mode which make the viewport freeze during Game.
 	if (m_currentState == EditorState::EDIT) {
 
 		app.m_cameraSystem->update(current_scene->getRegistry());

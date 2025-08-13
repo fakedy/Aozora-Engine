@@ -24,8 +24,8 @@ namespace Aozora {
 		m_renderAPI = std::unique_ptr<IrenderAPI>(IrenderAPI::create());
 		m_sceneManager = std::make_unique<SceneManager>();
 		m_sceneRenderer = std::make_unique<Graphics::SceneRenderer>(m_renderAPI.get());
-		m_resourceManager = std::make_unique<ResourceManager>();
 		m_assetManager = std::make_unique<Resources::AssetManager>();
+		m_resourceManager = std::make_unique<ResourceManager>(*m_assetManager.get());
 		m_projectManager = std::make_unique<ProjectManager>(*m_sceneManager.get());
 		
 		
@@ -38,7 +38,7 @@ namespace Aozora {
 		context.sceneRenderer = m_sceneRenderer.get();
 		context.resourcemanager = m_resourceManager.get();
 		context.projectManager = m_projectManager.get();
-		//context.assetManager = m_assetManager;
+		context.assetManager = m_assetManager.get();
 
 	
 		EventDispatcher::subscribe(EventType::CreateProjectRequest, [this](Event& e) {
@@ -55,8 +55,8 @@ namespace Aozora {
 
 		while (!m_window->windowShouldClose()) {
 			auto start = std::chrono::high_resolution_clock::now();
-			processActions();
-			EventDispatcher::flush();
+			processActions(); // process non event based queued functions
+			EventDispatcher::flush(); // goes through events queued for processing
 
 			// TODO render after updated layers
 			for (Layer* layer : *layerStack) {
@@ -123,7 +123,7 @@ namespace Aozora {
 
 
 		m_sceneRenderer->updatePrimaryScene(*scene);
-		m_resourceManager->loadModel("Resources/testcube/testcube.obj");
+		//m_resourceManager->loadModel("Resources/testcube/testcube.obj");
 
 	}
 

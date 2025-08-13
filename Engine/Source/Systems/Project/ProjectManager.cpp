@@ -9,7 +9,7 @@ namespace Aozora {
 		// check if it exist blablabla
 		m_project = std::make_unique<Project>();
 
-		Log::info("Created new project");
+		Log::info("Created new Project Object");
 		return true;
 	}
 }
