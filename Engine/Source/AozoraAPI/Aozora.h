@@ -26,7 +26,6 @@ namespace Aozora {
 		static uint32_t loadCubemap(const std::vector<std::string>& paths);
 		static uint32_t loadCubemap();
 		static SkyboxTextures loadSkybox(const std::vector<std::string>& paths);
-		static uint32_t loadTexture(std::string name, bool persistent);
 
 	};
 

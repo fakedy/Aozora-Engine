@@ -31,10 +31,5 @@ namespace Aozora {
 		return data;
 	}
 
-	uint32_t ResourcesAPI::loadTexture(std::string name, bool persistent)
-	{
-		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
-		return resourceManager.loadTexture(name, false, persistent);
-	}
 
 }

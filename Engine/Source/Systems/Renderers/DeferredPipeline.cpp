@@ -127,8 +127,8 @@ namespace Aozora {
 				auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
 
 				Mesh::MeshData& data = resourceManager.m_loadedMeshes[meshComponent.meshID].meshData;
-				uint32_t verticesAmount = data.vertices.size();
-				uint32_t indicesAmount = data.indices.size();
+				uint64_t verticesAmount = data.vertices.size();
+				uint64_t indicesAmount = data.indices.size();
 
 				DrawElementsIndirectCommand command;
 				command.count = indicesAmount; 
@@ -141,12 +141,25 @@ namespace Aozora {
 				auto& transformComponent = MeshTransformEntities.get<TransformComponent>(entity);
 				ObjectData objectData;
 				objectData.model = transformComponent.model;
-				objectData.diffuseTextureHandle = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture.handle;
-				objectData.emissiveTextureHandle = resourceManager.m_loadedmaterials[meshComponent.materialID].emissiveTexture.handle;
-				objectData.aoTextureHandle = resourceManager.m_loadedmaterials[meshComponent.materialID].aoTexture.handle;
-				objectData.metallicTextureHandle = resourceManager.m_loadedmaterials[meshComponent.materialID].metallicTexture.handle;
-				objectData.roughnessTextureHandle = resourceManager.m_loadedmaterials[meshComponent.materialID].roughnessTexture.handle;
-				objectData.normalTextureHandle = resourceManager.m_loadedmaterials[meshComponent.materialID].normalTexture.handle;
+
+				uint64_t diffuseTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
+				objectData.diffuseTextureHandle = resourceManager.m_loadedTextures[diffuseTextureID].handle;
+
+				uint64_t emissiveTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
+				objectData.emissiveTextureHandle = resourceManager.m_loadedTextures[emissiveTextureID].handle;
+
+				uint64_t aoTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
+				objectData.aoTextureHandle = resourceManager.m_loadedTextures[aoTextureID].handle;
+
+				uint64_t metallicTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
+				objectData.metallicTextureHandle = resourceManager.m_loadedTextures[metallicTextureID].handle;
+
+				uint64_t roughnessTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
+				objectData.roughnessTextureHandle = resourceManager.m_loadedTextures[roughnessTextureID].handle;
+
+				uint64_t normalTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
+				objectData.normalTextureHandle = resourceManager.m_loadedTextures[normalTextureID].handle;
+
 				objectDataVector[i] = objectData;
 				firstIndex += indicesAmount;
 				baseVertex += verticesAmount; // add offset
@@ -421,7 +434,7 @@ namespace Aozora {
 			auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
 			Mesh::MeshData& data = resourceManager.m_loadedMeshes[meshComponent.meshID].meshData;
 			verticesSize += data.vertices.size() * sizeof(Mesh::Vertex);
-			indexSize += data.indices.size() * sizeof(uint32_t);
+			indexSize += data.indices.size() * sizeof(uint64_t);
 
 		}
 

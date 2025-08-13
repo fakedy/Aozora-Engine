@@ -89,9 +89,10 @@ namespace Aozora {
 		m_resourceManager->clearResources();
 		m_sceneManager->clearScenes();
 
-		// would init a new project directory
+		// init new project directory
 		m_assetManager->createProject("MyProject");
 
+		// create the project object (for future settings?)
 		m_projectManager->createProject("MyProject");
 
 		uint32_t sceneID = m_sceneManager->createScene();
@@ -123,7 +124,6 @@ namespace Aozora {
 
 
 		m_sceneRenderer->updatePrimaryScene(*scene);
-		//m_resourceManager->loadModel("Resources/testcube/testcube.obj");
 
 	}
 

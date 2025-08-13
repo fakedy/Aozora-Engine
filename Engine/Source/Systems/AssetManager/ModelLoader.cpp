@@ -50,11 +50,10 @@ namespace Aozora::Resources {
             }
             else {
                 // create the mesh
-                Mesh mesh = processMesh(aiMesh, scene, iModel);
-                // creating material
-                mesh.materialID = 0; // this also need to have a unique id
+                Mesh mesh = processMesh(aiMesh, scene, iModel, file);
                 mesh.name = aiMesh->mName.C_Str();
-                m_importRegistry[key] = XXH64(key.c_str(), key.length(), 0);
+                mesh.id = XXH64(key.c_str(), key.length(), 0);
+                m_importRegistry[key] = mesh.id;
                 iModel.meshes.push_back(mesh);
             }
 
@@ -67,7 +66,7 @@ namespace Aozora::Resources {
             uint32_t nodeIndex = model.allNodes.size();
             model.allNodes[parentIndex].childrenNodes.push_back(nodeIndex);
             meshNode.parentNode = parentIndex; 
-            meshNode.meshID = 0; // runtime id
+            meshNode.meshID = XXH64(key.c_str(), key.length(), 0);
             meshNode.hasMesh = true;
             meshNode.name = aiMesh->mName.C_Str();
             model.allNodes.push_back(meshNode);
@@ -83,16 +82,25 @@ namespace Aozora::Resources {
         return parentIndex;
     }
 
-    Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene, IntermediateModel& iModel)
+    Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene, IntermediateModel& iModel, const std::string& file)
     {
         Mesh createdmesh;
 
+
+
         // check if the material already exist
         unsigned int mMaterialIndex = mesh->mMaterialIndex;
-        Material material;
+        std::string key = file + "|" + std::to_string(mMaterialIndex);
 
-        ResourceManager& resourceManager = Application::getApplication().getResourceManager();
-        if (mMaterialIndex >= 0) {
+        uint64_t materialID;
+        if (m_importRegistry.count(key)) {
+            materialID = m_importRegistry[key];
+        }
+        else {
+            Material material;
+            materialID = XXH64(key.c_str(), key.length(), 0);
+            material.ID = materialID;
+            material.name = scene->mMaterials[mMaterialIndex]->GetName().C_Str();
 
             aiMaterial* aimaterial = scene->mMaterials[mMaterialIndex];
 
@@ -108,7 +116,10 @@ namespace Aozora::Resources {
 
             loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE_ROUGHNESS, Texture::TextureType::ROUGHNESS, iModel);
 
+            m_importRegistry[key] = materialID;
+            iModel.materials.push_back(material);
         }
+
 
         for (uint32_t v = 0; v < mesh->mNumVertices; v++) {
 
@@ -160,8 +171,7 @@ namespace Aozora::Resources {
                 createdmesh.meshData.indices.push_back(face.mIndices[j]);
         }
 
-        material.name = scene->mMaterials[mMaterialIndex]->GetName().C_Str();
-        iModel.materials.push_back(material);
+        createdmesh.materialID = materialID;
         return createdmesh;
     }
 
@@ -216,23 +226,23 @@ namespace Aozora::Resources {
             switch (type)
             {
             case aiTextureType_DIFFUSE:
-                material.diffuseTexture = targetTexture;
+                material.diffuseTexture = targetTexture.id;
                 isSrgb = true;
                 break;
             case aiTextureType_NORMALS:
-                material.normalTexture = targetTexture;
+                material.normalTexture = targetTexture.id;
                 break;
             case aiTextureType_EMISSIVE:
-                material.emissiveTexture = targetTexture;
+                material.emissiveTexture = targetTexture.id;
                 break;
             case aiTextureType_AMBIENT_OCCLUSION:
-                material.aoTexture = targetTexture;
+                material.aoTexture = targetTexture.id;
                 break;
             case aiTextureType_METALNESS:
-                material.metallicTexture = targetTexture;
+                material.metallicTexture = targetTexture.id;
                 break;
             case aiTextureType_DIFFUSE_ROUGHNESS:
-                material.roughnessTexture = targetTexture;
+                material.roughnessTexture = targetTexture.id;
                 break;
             default:
                 break;
@@ -242,6 +252,7 @@ namespace Aozora::Resources {
                 targetTexture.type = typeName;
                 targetTexture.isSrgb = isSrgb;
                 targetTexture.path = str.C_Str();
+                material.textureIDs.push_back(targetTexture.id);
                 iModel.textures.push_back(targetTexture);
             }
 

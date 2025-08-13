@@ -43,6 +43,7 @@ namespace Aozora::Resources {
         stbi_image_free(data);
 
         m_importRegistry[fullPath] = XXH64(fullPath.c_str(), fullPath.length(), 0);
+        texture.id = m_importRegistry[fullPath];
         Log::info("Successfully loaded texture: " + fullPath);
 		return texture;
 	}

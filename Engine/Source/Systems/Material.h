@@ -16,14 +16,15 @@ namespace Aozora {
 
 		// storing textures like this is not efficient and its expensive
 		// the Texture files contain the raw data for that texture
-		Texture diffuseTexture;
-		Texture normalTexture;
-		Texture heightTexture;
-		Texture emissiveTexture;
-		Texture aoTexture;
-		Texture metallicTexture;
-		Texture roughnessTexture;
+		uint64_t diffuseTexture;
+		uint64_t normalTexture;
+		uint64_t heightTexture;
+		uint64_t emissiveTexture;
+		uint64_t aoTexture;
+		uint64_t metallicTexture;
+		uint64_t roughnessTexture;
 		
+		std::vector<uint64_t> textureIDs;
 		
 		// Default values incase we render without texture
 		glm::fvec4 baseColor{ glm::fvec4(0.3f, 1.0f, 1.0f , 1.0f) };
@@ -33,8 +34,7 @@ namespace Aozora {
 		float ao{ 1.0f };
 		glm::fvec4 emissive{ glm::fvec4(0.0f,0.0f,0.0f, 0.0f) };
 
-		uint32_t ID;
-		uint64_t hash{};
+		uint64_t ID;
 		std::string name;
 
 		template<class Archive>
@@ -46,6 +46,7 @@ namespace Aozora {
 				CEREAL_NVP(aoTexture),
 				CEREAL_NVP(metallicTexture),
 				CEREAL_NVP(roughnessTexture),
+				CEREAL_NVP(textureIDs),
 				CEREAL_NVP(baseColor),
 				CEREAL_NVP(metallic),
 				CEREAL_NVP(specular),

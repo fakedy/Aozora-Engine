@@ -15,7 +15,7 @@ namespace Aozora {
 			uint32_t parentNode{0};
 			std::vector<uint32_t> childrenNodes{};
 		
-			uint32_t meshID;
+			uint64_t meshID; // hash
 			bool hasMesh{ false };
 			std::string name{};
 		};

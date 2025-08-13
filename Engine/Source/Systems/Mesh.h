@@ -30,10 +30,9 @@ namespace Aozora {
 			std::vector<uint32_t> indices;
 		};
 
-		uint32_t id;
+		uint64_t id;
 		std::string name{};
-		uint64_t hash{};
-		uint32_t materialID;
+		uint64_t materialID{0};
 
 		uint32_t VAO{};
 		uint32_t VBO{};

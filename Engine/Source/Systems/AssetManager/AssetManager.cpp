@@ -84,11 +84,10 @@ namespace Aozora::Resources {
 				asset.parentDir = "";
 				asset.icon = 0;
 				asset.name = filename;
-				asset.hash = XXH64((m_workingDirectory + mesh.name).c_str(), path.length() + mesh.name.length(), 0);
+				asset.hash = mesh.id;
 				asset.hidden = true;
 
-				m_importRegistry[(m_workingDirectory + mesh.name).c_str()] = asset.hash;
-				std::ofstream os(m_workingDirectory + std::to_string(asset.hash) + ".mesh", std::ios::binary);
+				std::ofstream os(m_workingDirectory + std::to_string(mesh.id) + ".mesh", std::ios::binary);
 				cereal::BinaryOutputArchive archive(os);
 				archive(mesh);
 
@@ -103,11 +102,10 @@ namespace Aozora::Resources {
 				asset.parentDir = "";
 				asset.icon = 0;
 				asset.name = mat.name; // take asset name
-				asset.hash = XXH64((m_workingDirectory + mat.name).c_str(), path.length() + mat.name.length(), 0);
+				asset.hash = mat.ID;
 				asset.hidden = true;
 
-				m_importRegistry[(m_workingDirectory + mat.name).c_str()] = asset.hash;
-				std::ofstream os(m_workingDirectory + std::to_string(asset.hash) + ".material", std::ios::binary);
+				std::ofstream os(m_workingDirectory + std::to_string(mat.ID) + ".material", std::ios::binary);
 				cereal::BinaryOutputArchive archive(os);
 				archive(mat);
 
@@ -123,11 +121,10 @@ namespace Aozora::Resources {
 				asset.parentDir = "";
 				asset.icon = 0;
 				asset.name = filename;
-				asset.hash = XXH64((m_workingDirectory + tex.name).c_str(), path.length() + tex.name.length(), 0);
+				asset.hash = tex.id;
 				asset.hidden = true;
 
-				m_importRegistry[(m_workingDirectory + tex.name).c_str()] = asset.hash;
-				std::ofstream os(m_workingDirectory + std::to_string(asset.hash) + ".texture", std::ios::binary);
+				std::ofstream os(m_workingDirectory + std::to_string(tex.id) + ".texture", std::ios::binary);
 				cereal::BinaryOutputArchive archive(os);
 				archive(tex);
 
@@ -163,11 +160,39 @@ namespace Aozora::Resources {
 	{
 		Model model; // parse the file with the hash
 
+
 		std::ifstream os(m_workingDirectory + std::to_string(hash) +".model", std::ios::binary);
 		cereal::BinaryInputArchive archive(os);
-		archive(os);
-		// if the file doesnt exist in hashed format then files are missing
+		archive(model);
+
 		return model;
+	}
+
+	Mesh AssetManager::loadMesh(uint64_t hash)
+	{
+		Mesh mesh;
+		std::ifstream os(m_workingDirectory + std::to_string(hash) + ".mesh", std::ios::binary);
+		cereal::BinaryInputArchive archive(os);
+		archive(mesh);
+		return mesh;
+	}
+
+	Texture AssetManager::loadTexture(uint64_t hash)
+	{
+		Texture tex;
+		std::ifstream os(m_workingDirectory + std::to_string(hash) + ".texture", std::ios::binary);
+		cereal::BinaryInputArchive archive(os);
+		archive(tex);
+		return tex;
+	}
+
+	Material AssetManager::loadMaterial(uint64_t hash)
+	{
+		Material mat;
+		std::ifstream os(m_workingDirectory + std::to_string(hash) + ".material", std::ios::binary);
+		cereal::BinaryInputArchive archive(os);
+		archive(mat);
+		return mat;
 	}
 
 

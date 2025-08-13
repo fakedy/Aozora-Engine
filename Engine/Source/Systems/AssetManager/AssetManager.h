@@ -14,7 +14,8 @@ namespace Aozora::Resources {
 			Model,
 			Texture,
 			Material,
-			Mesh
+			Mesh,
+			Skybox
 		};
 		struct Asset {
 			AssetType type;
@@ -46,6 +47,9 @@ namespace Aozora::Resources {
 		void loadAsset(const std::string& path);
 
 		Model loadModel(uint64_t hash);
+		Mesh loadMesh(uint64_t hash);
+		Texture loadTexture(uint64_t hash);
+		Material loadMaterial(uint64_t hash);
 
 		std::vector<std::reference_wrapper<Asset>> getLoadedAssets();
 

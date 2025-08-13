@@ -19,10 +19,9 @@ namespace Aozora {
 		};
 
 
-		uint32_t id{};
+		uint64_t id{};
 		std::string name{};
 		uint64_t handle{}; // for bindless textures
-		uint64_t hash{};
 		uint32_t refCount{};
 		TextureType type{};
 		std::string path{};

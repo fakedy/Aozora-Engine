@@ -135,8 +135,10 @@ namespace Aozora {
 			auto& meshComp = m_registry->emplace<Aozora::MeshComponent>(entity);
 			meshComp.meshID = node.meshID;
 			meshComp.materialID = resourceManager.m_loadedMeshes.at(node.meshID).materialID;
+
+			// this is for the deferred rendering buffer, should take a look at this later
 			if (!resourceManager.m_loadedMeshes.at(node.meshID).isBuffered) {
-				// 
+				
 				EntityCreatedWithMeshEvent* event = new EntityCreatedWithMeshEvent(entity, node.meshID, this);
 				EventDispatcher::dispatch(event);
 			}
@@ -155,11 +157,10 @@ namespace Aozora {
 	void Scene::instantiateEntity(uint64_t hash)
 	{
 		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
-		// temp
-		Resources::AssetManager& assetManager = Application::getApplication().getAssetManager();
 
 		Log::info(std::format("Instantiating {}", hash));
 
+		resourceManager.loadModel(hash);
 		Model& model = resourceManager.m_loadedModels.at(hash);
 
 		createEntityFromNodes(model, model.allNodes[0], entt::null);

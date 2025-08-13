@@ -33,7 +33,7 @@ namespace Aozora::Resources {
 	private:
 
 		uint32_t processNode(aiNode* node, const aiScene* scene, const std::string& file, Model& model, IntermediateModel& iModel);
-		Mesh processMesh(aiMesh* mesh, const aiScene* scene, IntermediateModel& iModel);
+		Mesh processMesh(aiMesh* mesh, const aiScene* scene, IntermediateModel& iModel, const std::string& file);
 		void loadMaterialTextures(Material& material, aiMaterial* mat, aiTextureType type, Texture::TextureType typeName, IntermediateModel& iModel);
 		Assimp::Importer m_importer;
 		std::string m_directory;

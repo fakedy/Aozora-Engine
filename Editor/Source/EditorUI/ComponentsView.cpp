@@ -87,10 +87,10 @@ void ComponentsView::draw(const Aozora::Context& context) {
 				ImGui::Text("Material ID: %i", meshComp.materialID);
 				// not sure this is correct but lets see
 				// I need to check how i actually did my refCount
-				if (context.resourcemanager->getMaterial(meshComp.materialID).diffuseTexture.refCount == 0) {
+				if (context.resourcemanager->getMaterial(meshComp.materialID).diffuseTexture == 0) {
 					ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.05f);
 				}
-				if (context.resourcemanager->getMaterial(meshComp.materialID).emissiveTexture.refCount == 0) {
+				if (context.resourcemanager->getMaterial(meshComp.materialID).emissiveTexture == 0) {
 					ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.05f);
 				}
 			}

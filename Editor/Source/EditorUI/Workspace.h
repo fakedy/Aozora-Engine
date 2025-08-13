@@ -28,10 +28,12 @@ public:
 	Workspace() {
 		// I added another storage in resourcemanager to store "persistent" textures that should stay there until shutdown.
 		// I do not know yet if it was wise, but we will eventually find out.
+		/*
 		m_file_3d_texture = (ImTextureID)(intptr_t)Aozora::ResourcesAPI::loadTexture("Resources/editor/file-3d.png", true);
 		m_image_texture = (ImTextureID)(intptr_t)Aozora::ResourcesAPI::loadTexture("Resources/editor/image.png", true);
 		m_folder_texture = (ImTextureID)(intptr_t)Aozora::ResourcesAPI::loadTexture("Resources/editor/folder.png", true);
 		m_script_texture = (ImTextureID)(intptr_t)Aozora::ResourcesAPI::loadTexture("Resources/editor/folder.png", true); // TEMP it should be script
+		*/
 	}
 
 
