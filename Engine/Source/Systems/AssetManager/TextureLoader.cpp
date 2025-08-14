@@ -69,6 +69,65 @@ namespace Aozora::Resources {
 		return texture;
 	}
 
+    // just copy of above without directory
+    // can prob fix it so i only have to use one later.
+    Texture TextureLoader::loadTexture(const std::string& fileName)
+    {
+        // this is without the parent directory which we need to create unique hashes
+        std::string filename = std::string(fileName);
+
+        Log::info("Loading texture file: " + fileName);
+        if (m_importRegistry.count(fileName)) {
+            Log::info(std::format("{} already exist on disk", filename));
+            return Texture();
+        }
+
+
+        int width, height, nrChannels;
+
+        Texture texture;
+
+        if (stbi_is_hdr(fileName.c_str())) {
+            float* data = stbi_loadf(fileName.c_str(), &width, &height, &nrChannels, 0);
+            if (!data) {
+                Log::error("Failed to load texture: " + fileName);
+                stbi_image_free(data);
+                return Texture();
+            }
+            std::vector<std::vector<float>> dataV(1);
+            dataV[0].resize(width * height * nrChannels);
+            memcpy(dataV[0].data(), data, width * height * nrChannels * sizeof(float));
+            texture.dataVector = dataV;
+            texture.hasData = true;
+        }
+        else {
+            unsigned char* data = stbi_load(fileName.c_str(), &width, &height, &nrChannels, 0);
+
+            if (!data) {
+                Log::error("Failed to load texture: " + fileName);
+                stbi_image_free(data);
+                return Texture();
+            }
+
+            std::vector<std::vector<uint8_t>> dataV(1);
+            dataV[0].resize(width * height * nrChannels);
+            memcpy(dataV[0].data(), data, width * height * nrChannels);
+            texture.dataVector = dataV;
+            texture.hasData = true;
+        }
+
+        texture.width = width;
+        texture.height = height;
+        texture.nrChannels = nrChannels;
+        texture.name = filename;
+
+
+        m_importRegistry[fileName] = XXH64(fileName.c_str(), fileName.length(), 0);
+        texture.id = m_importRegistry[fileName];
+        Log::info("Successfully loaded texture: " + fileName);
+        return texture;
+    }
+
 
     Texture TextureLoader::loadCubemap(const std::vector<std::string>& faces)
     {

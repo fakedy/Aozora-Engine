@@ -260,13 +260,13 @@ namespace Aozora::Resources {
 		skybox.irradienceMapTexture = cubeMapTexture.id;
 
 		{
-			// update the manifest
+
 			std::ofstream os(m_workingDirectory + std::to_string(skybox.id) + ".skybox", std::ios::binary);
 			cereal::BinaryOutputArchive archive(os);
 			archive(skybox);
 		}
 		{
-			// update the manifest
+
 			std::ofstream os(m_workingDirectory + std::to_string(cubeMapTexture.id) + ".texture", std::ios::binary);
 			cereal::BinaryOutputArchive archive(os);
 			archive(cubeMapTexture);
@@ -285,6 +285,29 @@ namespace Aozora::Resources {
 		archive(m_importRegistry);
 
 		return skybox.id;
+	}
+
+	uint64_t AssetManager::createTexture(const std::string& filePath)
+	{
+
+		Texture tex = m_textureLoader.loadTexture(filePath);
+		// load from disk
+		if (tex.id == 0) {
+			tex = loadTextureFromDisk(m_importRegistry[filePath]);
+		}
+
+		{
+
+			std::ofstream os(m_workingDirectory + std::to_string(tex.id) + ".texture", std::ios::binary);
+			cereal::BinaryOutputArchive archive(os);
+			archive(tex);
+		}
+		// update the manifest
+		std::ofstream os(m_workingDirectory + "manifest.manifest", std::ios::binary);
+		cereal::BinaryOutputArchive archive(os);
+		archive(m_importRegistry);
+
+		return tex.id;
 	}
 
 	uint64_t AssetManager::getUniqueID()

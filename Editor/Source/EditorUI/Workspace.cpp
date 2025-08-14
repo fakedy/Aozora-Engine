@@ -51,7 +51,7 @@ void Workspace::draw(const Aozora::Context& context)
 		switch (asset.type)
 		{
 		case(Aozora::Resources::AssetType::Model):
-			if (ImGui::ImageButton(asset.name.c_str(), 0, ImVec2(thumbnailSize, thumbnailSize))) {
+			if (ImGui::ImageButton(asset.name.c_str(), m_file_3d_texture, ImVec2(thumbnailSize, thumbnailSize))) {
 				context.sceneManager->getCurrentActiveScene()->instantiateEntity(asset.hash);
 			}
 			break;

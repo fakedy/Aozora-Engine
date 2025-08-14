@@ -54,6 +54,7 @@ namespace Aozora::Resources {
 		Skybox loadSkyboxFromDisk(uint64_t hash);
 
 		uint64_t createSkybox();
+		uint64_t createTexture(const std::string& filePath);
 
 		uint64_t getUniqueID();
 

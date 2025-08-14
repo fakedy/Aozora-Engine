@@ -17,6 +17,7 @@ namespace Aozora::Resources {
 		TextureLoader(std::unordered_map<std::string, uint64_t>& importRegistry) : m_importRegistry(importRegistry){};
 
 		Texture loadTexture(const std::string& fileName, const std::string& directory);
+		Texture loadTexture(const std::string& fileName);
 		Texture loadCubemap(const std::vector<std::string>& faces);
 
 

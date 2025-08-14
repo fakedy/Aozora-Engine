@@ -16,12 +16,12 @@ public:
 
 	Editor() : Application("Aozora Editor") { // calls the constructor of Application
 
-
 		EditorLayer* editlayer = new EditorLayer(getSceneManager(), *m_sceneRenderer.get());
 		layerStack->addLayer(editlayer);
-		layerStack->addOverlay(new EditorUILayer(editlayer));
 
 		createProject();
+
+		layerStack->addOverlay(new EditorUILayer(editlayer, context));
 
 
 		run(); // run the app

@@ -14,15 +14,16 @@
 #include "EditorLayer.h"
 #include "Workspace.h"
 #include <Context.h>
+#include <Systems/AssetManager/AssetManager.h>
 
 class EditorUILayer : public Aozora::Layer {
 public:
-	EditorUILayer(EditorLayer* editlayer) : m_editorLayer(editlayer){
+	EditorUILayer(EditorLayer* editlayer, Aozora::Context& context) : m_editorLayer(editlayer), m_context(context) {
 
 
 		m_componentsViewWindow = std::make_shared<ComponentsView>();
 		m_editorEntityWindow = std::make_shared<EditorEntityWindow>(m_componentsViewWindow);
-		m_workspace = std::make_shared<Workspace>();
+		m_workspace = std::make_shared<Workspace>(m_context);
 
 		
 		IMGUI_CHECKVERSION();
@@ -60,6 +61,8 @@ public:
 
 
 private:
+	Aozora::Context& m_context;
+
 	std::shared_ptr<EditorEntityWindow> m_editorEntityWindow;
 	std::shared_ptr<ComponentsView> m_componentsViewWindow;
 	std::shared_ptr<StatsView> m_statsViewWindow;
@@ -70,6 +73,5 @@ private:
 	ImTextureID m_folder_texture;
 
 	EditorLayer* m_editorLayer;
-
 
 };

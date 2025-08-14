@@ -80,11 +80,12 @@ namespace Aozora {
 		std::unique_ptr<Graphics::SceneRenderer> m_sceneRenderer;
 		std::unique_ptr<SceneManager> m_sceneManager;
 		std::unique_ptr<ScriptSystem> m_scriptSystem;
+
+		Aozora::Context context;
 	private:
 		static Application* m_appInstance;
 
 		Window* m_window;
-		Aozora::Context context;
 		Window::WindowProps props;
 
 		std::queue<std::function<void()>> m_actionQueue;
