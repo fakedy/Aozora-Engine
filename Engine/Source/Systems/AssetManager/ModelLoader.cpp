@@ -107,7 +107,13 @@ namespace Aozora::Resources {
 
             loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE, Texture::TextureType::Texture2D, iModel);
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_NORMALS, Texture::TextureType::Texture2D, iModel);
+            if (aimaterial->GetTextureCount(aiTextureType_NORMALS) > 0) {
+
+                loadMaterialTextures(material, aimaterial, aiTextureType_NORMALS, Texture::TextureType::Texture2D, iModel);
+            }
+            else if (aimaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
+                loadMaterialTextures(material, aimaterial, aiTextureType_HEIGHT, Texture::TextureType::Texture2D, iModel);
+            }
 
             loadMaterialTextures(material, aimaterial, aiTextureType_EMISSIVE, Texture::TextureType::Texture2D, iModel);
 

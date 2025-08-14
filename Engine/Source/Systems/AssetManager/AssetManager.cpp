@@ -35,7 +35,8 @@ namespace Aozora::Resources {
 				archive(m_importRegistry);
 			}
 			loadAsset("Resources/testcube/testcube.obj");
-			loadAsset("Resources/sponza2/sponza.obj");
+			//loadAsset("Resources/sponza2/sponza.obj");
+			loadAsset("Resources/main_sponza/NewSponza_Main_glTF_003.gltf");
 			return true;
 		}
 
@@ -50,9 +51,9 @@ namespace Aozora::Resources {
 			archive(m_importRegistry);
 		}
 
-
 		loadAsset("Resources/testcube/testcube.obj");
-		loadAsset("Resources/sponza2/sponza.obj");
+		loadAsset("Resources/main_sponza/NewSponza_Main_glTF_003.gltf");
+		//loadAsset("Resources/sponza2/sponza.obj");
 		return false;
 	}
 

@@ -65,6 +65,8 @@ namespace Aozora {
                 sourceType = GL_FLOAT;
 
                 glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, tex.width, tex.height, 0, sourceFormat, sourceType, data[0].data());
+                data[0].clear();
+                data[0].shrink_to_fit();
             }
             else {
                 if (tex.isSrgb) { // if the image is in gamma mode
@@ -77,10 +79,12 @@ namespace Aozora {
                 sourceType = GL_UNSIGNED_BYTE;
 
                 glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, tex.width, tex.height, 0, sourceFormat, sourceType, data[0].data());
+                data[0].clear();
+                data[0].shrink_to_fit();
             }
         }, tex.dataVector);
 
-
+        
         glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -132,6 +136,8 @@ namespace Aozora {
 
             for (int i = 0; i < 6; i++) {
                 glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, sourceFormat, sourceType, data[i].data());
+                data[i].clear();
+                data[i].shrink_to_fit();
             }
         }, texture.dataVector);
 
