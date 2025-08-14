@@ -1,5 +1,6 @@
 #include "ResourceManager.h"
 #include <Systems/Logging/Logger.h>
+#include <variant>
 
 namespace Aozora {
 
@@ -7,21 +8,27 @@ namespace Aozora {
     const void ResourceManager::loadModel(uint64_t hash)
     {
        
-       const Model& model = m_assetManager.loadModel(hash);
+       // if it is not cached
+       if (m_loadedModels.find(hash) == m_loadedModels.end()) {
+           const Model& model = m_assetManager.loadModelFromDisk(hash);
 
-       for (const auto& node : model.allNodes) {
-           if (node.hasMesh) {
-               Mesh mesh = m_assetManager.loadMesh(node.meshID);
-               m_loadedMeshes[node.meshID] = mesh;
-               m_loadedmaterials[mesh.materialID] = m_assetManager.loadMaterial(mesh.materialID);
+           for (const auto& node : model.allNodes) {
+               if (node.hasMesh) {
+                   Mesh mesh = m_assetManager.loadMeshFromDisk(node.meshID);
+                   m_loadedMeshes[node.meshID] = mesh;
+                   m_loadedmaterials[mesh.materialID] = m_assetManager.loadMaterialFromDisk(mesh.materialID);
 
-               for (uint64_t texID : m_loadedmaterials[mesh.materialID].textureIDs) {
-                   loadTexture(texID);
+                   for (uint64_t texID : m_loadedmaterials[mesh.materialID].textureIDs) {
+                       loadTexture(texID);
+                   }
                }
            }
-       }
+           m_loadedModels.emplace(hash, model);
 
-       m_loadedModels.emplace(hash, model);
+       }
+       else {
+           Log::info(std::format("Using cache for model: {}", hash));
+       }
     }
 
     // opengl dependent code for loading texture
@@ -37,41 +44,43 @@ namespace Aozora {
             return isAlreadyLoaded;
         }
 
-        Texture tex = m_assetManager.loadTexture(hash);
+        Texture tex = m_assetManager.loadTextureFromDisk(hash);
 
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
         GLenum internalFormat;
-        GLenum dataFormat;
+        GLenum sourceFormat;
+        GLenum sourceType;
 
-        if (tex.nrChannels == 4) {
-            internalFormat = tex.isSrgb ? GL_SRGB_ALPHA : GL_RGBA8;
-            dataFormat = GL_RGBA;
-        }
-        else {
-            internalFormat = tex.isSrgb ? GL_SRGB : GL_RGB8;
-            dataFormat = GL_RGB;
-        }
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, tex.width, tex.height, 0, dataFormat, GL_UNSIGNED_BYTE, tex.data.data());
+        std::visit([&](auto&& data) {
+
+            using VecType = std::decay_t<decltype(data[0])>;
+            using PixelType = typename VecType::value_type;
+
+            // basically check if they are the same type
+            if (std::is_same_v<PixelType, float>) {
+                internalFormat = (tex.nrChannels == 4) ? GL_RGBA16F : GL_RGB16F;
+                sourceFormat = (tex.nrChannels == 4) ? GL_RGBA : GL_RGB;
+                sourceType = GL_FLOAT;
+
+                glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, tex.width, tex.height, 0, sourceFormat, sourceType, data[0].data());
+            }
+            else {
+
+                internalFormat = (tex.nrChannels == 4) ? GL_SRGB8_ALPHA8 : GL_SRGB8;
+                sourceFormat = (tex.nrChannels == 4) ? GL_RGBA : GL_RGB;
+                sourceType = GL_UNSIGNED_BYTE;
+
+                glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, tex.width, tex.height, 0, sourceFormat, sourceType, data[0].data());
+            }
+        }, tex.dataVector);
+
+
         glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-
-        // filename will be unique so its alright to use the filename
-        // TEMPORARY
-        /*
-        if (persistent) {
-            m_loadedPersistentTextures[filename].id = texture;
-            m_loadedPersistentTextures[filename].refCount++;
-        }
-        else {
-            m_loadedTextures[hash].id = texture;
-            m_loadedTextures[hash].refCount++;
-        }
-        */
 
         uint64_t handle = glGetTextureHandleARB(texture);
         glMakeTextureHandleResidentARB(handle);
@@ -82,46 +91,59 @@ namespace Aozora {
         return texture;
         
     }
-    // opengl dependent
-    unsigned int ResourceManager::loadCubemap(const std::vector<std::string> faces)
+
+    uint64_t ResourceManager::loadCubemap(uint64_t hash)
     {
-        /*
 
-        // TECHNICALLY UNTRACKED TEXTURE
-
-
+        Texture texture = m_assetManager.loadTextureFromDisk(hash);
 
         uint32_t textureID;
 
         glGenTextures(1, &textureID);
         glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
-        int width, height, nrChannels;
+        GLenum internalFormat;
+        GLenum sourceFormat;
+        GLenum sourceType;
 
-        int i = 0;
-        for (auto face : faces) {
+        std::visit([&](auto&& data) {
 
-            std::string filename = face;
-            float* data = stbi_loadf(filename.c_str(), &width, &height, &nrChannels, 0);
-            if (data) {
-
-                if (nrChannels == 4) {
-                    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, data);
+            using VecType = std::decay_t<decltype(data[0])>;
+            using PixelType = typename VecType::value_type;
+            int width = texture.width;
+            int height = texture.height;
+            // basically check if they are the same type
+            if (std::is_same_v<PixelType, float>) {
+                if (texture.nrChannels == 4) {
+                    internalFormat = GL_RGBA16F;
+                    sourceFormat = GL_RGBA;
+                    sourceType = GL_FLOAT;
                 }
                 else {
-                    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA16F, width, height, 0, GL_RGB, GL_FLOAT, data);
+                    internalFormat = GL_RGB16F;
+                    sourceFormat = GL_RGB;
+                    sourceType = GL_FLOAT;
                 }
-
-                stbi_image_free(data);
-
             }
             else {
-                Log::error("ResourceManager::loadCubemap failed");
-                stbi_image_free(data);
-                return 0;
+                if (texture.nrChannels == 4) {
+                    internalFormat = GL_RGBA8;
+                    sourceFormat = GL_RGBA;
+                    sourceType = GL_UNSIGNED_BYTE;
+                }
+                else {
+                    internalFormat = GL_RGB8;
+                    sourceFormat = GL_RGB;
+                    sourceType = GL_UNSIGNED_BYTE;
+                }
+         
             }
-            i++;
-        }
+
+            for (int i = 0; i < 6; i++) {
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, sourceFormat, sourceType, data[i].data());
+            }
+        }, texture.dataVector);
+
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -129,46 +151,26 @@ namespace Aozora {
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-        Log::info(std::format("Created cubemap with ID: {}", textureID));
+        texture.gpuID = textureID;
+
+        m_loadedTextures[texture.id] = texture;
         return textureID;
-        */
-        return 0;
     }
 
-    unsigned int ResourceManager::loadCubemap()
+    uint64_t ResourceManager::loadSkybox(uint64_t hash)
     {
-        /*
-        // TECHNICALLY UNTRACKED TEXTURE
 
-        uint32_t textureID;
+            Skybox skybox = m_assetManager.loadSkyboxFromDisk(hash);
+            loadCubemap(skybox.cubeMapTexture);
+            loadCubemap(skybox.irradienceMapTexture);
 
-        glGenTextures(1, &textureID);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-        // can put this in parameters instead but lazy
-        int width = 32;
-        int height = 32;
-
-        for (int i = 0; i < 6; i++) {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA16F, 32, 32, 0, GL_RGBA, GL_FLOAT, nullptr);
-        }
-
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-        Log::info(std::format("Created empty cubemap with ID: {}", textureID));
-
-        return textureID;
-        */
-        return 0;
+            m_loadedSkyboxes[skybox.id] = skybox;
+            return skybox.id;
     }
 
     uint64_t ResourceManager::loadMesh(uint64_t hash)
     {
-        m_loadedMeshes[hash] = m_assetManager.loadMesh(hash);
+        m_loadedMeshes[hash] = m_assetManager.loadMeshFromDisk(hash);
         return hash; // do we really need this lol?
     }
 

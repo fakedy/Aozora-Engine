@@ -1,6 +1,5 @@
 #pragma once
 #include <memory>
-#include "AozoraAPI/Aozora.h"
 #include "Systems/Windows/Window.h"
 #include "Systems/Renderers/IrenderAPI.h"
 #include "Systems/Layers/LayerStack.h"

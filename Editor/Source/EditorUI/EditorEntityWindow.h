@@ -1,5 +1,4 @@
 #pragma once 
-#include "AozoraAPI/Aozora.h"
 #include "ComponentsView.h"
 #include "Systems/ResourceManager/ResourceManager.h"
 #include <Context.h>

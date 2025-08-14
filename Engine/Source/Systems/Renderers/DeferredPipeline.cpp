@@ -193,6 +193,7 @@ namespace Aozora {
 			glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+
 			renderBuffer->bind();
 			// light pass
 
@@ -212,6 +213,9 @@ namespace Aozora {
 
 			auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
 			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skyboxes.front()); // hack
+			Skybox& skyboxObject = resourceManager.m_loadedSkyboxes[skyboxComponent.id];
+			Texture& cubeMapTexture = resourceManager.m_loadedTextures[skyboxObject.cubeMapTexture];
+			Texture& irradienceMapTexture = resourceManager.m_loadedTextures[skyboxObject.irradienceMapTexture];
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[0]);
@@ -226,12 +230,13 @@ namespace Aozora {
 			glActiveTexture(GL_TEXTURE5);
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_depthTextureID);
 			glActiveTexture(GL_TEXTURE6);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.data.irradianceTextureID);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, irradienceMapTexture.gpuID);
 			m_defaultShader.setInt("irradianceMap", 6);
 
 			glDepthMask(GL_FALSE);
 			renderLights(scene);
 			glDepthMask(GL_TRUE);
+
 
 			// render skybox
 			glDepthFunc(GL_LEQUAL);
@@ -243,7 +248,7 @@ namespace Aozora {
 				auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skybox);
 				glm::mat4 viewWithoutRotation = glm::mat4(glm::mat3(current_camera.getView()));
 				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.data.skyboxTextureID);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture.gpuID);
 				m_skyboxShader.setMat4("view", viewWithoutRotation);
 				m_skyboxShader.setMat4("proj", current_camera.getProjection());
 				glDrawArrays(GL_TRIANGLES, 0, 36);

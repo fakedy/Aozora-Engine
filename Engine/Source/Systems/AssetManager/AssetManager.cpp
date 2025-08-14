@@ -6,6 +6,7 @@
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/unordered_map.hpp>
 #include <fstream>
+#include <random>
 
 namespace Aozora::Resources {
 
@@ -27,14 +28,31 @@ namespace Aozora::Resources {
 			Log::info("Successfully created project folder");
 			// load base assets and serialize to store binary data
 
+			std::ifstream os(m_workingDirectory + "manifest.manifest", std::ios::binary);
+			if (os) {
+
+				cereal::BinaryInputArchive archive(os);
+				archive(m_importRegistry);
+			}
 			loadAsset("Resources/testcube/testcube.obj");
+			loadAsset("Resources/sponza2/sponza.obj");
 			return true;
 		}
 
 		Log::error("Failed to create project directory. It may already exist.");
 
 
+		
+		std::ifstream os(m_workingDirectory + "manifest.manifest", std::ios::binary);
+		if (os) {
+
+			cereal::BinaryInputArchive archive(os);
+			archive(m_importRegistry);
+		}
+
+
 		loadAsset("Resources/testcube/testcube.obj");
+		loadAsset("Resources/sponza2/sponza.obj");
 		return false;
 	}
 
@@ -47,6 +65,7 @@ namespace Aozora::Resources {
 		throw std::out_of_range(std::format("Asset with ID: {} doesn't exist", ID));
 	}
 
+	// intended for non engine file formats
 	void AssetManager::loadAsset(const std::string& path)
 	{
 		// This is for prototyping and getting a grasp around the system im designing
@@ -131,8 +150,6 @@ namespace Aozora::Resources {
 				m_assets[m_nextAssetID] = asset;
 				m_nextAssetID++;
 			}
-
-
 		}
 
 		if (e == "scene") {
@@ -156,8 +173,9 @@ namespace Aozora::Resources {
 
 	}
 
-	Model AssetManager::loadModel(uint64_t hash)
+	Model AssetManager::loadModelFromDisk(uint64_t hash)
 	{
+		Log::info(std::format("Loading model: {} from disk", hash));
 		Model model; // parse the file with the hash
 
 
@@ -168,8 +186,9 @@ namespace Aozora::Resources {
 		return model;
 	}
 
-	Mesh AssetManager::loadMesh(uint64_t hash)
+	Mesh AssetManager::loadMeshFromDisk(uint64_t hash)
 	{
+		Log::info(std::format("Loading mesh: {} from disk", hash));
 		Mesh mesh;
 		std::ifstream os(m_workingDirectory + std::to_string(hash) + ".mesh", std::ios::binary);
 		cereal::BinaryInputArchive archive(os);
@@ -177,8 +196,9 @@ namespace Aozora::Resources {
 		return mesh;
 	}
 
-	Texture AssetManager::loadTexture(uint64_t hash)
+	Texture AssetManager::loadTextureFromDisk(uint64_t hash)
 	{
+		Log::info(std::format("Loading texture: {} from disk", hash));
 		Texture tex;
 		std::ifstream os(m_workingDirectory + std::to_string(hash) + ".texture", std::ios::binary);
 		cereal::BinaryInputArchive archive(os);
@@ -186,13 +206,94 @@ namespace Aozora::Resources {
 		return tex;
 	}
 
-	Material AssetManager::loadMaterial(uint64_t hash)
+	Material AssetManager::loadMaterialFromDisk(uint64_t hash)
 	{
+		Log::info(std::format("Loading material: {} from disk", hash));
 		Material mat;
 		std::ifstream os(m_workingDirectory + std::to_string(hash) + ".material", std::ios::binary);
 		cereal::BinaryInputArchive archive(os);
 		archive(mat);
 		return mat;
+	}
+
+	Skybox AssetManager::loadSkyboxFromDisk(uint64_t hash)
+	{
+		Log::info(std::format("Loading skybox: {} from disk", hash));
+		Skybox skybox;
+		std::ifstream os(m_workingDirectory + std::to_string(hash) + ".skybox", std::ios::binary);
+		cereal::BinaryInputArchive archive(os);
+		archive(skybox);
+		return skybox;
+	}
+
+	uint64_t AssetManager::createSkybox()
+	{
+		Asset asset;
+		asset.hidden = true;
+		asset.icon = 0;
+		asset.name = "Skybox";
+		asset.parentDir = "";
+		asset.type = AssetType::Skybox;
+		asset.hash = getUniqueID();
+
+		Skybox skybox;
+		skybox.id = asset.hash;
+		m_assets[asset.hash] = asset;
+
+		// default skybox textures
+		std::vector<std::string> paths = {
+		"Resources/cubemap/px.hdr",
+		"Resources/cubemap/nx.hdr",
+		"Resources/cubemap/py.hdr",
+		"Resources/cubemap/ny.hdr",
+		"Resources/cubemap/pz.hdr",
+		"Resources/cubemap/nz.hdr"
+		};
+
+		// this is unironically so bad design
+		Texture cubeMapTexture = m_textureLoader.loadCubemap(paths);
+
+		//Texture irradienceMapTexture = m_textureLoader.loadCubemap(paths);
+
+		// temp
+		skybox.cubeMapTexture = cubeMapTexture.id;
+		skybox.irradienceMapTexture = cubeMapTexture.id;
+
+		{
+			// update the manifest
+			std::ofstream os(m_workingDirectory + std::to_string(skybox.id) + ".skybox", std::ios::binary);
+			cereal::BinaryOutputArchive archive(os);
+			archive(skybox);
+		}
+		{
+			// update the manifest
+			std::ofstream os(m_workingDirectory + std::to_string(cubeMapTexture.id) + ".texture", std::ios::binary);
+			cereal::BinaryOutputArchive archive(os);
+			archive(cubeMapTexture);
+		}
+		/*
+		{
+			// update the manifest
+			std::ofstream os(m_workingDirectory + std::to_string(irradienceMapTexture.id) + ".texture", std::ios::binary);
+			cereal::BinaryOutputArchive archive(os);
+			archive(irradienceMapTexture);
+		}
+		*/
+		// update the manifest
+		std::ofstream os(m_workingDirectory + "manifest.manifest", std::ios::binary);
+		cereal::BinaryOutputArchive archive(os);
+		archive(m_importRegistry);
+
+		return skybox.id;
+	}
+
+	uint64_t AssetManager::getUniqueID()
+	{
+		std::random_device rd;
+		std::mt19937_64 gen(rd());
+		std::uniform_int_distribution<uint64_t> dis;
+
+		return dis(gen);
 	}
 
 

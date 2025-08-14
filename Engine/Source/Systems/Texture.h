@@ -3,22 +3,19 @@
 #include <string>
 #include <cereal/cereal.hpp>
 #include <cereal/types/vector.hpp>
-
+#include <cereal/types/variant.hpp>
+#include <variant>
 namespace Aozora {
 
 	class Texture {
 	public:
 
 		enum TextureType {
-			DIFFUSE,
-			NORMAL,
-			EMISSIVE,
-			AO,
-			METALLIC,
-			ROUGHNESS
+			Texture2D,
+			Cubemap
 		};
 
-
+		uint32_t gpuID{};
 		uint64_t id{};
 		std::string name{};
 		uint64_t handle{}; // for bindless textures
@@ -26,8 +23,11 @@ namespace Aozora {
 		TextureType type{};
 		std::string path{};
 		uint32_t width, height, nrChannels;
-		std::vector<uint8_t> data;
-		bool isSrgb{ false };
+		
+		using PixelData = std::variant<std::vector<std::vector<uint8_t>>, std::vector<std::vector<float>>>;
+		// each element is the data of a texture
+		PixelData dataVector;
+		bool hasData{ false };
 
 		template<class Archive>
 		void serialize(Archive& archive) {
@@ -38,9 +38,9 @@ namespace Aozora {
 				CEREAL_NVP(width),
 				CEREAL_NVP(height),
 				CEREAL_NVP(nrChannels),
-				CEREAL_NVP(data),
+				CEREAL_NVP(dataVector),
 				CEREAL_NVP(name),
-				CEREAL_NVP(isSrgb));
+				CEREAL_NVP(hasData));
 		}
 
 	private:

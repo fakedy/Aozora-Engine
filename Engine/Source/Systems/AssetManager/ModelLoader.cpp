@@ -43,7 +43,7 @@ namespace Aozora::Resources {
             aiMesh* aiMesh = scene->mMeshes[meshIndex];
             
             // unique string for the mesh
-            std::string key = file + "|" + std::to_string(meshIndex);
+            std::string key = file + "|" + std::to_string(meshIndex) + aiMesh->mName.C_Str();
 
             // check if mesh i already loaded
             if (m_importRegistry.count(key)) {
@@ -90,7 +90,8 @@ namespace Aozora::Resources {
 
         // check if the material already exist
         unsigned int mMaterialIndex = mesh->mMaterialIndex;
-        std::string key = file + "|" + std::to_string(mMaterialIndex);
+        // notice this might be flaws and crash with the mesh data if the name is ""
+        std::string key = file + "|" + std::to_string(mMaterialIndex) + scene->mMaterials[mMaterialIndex]->GetName().C_Str();
 
         uint64_t materialID;
         if (m_importRegistry.count(key)) {
@@ -104,17 +105,17 @@ namespace Aozora::Resources {
 
             aiMaterial* aimaterial = scene->mMaterials[mMaterialIndex];
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE, Texture::TextureType::DIFFUSE, iModel);
+            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE, Texture::TextureType::Texture2D, iModel);
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_NORMALS, Texture::TextureType::NORMAL, iModel);
+            loadMaterialTextures(material, aimaterial, aiTextureType_NORMALS, Texture::TextureType::Texture2D, iModel);
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_EMISSIVE, Texture::TextureType::EMISSIVE, iModel);
+            loadMaterialTextures(material, aimaterial, aiTextureType_EMISSIVE, Texture::TextureType::Texture2D, iModel);
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_AMBIENT_OCCLUSION, Texture::TextureType::AO, iModel);
+            loadMaterialTextures(material, aimaterial, aiTextureType_AMBIENT_OCCLUSION, Texture::TextureType::Texture2D, iModel);
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_METALNESS, Texture::TextureType::METALLIC, iModel);
+            loadMaterialTextures(material, aimaterial, aiTextureType_METALNESS, Texture::TextureType::Texture2D, iModel);
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE_ROUGHNESS, Texture::TextureType::ROUGHNESS, iModel);
+            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE_ROUGHNESS, Texture::TextureType::Texture2D, iModel);
 
             m_importRegistry[key] = materialID;
             iModel.materials.push_back(material);
@@ -222,12 +223,10 @@ namespace Aozora::Resources {
             mat->GetTexture(type, 0, &str);
 
             Texture targetTexture = m_textureLoader.loadTexture(str.C_Str(), m_directory);
-            bool isSrgb = false;
             switch (type)
             {
             case aiTextureType_DIFFUSE:
                 material.diffuseTexture = targetTexture.id;
-                isSrgb = true;
                 break;
             case aiTextureType_NORMALS:
                 material.normalTexture = targetTexture.id;
@@ -248,9 +247,8 @@ namespace Aozora::Resources {
                 break;
             }
 
-            if (!targetTexture.data.empty()) {
+            if (targetTexture.hasData) {
                 targetTexture.type = typeName;
-                targetTexture.isSrgb = isSrgb;
                 targetTexture.path = str.C_Str();
                 material.textureIDs.push_back(targetTexture.id);
                 iModel.textures.push_back(targetTexture);

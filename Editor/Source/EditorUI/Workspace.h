@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "AozoraAPI/Aozora.h"
 #include "imgui/imgui.h"
 #include <Context.h>
 

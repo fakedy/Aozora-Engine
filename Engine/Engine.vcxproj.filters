@@ -7,9 +7,6 @@
     <Filter Include="Source">
       <UniqueIdentifier>{56EB95D1-428D-C0A7-2B48-D4FB178947F8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\AozoraAPI">
-      <UniqueIdentifier>{CBFDE3F3-B7F6-0246-E028-E8CACC80E251}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Systems">
       <UniqueIdentifier>{5D37F96B-4905-ED71-3299-5D981E06C9D6}</UniqueIdentifier>
     </Filter>
@@ -69,9 +66,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\AozoraAPI\Aozora.h">
-      <Filter>Source\AozoraAPI</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Application.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -210,6 +204,9 @@
     <ClInclude Include="Source\Systems\Serialization\Serializer.h">
       <Filter>Source\Systems\Serialization</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\Skybox.h">
+      <Filter>Source\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\Texture.h">
       <Filter>Source\Systems</Filter>
     </ClInclude>
@@ -226,9 +223,6 @@
   <ItemGroup>
     <ClCompile Include="Source\APPLICATION.CPP">
       <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\AozoraAPI\ResourcesAPI.cpp">
-      <Filter>Source\AozoraAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\AssetManager\AssetManager.cpp">
       <Filter>Source\Systems\AssetManager</Filter>

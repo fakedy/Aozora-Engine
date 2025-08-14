@@ -2,7 +2,6 @@
 #include "ResourceManager/ResourceManager.h"
 #include "glad/glad.h"
 #include <iostream>
-#include <AozoraAPI/Aozora.h>
 
 
 

@@ -1,5 +1,5 @@
+#include <Application.h>
 #include <iostream>
-#include "AozoraAPI/Aozora.h"
 #include "EditorUI/EditorUILayer.h"
 #include "EditorLayer.h"
 #include <Context.h>

@@ -21,6 +21,9 @@ void Workspace::draw(const Aozora::Context& context)
 				if (ImGui::MenuItem("Script")) {
 					// create new asset folder or something idk
 				}
+				if (ImGui::MenuItem("Skybox")) {
+					// create new asset folder or something idk
+				}
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Import")) {
@@ -57,6 +60,8 @@ void Workspace::draw(const Aozora::Context& context)
 		case(Aozora::Resources::AssetType::Material):
 			break;
 		case(Aozora::Resources::AssetType::Scene):
+			break;
+		case(Aozora::Resources::AssetType::Skybox):
 			break;
 		default:
 			break;

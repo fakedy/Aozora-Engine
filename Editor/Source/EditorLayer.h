@@ -1,5 +1,5 @@
 #pragma once
-#include "AozoraAPI/Aozora.h"
+#include <Application.h> // temp
 #include <Systems/EditorCameraSystem.h>
 #include <memory>
 #include <entt/entt.hpp>

@@ -2,7 +2,6 @@
 #include "imgui/imgui.h"
 #include "entt/entt.hpp"
 #include <string>
-#include <AozoraAPI/Aozora.h>
 
 void EditorEntityWindow::draw(const Aozora::Context& context)
 {

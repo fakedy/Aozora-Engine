@@ -10,6 +10,7 @@
 #include <Systems/Events/EventSystem.h>
 #include <Systems/AssetManager/AssetManager.h>
 #include <Systems/Texture.h>
+#include <Systems/Skybox.h>
 
 namespace Aozora {
 
@@ -24,8 +25,8 @@ namespace Aozora {
 		const void loadModel(uint64_t hash);
 
 		uint64_t loadTexture(uint64_t hash);
-		unsigned int loadCubemap(const std::vector<std::string> faces);
-		unsigned int loadCubemap();
+		uint64_t loadCubemap(uint64_t hash);
+		uint64_t loadSkybox(uint64_t hash);
 		uint64_t loadMesh(uint64_t hash);
 		unsigned int createMaterial(Material* material);
 		unsigned int materialLoaded(unsigned int id);
@@ -45,6 +46,7 @@ namespace Aozora {
 		std::unordered_map<uint64_t, Mesh> m_loadedMeshes;
 		std::unordered_map<unsigned int, Material> m_loadedmaterials;
 		std::unordered_map<uint64_t, Model> m_loadedModels;
+		std::unordered_map<uint64_t, Skybox> m_loadedSkyboxes;
 
 		unsigned int m_nextMeshID{ 0 };
 		unsigned int m_nextMaterialID{ 0 };

@@ -1,5 +1,5 @@
 #pragma once
-#include "AozoraAPI/Aozora.h"
+#include <Application.h> // temp
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
 #include "imgui/imgui_impl_glfw.h"

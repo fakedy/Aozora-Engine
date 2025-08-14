@@ -108,21 +108,18 @@ namespace Aozora {
 		registry.emplace<Aozora::EditorEntityTag>(editorCameraEntity);
 
 
+		
 		// create skybox
 		const entt::entity skyboxEntity = registry.create();
 		registry.emplace_or_replace<EditorEntityTag>(skyboxEntity);
-		std::vector<std::string> paths = {
-			"Resources/cubemap/px.hdr",
-			"Resources/cubemap/nx.hdr",
-			"Resources/cubemap/py.hdr",
-			"Resources/cubemap/ny.hdr",
-			"Resources/cubemap/pz.hdr",
-			"Resources/cubemap/nz.hdr"
-		};
-		SkyboxTextures data = ResourcesAPI::loadSkybox(paths);
-		registry.emplace_or_replace<SkyboxComponent>(skyboxEntity).data = data;
 
 
+		uint64_t skyboxID = m_resourceManager->loadSkybox(m_assetManager->createSkybox());
+
+
+		registry.emplace_or_replace<SkyboxComponent>(skyboxEntity).id = skyboxID;
+
+		
 		m_sceneRenderer->updatePrimaryScene(*scene);
 
 	}

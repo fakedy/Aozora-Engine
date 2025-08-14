@@ -163,6 +163,7 @@ namespace Aozora {
 		resourceManager.loadModel(hash);
 		Model& model = resourceManager.m_loadedModels.at(hash);
 
+		// could totally cache the entity too so I dont have to do this node work
 		createEntityFromNodes(model, model.allNodes[0], entt::null);
 
 	}

@@ -6,6 +6,7 @@
 #include <Systems/AssetManager/TextureLoader.h>
 #include <cereal/cereal.hpp>
 #include <cereal/types/unordered_map.hpp>
+#include <Systems/Skybox.h>
 
 namespace Aozora::Resources {
 
@@ -46,10 +47,15 @@ namespace Aozora::Resources {
 
 		void loadAsset(const std::string& path);
 
-		Model loadModel(uint64_t hash);
-		Mesh loadMesh(uint64_t hash);
-		Texture loadTexture(uint64_t hash);
-		Material loadMaterial(uint64_t hash);
+		Model loadModelFromDisk(uint64_t hash);
+		Mesh loadMeshFromDisk(uint64_t hash);
+		Texture loadTextureFromDisk(uint64_t hash);
+		Material loadMaterialFromDisk(uint64_t hash);
+		Skybox loadSkyboxFromDisk(uint64_t hash);
+
+		uint64_t createSkybox();
+
+		uint64_t getUniqueID();
 
 		std::vector<std::reference_wrapper<Asset>> getLoadedAssets();
 
