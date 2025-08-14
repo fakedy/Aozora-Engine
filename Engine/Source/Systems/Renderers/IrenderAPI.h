@@ -1,8 +1,6 @@
 #pragma once
-#include "Systems/Windows/Window.h"
 #include <glm/glm.hpp>
 #include "Shader.h"
-#include <Systems/Scene/Scene.h>
 
 namespace Aozora {
 

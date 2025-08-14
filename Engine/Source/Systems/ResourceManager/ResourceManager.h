@@ -11,13 +11,15 @@
 #include <Systems/AssetManager/AssetManager.h>
 #include <Systems/Texture.h>
 #include <Systems/Skybox.h>
+#include <Systems/Renderers/OpenGL.h>
+#include <Systems/Renderers/IrenderAPI.h>
 
 namespace Aozora {
 
 	class ResourceManager {
 	public:
 
-		ResourceManager(Resources::AssetManager& assetManager) : m_assetManager(assetManager) {
+		ResourceManager(Resources::AssetManager& assetManager, IrenderAPI& renderAPI) : m_assetManager(assetManager), m_renderAPI(renderAPI) {
 		
 
 		};
@@ -26,6 +28,8 @@ namespace Aozora {
 
 		uint64_t loadTexture(uint64_t hash);
 		uint64_t loadCubemap(uint64_t hash);
+		
+		uint64_t createEmptyCubeMap(uint32_t width, uint32_t height);
 		uint64_t loadSkybox(uint64_t hash);
 		uint64_t loadMesh(uint64_t hash);
 		unsigned int createMaterial(Material* material);
@@ -54,6 +58,7 @@ namespace Aozora {
 		void clearResources();
 
 		Resources::AssetManager& m_assetManager;
+		IrenderAPI& m_renderAPI;
 
 	private:
 

@@ -211,12 +211,6 @@ namespace Aozora {
 			m_defaultShader.setInt("gProperties", 4);
 			m_defaultShader.setInt("gDepth", 5);
 
-			auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
-			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skyboxes.front()); // hack
-			Skybox& skyboxObject = resourceManager.m_loadedSkyboxes[skyboxComponent.id];
-			Texture& cubeMapTexture = resourceManager.m_loadedTextures[skyboxObject.cubeMapTexture];
-			Texture& irradienceMapTexture = resourceManager.m_loadedTextures[skyboxObject.irradienceMapTexture];
-
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[0]);
 			glActiveTexture(GL_TEXTURE1);
@@ -229,6 +223,13 @@ namespace Aozora {
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[4]);
 			glActiveTexture(GL_TEXTURE5);
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_depthTextureID);
+
+			auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
+			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skyboxes.front()); // hack
+			Skybox& skyboxObject = resourceManager.m_loadedSkyboxes[skyboxComponent.id];
+			Texture& cubeMapTexture = resourceManager.m_loadedTextures[skyboxObject.cubeMapTexture];
+			Texture& irradienceMapTexture = resourceManager.m_loadedTextures[skyboxObject.irradienceMapTexture];
+
 			glActiveTexture(GL_TEXTURE6);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, irradienceMapTexture.gpuID);
 			m_defaultShader.setInt("irradianceMap", 6);

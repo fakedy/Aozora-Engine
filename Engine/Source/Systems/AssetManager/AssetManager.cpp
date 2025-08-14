@@ -200,6 +200,7 @@ namespace Aozora::Resources {
 	{
 		Log::info(std::format("Loading texture: {} from disk", hash));
 		Texture tex;
+		// load from disk
 		std::ifstream os(m_workingDirectory + std::to_string(hash) + ".texture", std::ios::binary);
 		cereal::BinaryInputArchive archive(os);
 		archive(tex);
@@ -253,6 +254,7 @@ namespace Aozora::Resources {
 		// this is unironically so bad design
 		Texture cubeMapTexture = m_textureLoader.loadCubemap(paths);
 
+		// confusing situation
 		//Texture irradienceMapTexture = m_textureLoader.loadCubemap(paths);
 
 		// temp
@@ -293,20 +295,22 @@ namespace Aozora::Resources {
 		Texture tex = m_textureLoader.loadTexture(filePath);
 		// load from disk
 		if (tex.id == 0) {
-			tex = loadTextureFromDisk(m_importRegistry[filePath]);
+			// if its already loaded return the hash
+			return m_importRegistry[filePath];
 		}
+
+		// save to disk
+		std::ofstream os(m_workingDirectory + std::to_string(tex.id) + ".texture", std::ios::binary);
+		cereal::BinaryOutputArchive archive(os);
+		archive(tex);
 
 		{
-
-			std::ofstream os(m_workingDirectory + std::to_string(tex.id) + ".texture", std::ios::binary);
+			// update the manifest
+			std::ofstream os(m_workingDirectory + "manifest.manifest", std::ios::binary);
 			cereal::BinaryOutputArchive archive(os);
-			archive(tex);
+			archive(m_importRegistry);
 		}
-		// update the manifest
-		std::ofstream os(m_workingDirectory + "manifest.manifest", std::ios::binary);
-		cereal::BinaryOutputArchive archive(os);
-		archive(m_importRegistry);
-
+	
 		return tex.id;
 	}
 

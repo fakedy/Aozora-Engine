@@ -3,8 +3,6 @@
 #include "glad/glad.h"
 #include "Opengl/OpenglShader.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include "Systems/Windows/Window.h"
-#include <unordered_map>
 #include "Opengl/OpenglFrameBuffer.h"
 #include <Systems/Mesh.h>
 

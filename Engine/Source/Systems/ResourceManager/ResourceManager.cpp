@@ -1,6 +1,7 @@
 #include "ResourceManager.h"
 #include <Systems/Logging/Logger.h>
 #include <variant>
+#include <random>
 
 namespace Aozora {
 
@@ -59,15 +60,19 @@ namespace Aozora {
 
             // basically check if they are the same type
             if (std::is_same_v<PixelType, float>) {
-                internalFormat = (tex.nrChannels == 4) ? GL_RGBA16F : GL_RGB16F;
-                sourceFormat = (tex.nrChannels == 4) ? GL_RGBA : GL_RGB;
+                internalFormat = GL_R11F_G11F_B10F;
+                sourceFormat = GL_RGB;
                 sourceType = GL_FLOAT;
 
                 glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, tex.width, tex.height, 0, sourceFormat, sourceType, data[0].data());
             }
             else {
-
-                internalFormat = (tex.nrChannels == 4) ? GL_SRGB8_ALPHA8 : GL_SRGB8;
+                if (tex.isSrgb) {
+                    internalFormat = (tex.nrChannels == 4) ? GL_SRGB8_ALPHA8 : GL_SRGB8;
+                }
+                else {
+                    internalFormat = (tex.nrChannels == 4) ? GL_RGBA8 : GL_RGB8;
+                }
                 sourceFormat = (tex.nrChannels == 4) ? GL_RGBA : GL_RGB;
                 sourceType = GL_UNSIGNED_BYTE;
 
@@ -114,28 +119,14 @@ namespace Aozora {
             int height = texture.height;
             // basically check if they are the same type
             if (std::is_same_v<PixelType, float>) {
-                if (texture.nrChannels == 4) {
-                    internalFormat = GL_RGBA16F;
-                    sourceFormat = GL_RGBA;
-                    sourceType = GL_FLOAT;
-                }
-                else {
-                    internalFormat = GL_RGB16F;
-                    sourceFormat = GL_RGB;
-                    sourceType = GL_FLOAT;
-                }
+                internalFormat = GL_R11F_G11F_B10F;
+                sourceFormat = GL_RGB;
+                sourceType = GL_FLOAT;
             }
             else {
-                if (texture.nrChannels == 4) {
-                    internalFormat = GL_RGBA8;
-                    sourceFormat = GL_RGBA;
-                    sourceType = GL_UNSIGNED_BYTE;
-                }
-                else {
-                    internalFormat = GL_RGB8;
-                    sourceFormat = GL_RGB;
-                    sourceType = GL_UNSIGNED_BYTE;
-                }
+                internalFormat = (texture.nrChannels == 4) ? GL_RGBA8 : GL_RGB8;
+                sourceFormat = (texture.nrChannels == 4) ? GL_RGBA : GL_RGB;
+                sourceType = GL_UNSIGNED_BYTE;
          
             }
 
@@ -157,12 +148,54 @@ namespace Aozora {
         return textureID;
     }
 
-    uint64_t ResourceManager::loadSkybox(uint64_t hash)
+    uint64_t ResourceManager::createEmptyCubeMap(uint32_t width, uint32_t height)
     {
 
+        Texture tex;
+        uint32_t textureID;
+
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+        GLenum internalFormat;
+        GLenum sourceFormat;
+        GLenum sourceType;
+
+
+
+        internalFormat = GL_RGBA16F;
+        sourceFormat = GL_RGBA;
+        sourceType = GL_FLOAT;
+        for (int i = 0; i < 6; i++) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, sourceFormat, sourceType, nullptr);
+        }
+
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        tex.gpuID = textureID;
+
+        std::random_device rd;
+        std::mt19937_64 gen(rd());
+        std::uniform_int_distribution<uint64_t> dis;
+        tex.id = dis(gen);
+        m_loadedTextures[tex.id] = tex;
+        return tex.id;
+
+    }
+
+    uint64_t ResourceManager::loadSkybox(uint64_t hash)
+    {
+            // yes its confusing, yes its temporary
             Skybox skybox = m_assetManager.loadSkyboxFromDisk(hash);
             loadCubemap(skybox.cubeMapTexture);
-            loadCubemap(skybox.irradienceMapTexture);
+
+            skybox.irradienceMapTexture = createEmptyCubeMap(32, 32);
+            m_renderAPI.bakeCubemapIrradiance(m_loadedTextures[skybox.cubeMapTexture].gpuID, m_loadedTextures[skybox.irradienceMapTexture].gpuID);
 
             m_loadedSkyboxes[skybox.id] = skybox;
             return skybox.id;

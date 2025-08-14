@@ -25,7 +25,7 @@ namespace Aozora {
 		m_sceneManager = std::make_unique<SceneManager>();
 		m_sceneRenderer = std::make_unique<Graphics::SceneRenderer>(m_renderAPI.get());
 		m_assetManager = std::make_unique<Resources::AssetManager>();
-		m_resourceManager = std::make_unique<ResourceManager>(*m_assetManager.get());
+		m_resourceManager = std::make_unique<ResourceManager>(*m_assetManager.get(), *m_renderAPI.get());
 		m_projectManager = std::make_unique<ProjectManager>(*m_sceneManager.get());
 		
 		

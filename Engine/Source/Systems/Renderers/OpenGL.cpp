@@ -1,12 +1,6 @@
 #include "OpenGL.h"
 #include <iostream>
 #include "Opengl/OpenglShader.h"
-#include <GLFW/glfw3.h>
-#include "Systems/Windows/Window.h"
-
-#include "Systems/ECS/Components/Components.h"
-#include "Systems/ResourceManager/ResourceManager.h"
-#include "Application.h"
 #include "Systems/Renderers/FrameBuffer.h"
 #include "Systems/Renderers/Opengl/OpenglFrameBuffer.h"
 #include <Systems/Logging/Logger.h>
@@ -44,6 +38,7 @@ namespace Aozora {
 		glViewport(x, y, width, height);
 	}
 
+	// takes in a source and target texture
 	uint32_t OpenGL::bakeCubemapIrradiance(uint32_t sourceID, uint32_t targetID)
 	{
 		Log::info("Baking Cubemap Irradiance Texture");

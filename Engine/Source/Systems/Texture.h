@@ -23,7 +23,7 @@ namespace Aozora {
 		TextureType type{};
 		std::string path{};
 		uint32_t width, height, nrChannels;
-		
+		bool isSrgb{ false };
 		using PixelData = std::variant<std::vector<std::vector<uint8_t>>, std::vector<std::vector<float>>>;
 		// each element is the data of a texture
 		PixelData dataVector;
@@ -40,7 +40,8 @@ namespace Aozora {
 				CEREAL_NVP(nrChannels),
 				CEREAL_NVP(dataVector),
 				CEREAL_NVP(name),
-				CEREAL_NVP(hasData));
+				CEREAL_NVP(hasData),
+				CEREAL_NVP(isSrgb));
 		}
 
 	private:

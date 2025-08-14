@@ -221,32 +221,37 @@ namespace Aozora::Resources {
             // if we have textures we'll create textures with them...
             aiString str;
             mat->GetTexture(type, 0, &str);
-
-            Texture targetTexture = m_textureLoader.loadTexture(str.C_Str(), m_directory);
+            bool isSrgb = false;
+            uint64_t* targetID = nullptr;
+            
             switch (type)
             {
             case aiTextureType_DIFFUSE:
-                material.diffuseTexture = targetTexture.id;
+                isSrgb = true;
+                targetID = &material.diffuseTexture;
                 break;
             case aiTextureType_NORMALS:
-                material.normalTexture = targetTexture.id;
+                targetID = &material.normalTexture;
                 break;
             case aiTextureType_EMISSIVE:
-                material.emissiveTexture = targetTexture.id;
+                isSrgb = true;
+                targetID = &material.emissiveTexture;
                 break;
             case aiTextureType_AMBIENT_OCCLUSION:
-                material.aoTexture = targetTexture.id;
+                targetID = &material.aoTexture;
                 break;
             case aiTextureType_METALNESS:
-                material.metallicTexture = targetTexture.id;
+                targetID = &material.metallicTexture;
                 break;
             case aiTextureType_DIFFUSE_ROUGHNESS:
-                material.roughnessTexture = targetTexture.id;
+                targetID = &material.roughnessTexture;
                 break;
             default:
                 break;
             }
 
+            Texture targetTexture = m_textureLoader.loadTexture(str.C_Str(), m_directory, isSrgb);
+            *targetID = targetTexture.id;
             if (targetTexture.hasData) {
                 targetTexture.type = typeName;
                 targetTexture.path = str.C_Str();
