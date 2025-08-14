@@ -9,7 +9,8 @@ project "Engine"
    "Source/**.cpp",
    "Source/**.c",
    "Vendor/include/imgui/*.cpp",
-   "Resources/Shaders/*"}
+   "Resources/Shaders/*",
+   "vendor/include/xxHash/xxhash.c"}
 
    includedirs
    {
@@ -26,6 +27,10 @@ project "Engine"
 	  "glfw3.lib",
 	  "opengl32.lib",
 	  "assimp-vc143-mtd.lib"
+   }
+
+   defines{
+        "XXH_INLINE_ALL"
    }
    
    

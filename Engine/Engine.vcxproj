@@ -75,7 +75,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XXH_INLINE_ALL;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>Source;Vendor\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -97,7 +97,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XXH_INLINE_ALL;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>Source;Vendor\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
@@ -125,7 +125,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XXH_INLINE_ALL;DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>Source;Vendor\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
@@ -150,9 +150,11 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\AozoraAPI\Aozora.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Context.h" />
+    <ClInclude Include="Source\Systems\AssetManager\AssetManager.h" />
+    <ClInclude Include="Source\Systems\AssetManager\ModelLoader.h" />
+    <ClInclude Include="Source\Systems\AssetManager\TextureLoader.h" />
     <ClInclude Include="Source\Systems\CameraSystem.h" />
     <ClInclude Include="Source\Systems\ECS\Components\CameraComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\Components.h" />
@@ -167,18 +169,17 @@
     <ClInclude Include="Source\Systems\ECS\Components\TagComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\TransformComponent.h" />
     <ClInclude Include="Source\Systems\EditorCameraSystem.h" />
-    <ClInclude Include="Source\Systems\Events\Event.h" />
+    <ClInclude Include="Source\Systems\Events\EventSystem.h" />
     <ClInclude Include="Source\Systems\Events\Events.h" />
     <ClInclude Include="Source\Systems\Input.h" />
-    <ClInclude Include="Source\Systems\Layers\ImguiLayer.h" />
     <ClInclude Include="Source\Systems\Layers\Layer.h" />
     <ClInclude Include="Source\Systems\Layers\LayerStack.h" />
     <ClInclude Include="Source\Systems\Logging\Logger.h" />
     <ClInclude Include="Source\Systems\Material.h" />
     <ClInclude Include="Source\Systems\Mesh.h" />
-    <ClInclude Include="Source\Systems\MeshSystem.h" />
     <ClInclude Include="Source\Systems\Model.h" />
     <ClInclude Include="Source\Systems\Project\Project.h" />
+    <ClInclude Include="Source\Systems\Project\ProjectManager.h" />
     <ClInclude Include="Source\Systems\Renderers\DeferredPipeline.h" />
     <ClInclude Include="Source\Systems\Renderers\FrameBuffer.h" />
     <ClInclude Include="Source\Systems\Renderers\IrenderAPI.h" />
@@ -189,40 +190,36 @@
     <ClInclude Include="Source\Systems\Renderers\SceneRenderer.h" />
     <ClInclude Include="Source\Systems\Renderers\Shader.h" />
     <ClInclude Include="Source\Systems\Renderers\Viewport.h" />
-    <ClInclude Include="Source\Systems\ResourceManager\ModelLoader.h" />
     <ClInclude Include="Source\Systems\ResourceManager\ResourceManager.h" />
     <ClInclude Include="Source\Systems\Scene\Scene.h" />
     <ClInclude Include="Source\Systems\SceneManager\SceneManager.h" />
     <ClInclude Include="Source\Systems\ScriptManager\ScriptSystem.h" />
     <ClInclude Include="Source\Systems\Serialization\SerializationGLM.h" />
     <ClInclude Include="Source\Systems\Serialization\Serializer.h" />
+    <ClInclude Include="Source\Systems\Skybox.h" />
+    <ClInclude Include="Source\Systems\Texture.h" />
     <ClInclude Include="Source\Systems\Time.h" />
     <ClInclude Include="Source\Systems\Windows\Window.h" />
     <ClInclude Include="Source\Systems\Windows\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\AozoraAPI\ApplicationAPI.cpp" />
-    <ClCompile Include="Source\AozoraAPI\RenderAPI.cpp" />
-    <ClCompile Include="Source\AozoraAPI\ResourcesAPI.cpp" />
-    <ClCompile Include="Source\AozoraAPI\SceneAPI.cpp" />
-    <ClCompile Include="Source\Application.cpp" />
+    <ClCompile Include="Source\APPLICATION.CPP" />
+    <ClCompile Include="Source\Systems\AssetManager\AssetManager.cpp" />
+    <ClCompile Include="Source\Systems\AssetManager\ModelLoader.cpp" />
+    <ClCompile Include="Source\Systems\AssetManager\TextureLoader.cpp" />
     <ClCompile Include="Source\Systems\CameraSystem.cpp" />
     <ClCompile Include="Source\Systems\EditorCameraSystem.cpp" />
     <ClCompile Include="Source\Systems\Input.cpp" />
-    <ClCompile Include="Source\Systems\Layers\ImguiLayer.cpp" />
-    <ClCompile Include="Source\Systems\Layers\Layer.cpp" />
     <ClCompile Include="Source\Systems\Layers\LayerStack.cpp" />
     <ClCompile Include="Source\Systems\Logging\Logger.cpp" />
     <ClCompile Include="Source\Systems\Mesh.cpp" />
-    <ClCompile Include="Source\Systems\MeshSystem.cpp" />
-    <ClCompile Include="Source\Systems\Project\Project.cpp" />
+    <ClCompile Include="Source\Systems\Project\ProjectManager.cpp" />
     <ClCompile Include="Source\Systems\Renderers\DeferredPipeline.cpp" />
     <ClCompile Include="Source\Systems\Renderers\OpenGL.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglFrameBuffer.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Opengl\OpenglShader.cpp" />
     <ClCompile Include="Source\Systems\Renderers\SceneRenderer.cpp" />
     <ClCompile Include="Source\Systems\Renderers\Viewport.cpp" />
-    <ClCompile Include="Source\Systems\ResourceManager\ModelLoader.cpp" />
     <ClCompile Include="Source\Systems\ResourceManager\ResourceManager.cpp" />
     <ClCompile Include="Source\Systems\Scene\Scene.cpp" />
     <ClCompile Include="Source\Systems\SceneManager\SceneManager.cpp" />
@@ -235,6 +232,7 @@
     <ClCompile Include="Vendor\include\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="Vendor\include\imgui\imgui_tables.cpp" />
     <ClCompile Include="Vendor\include\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="vendor\include\xxHash\xxhash.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

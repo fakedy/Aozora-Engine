@@ -1,10 +1,13 @@
+#include <Application.h>
 #include <iostream>
-#include "AozoraAPI/Aozora.h"
 #include "EditorUI/EditorUILayer.h"
 #include "EditorLayer.h"
 #include <Context.h>
 #include <memory>
-
+#include <Systems/Events/EventSystem.h>
+#include <Systems/Events/Events.h>
+#include <Systems/Project/Project.h>
+#include <Systems/Scene/Scene.h>
 class Editor : public Aozora::Application {
 
 public:
@@ -13,18 +16,13 @@ public:
 
 	Editor() : Application("Aozora Editor") { // calls the constructor of Application
 
-
-		Aozora::Context context;
-		context.renderAPI = m_renderAPI.get();
-		context.sceneManager = m_sceneManager.get();
-		context.sceneRenderer = m_sceneRenderer.get();
-
-		Aozora::ApplicationAPI::newProject();
-		EditorLayer* editlayer = new EditorLayer();
+		EditorLayer* editlayer = new EditorLayer(getSceneManager(), *m_sceneRenderer.get());
 		layerStack->addLayer(editlayer);
-		layerStack->addOverlay(new EditorUILayer(editlayer));
 
-		// alright lets go
+		createProject();
+
+		layerStack->addOverlay(new EditorUILayer(editlayer, context));
+
 
 		run(); // run the app
 	}

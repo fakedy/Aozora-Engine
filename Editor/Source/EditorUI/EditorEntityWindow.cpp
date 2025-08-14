@@ -2,37 +2,36 @@
 #include "imgui/imgui.h"
 #include "entt/entt.hpp"
 #include <string>
-#include <AozoraAPI/Aozora.h>
 
-void EditorEntityWindow::draw()
+void EditorEntityWindow::draw(const Aozora::Context& context)
 {
 	ImGui::Begin("SceneGraph");
 
 	if (ImGui::Button("Create entity")) {
 
-		Aozora::SceneAPI::addEntity();
+		context.sceneManager->getCurrentActiveScene()->addEntity();
 
 	}
 
-	const std::vector<entt::entity>& view = Aozora::SceneAPI::getSceneHierarchyEntities();
+	const std::vector<entt::entity>& view = context.sceneManager->getCurrentActiveScene()->getSceneHierarchyEntities();
 
 	for (entt::entity entity: view) {
 		// only draw root nodes, the children will get drawn from them
-		if (Aozora::SceneAPI::getEntityParent(entity) == entt::null) {
-			drawEntityNode(entity);
+		if (context.sceneManager->getCurrentActiveScene()->getEntityParent(entity) == entt::null) {
+			drawEntityNode(entity, context);
 		}
 	}
 
 	ImGui::End();
 }
 
-void EditorEntityWindow::drawEntityNode(entt::entity entity)
+void EditorEntityWindow::drawEntityNode(entt::entity entity, const Aozora::Context& context)
 {
 
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-	const auto& children = Aozora::SceneAPI::getEntityChildren(entity);
-	std::string entityName = Aozora::SceneAPI::getEntityName(entity);
+	const auto& children = context.sceneManager->getCurrentActiveScene()->getEntityChildren(entity);
+	std::string entityName = context.sceneManager->getCurrentActiveScene()->getEntityName(entity);
 
 	// check for entity children
 	if (children.empty()) {
@@ -55,7 +54,7 @@ void EditorEntityWindow::drawEntityNode(entt::entity entity)
 	if (nodeOpen) {
 
 		for (entt::entity child : children) {
-			drawEntityNode(child);
+			drawEntityNode(child, context);
 		}
 		ImGui::TreePop();
 	}

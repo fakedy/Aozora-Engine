@@ -8,7 +8,7 @@
 #include <cereal/cereal.hpp>
 #include <cereal/archives/json.hpp>
 #include <cereal/archives/binary.hpp>
-
+#include <Systems/ECS/Components/Components.h>
 
 
 namespace Aozora {
@@ -37,7 +37,25 @@ namespace Aozora {
 
 		void takeSnapshot();
 		void loadSnapShot();
+		void addEntity();
 
+
+		entt::entity createEntityFromNodes(Model& model, Model::Node& node, entt::entity parent);
+		void instantiateEntity(uint64_t hash);
+
+		void deleteEntity(const entt::entity entity);
+
+		// returns a vector of entities
+		std::vector<entt::entity> getSceneHierarchyEntities();
+
+		std::string getEntityName(entt::entity entity);
+
+		std::vector<entt::entity>& getEntityChildren(entt::entity entity);
+
+		entt::entity& getEntityParent(entt::entity entity);
+
+
+		void makeTransformDirty(entt::entity entity);
 
 	private:
 

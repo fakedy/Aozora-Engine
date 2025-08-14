@@ -28,7 +28,7 @@ namespace Aozora {
 
 		Scene* scene{ nullptr };
 		uint32_t sceneID{ 0 };
-		entt::entity camera; // noooooo
+		entt::entity camera; // noooooo. I have no idea what this comment references.
 
 		bool isActive{ false };
 		void resize(uint32_t width, uint32_t height);

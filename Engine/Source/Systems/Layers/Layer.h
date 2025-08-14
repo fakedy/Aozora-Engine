@@ -1,5 +1,5 @@
 #pragma once
-
+#include <Context.h>
 namespace Aozora {
 
 	class Layer
@@ -7,7 +7,7 @@ namespace Aozora {
 	public:
 
 
-		virtual void onUpdate() = 0;
+		virtual void onUpdate(const Aozora::Context& context) = 0;
 
 
 

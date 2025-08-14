@@ -1,212 +1,146 @@
 #include "ResourceManager.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
-
+#include <Systems/Logging/Logger.h>
+#include <variant>
+#include <random>
 
 namespace Aozora {
 
 
-    const void ResourceManager::loadModel(const std::string& file)
+    const void ResourceManager::loadModel(uint64_t hash)
     {
-        // imho its bad that i do this filename thing again.
-        // storing shorted filename and whole path for the map is confusing
-        std::string filename = file.substr(file.find_last_of('/'), file.find_last_of('.'));
-        if (modelLoaded(filename)) {
-            std::cout << "model already loaded\n";
-            return;
-        }
-        Model loadedModel = m_modelLoader.loadModel(file);
+       
+       // if it is not cached
+       if (m_loadedModels.find(hash) == m_loadedModels.end()) {
+           const Model& model = m_assetManager.loadModelFromDisk(hash);
 
-        m_loadedModels.emplace(loadedModel.name, std::move(loadedModel));
+           for (const auto& node : model.allNodes) {
+               if (node.hasMesh) {
+                   Mesh mesh = m_assetManager.loadMeshFromDisk(node.meshID);
+                   m_loadedMeshes[node.meshID] = mesh;
+                   m_loadedmaterials[mesh.materialID] = m_assetManager.loadMaterialFromDisk(mesh.materialID);
 
+                   for (uint64_t texID : m_loadedmaterials[mesh.materialID].textureIDs) {
+                       loadTexture(texID);
+                   }
+               }
+           }
+           m_loadedModels.emplace(hash, model);
+
+       }
+       else {
+           Log::info(std::format("Using cache for model: {}", hash));
+       }
     }
 
     // opengl dependent code for loading texture
-    unsigned int ResourceManager::loadTexture(const std::string path, bool isSrgb, bool persistent)
+    uint64_t ResourceManager::loadTexture(uint64_t hash)
     {
-        std::string filename = std::string(path);
+        
         unsigned int texture = 0;
 
         // Checks if the texture is already in memory if so then reference it by id
-        int isAlreadyLoaded = textureLoaded(filename);
+        int isAlreadyLoaded = textureLoaded(hash);
         if (isAlreadyLoaded != -1) {
 
             return isAlreadyLoaded;
         }
 
-        std::cout << "Loading texture file: " << filename << "\n";
-        int width, height, nrChannels;
-        unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
+        Texture tex = m_assetManager.loadTextureFromDisk(hash);
+
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
-        if (data) {
-            GLenum internalFormat;
-            GLenum dataFormat;
+        GLenum internalFormat;
+        GLenum sourceFormat;
+        GLenum sourceType;
 
-            if (nrChannels == 4) {
-                internalFormat = isSrgb ? GL_SRGB_ALPHA : GL_RGBA8;
-                dataFormat = GL_RGBA;
+        std::visit([&](auto&& data) {
+
+            using VecType = std::decay_t<decltype(data[0])>;
+            using PixelType = typename VecType::value_type;
+
+            // if the image is HDR we assume its also in linear space
+            if (std::is_same_v<PixelType, float>) {
+                internalFormat = GL_R11F_G11F_B10F;
+                sourceFormat = GL_RGB;
+                sourceType = GL_FLOAT;
+
+                glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, tex.width, tex.height, 0, sourceFormat, sourceType, data[0].data());
+                data[0].clear();
+                data[0].shrink_to_fit();
             }
             else {
-                internalFormat = isSrgb ? GL_SRGB : GL_RGB8;
-                dataFormat = GL_RGB;
-            }
-                glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
-                glGenerateMipmap(GL_TEXTURE_2D);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        }
-        else {
-            std::cerr << "ResourceManager: texture load failed\n";
-            return 0;
-        }
-        stbi_image_free(data);
-
-        // filename will be unique so its alright to use the filename
-        if (persistent) {
-            m_loadedPersistentTextures[filename].id = texture;
-            m_loadedPersistentTextures[filename].refCount++;
-        }
-        else {
-            m_loadedTextures[filename].id = texture;
-            m_loadedTextures[filename].refCount++;
-        }
-
-        std::cout << "Created texture with ID: " << texture << "\n";
-
-        return texture;
-
-    }
-    // opengl dependent code for loading texture
-    unsigned int ResourceManager::loadTexture(const std::string fileName, const std::string& directory, bool isSrgb, bool persistent)
-    {
-        std::string filename = std::string(fileName);
-        filename = directory + "/" + filename;
-        unsigned int texture = 0;
-
-        // Checks if the texture is already in memory if so then reference it by id
-        int isAlreadyLoaded = textureLoaded(filename);
-        if (isAlreadyLoaded != -1) {
-
-            return isAlreadyLoaded;
-        }
-
-        std::cout << "Loading texture file: " << filename << "\n";
-        int width, height, nrChannels;
-        unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        if (data) {
-            GLenum internalFormat;
-            GLenum dataFormat;
-
-            if (nrChannels == 4) {
-                internalFormat = isSrgb ? GL_SRGB_ALPHA : GL_RGBA8;
-                dataFormat = GL_RGBA;
-            }
-            else {
-                internalFormat = isSrgb ? GL_SRGB : GL_RGB8;
-                dataFormat = GL_RGB;
-            }
-            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        }
-        else {
-            std::cerr << "ResourceManager: texture load failed\n";
-            return 0;
-        }
-        stbi_image_free(data);
-
-        // filename will be unique so its alright to use the filename
-        // filename will be unique so its alright to use the filename
-        if (persistent) {
-            m_loadedPersistentTextures[filename].id = texture;
-            m_loadedPersistentTextures[filename].refCount++;
-        }
-        else {
-            m_loadedTextures[filename].id = texture;
-            m_loadedTextures[filename].refCount++;
-        }
-
-        std::cout << "Created texture with ID: " << texture << "\n";
-
-        return texture;
-
-    }
-    // opengl dependent
-    unsigned int ResourceManager::loadCubemap(const std::vector<std::string> faces)
-    {
-
-        // TECHNICALLY UNTRACKED TEXTURE
-
-
-
-        uint32_t textureID;
-
-        glGenTextures(1, &textureID);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-        int width, height, nrChannels;
-
-        int i = 0;
-        for (auto face : faces) {
-
-            std::string filename = face;
-            float* data = stbi_loadf(filename.c_str(), &width, &height, &nrChannels, 0);
-            if (data) {
-
-                if (nrChannels == 4) {
-                    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, data);
+                if (tex.isSrgb) { // if the image is in gamma mode
+                    internalFormat = (tex.nrChannels == 4) ? GL_SRGB8_ALPHA8 : GL_SRGB8;
                 }
                 else {
-                    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA16F, width, height, 0, GL_RGB, GL_FLOAT, data);
+                    internalFormat = (tex.nrChannels == 4) ? GL_RGBA8 : GL_RGB8;
                 }
+                sourceFormat = (tex.nrChannels == 4) ? GL_RGBA : GL_RGB;
+                sourceType = GL_UNSIGNED_BYTE;
 
-                stbi_image_free(data);
-
+                glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, tex.width, tex.height, 0, sourceFormat, sourceType, data[0].data());
+                data[0].clear();
+                data[0].shrink_to_fit();
             }
-            else {
-                std::cerr << "ResourceManager: texture load failed\n";
-                stbi_image_free(data);
-                return 0;
-            }
-            std::cout << "Created face texture\n";
-            i++;
-        }
+        }, tex.dataVector);
 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        
+        glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        std::cout << "Created cubemap with ID: " << textureID << "\n";
+        uint64_t handle = glGetTextureHandleARB(texture);
+        glMakeTextureHandleResidentARB(handle);
+        tex.handle = handle;
+        m_loadedTextures[hash] = tex;
+        Log::info(std::format("Created texture with ID: {}", texture));
 
-        return textureID;
+        return texture;
+        
     }
 
-    unsigned int ResourceManager::loadCubemap()
+    uint64_t ResourceManager::loadCubemap(uint64_t hash)
     {
-        // TECHNICALLY UNTRACKED TEXTURE
+
+        Texture texture = m_assetManager.loadTextureFromDisk(hash);
 
         uint32_t textureID;
 
         glGenTextures(1, &textureID);
         glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
-        // can put this in parameters instead but lazy
-        int width = 32;
-        int height = 32;
+        GLenum internalFormat;
+        GLenum sourceFormat;
+        GLenum sourceType;
 
-        for (int i = 0; i < 6; i++) {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA16F, 32, 32, 0, GL_RGBA, GL_FLOAT, nullptr);
-        }
+        std::visit([&](auto&& data) {
+
+            using VecType = std::decay_t<decltype(data[0])>;
+            using PixelType = typename VecType::value_type;
+            int width = texture.width;
+            int height = texture.height;
+            // if the image is HDR we assume its also in linear space
+            if (std::is_same_v<PixelType, float>) {
+                internalFormat = GL_R11F_G11F_B10F;
+                sourceFormat = GL_RGB;
+                sourceType = GL_FLOAT;
+            }
+            else {
+                internalFormat = (texture.nrChannels == 4) ? GL_RGBA8 : GL_RGB8;
+                sourceFormat = (texture.nrChannels == 4) ? GL_RGBA : GL_RGB;
+                sourceType = GL_UNSIGNED_BYTE;
+         
+            }
+
+            for (int i = 0; i < 6; i++) {
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, sourceFormat, sourceType, data[i].data());
+                data[i].clear();
+                data[i].shrink_to_fit();
+            }
+        }, texture.dataVector);
+
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -214,9 +148,69 @@ namespace Aozora {
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-        std::cout << "Created cubemap with ID: " << textureID << "\n";
+        texture.gpuID = textureID;
 
+        m_loadedTextures[texture.id] = texture;
         return textureID;
+    }
+
+    uint64_t ResourceManager::createEmptyCubeMap(uint32_t width, uint32_t height)
+    {
+
+        Texture tex;
+        uint32_t textureID;
+
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+        GLenum internalFormat;
+        GLenum sourceFormat;
+        GLenum sourceType;
+
+
+
+        internalFormat = GL_R11F_G11F_B10F;
+        sourceFormat = GL_RGBA;
+        sourceType = GL_FLOAT;
+        for (int i = 0; i < 6; i++) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, sourceFormat, sourceType, nullptr);
+        }
+
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        tex.gpuID = textureID;
+
+        std::random_device rd;
+        std::mt19937_64 gen(rd());
+        std::uniform_int_distribution<uint64_t> dis;
+        tex.id = dis(gen);
+        m_loadedTextures[tex.id] = tex;
+        return tex.id;
+
+    }
+
+    uint64_t ResourceManager::loadSkybox(uint64_t hash)
+    {
+            // yes its confusing, yes its temporary
+            Skybox skybox = m_assetManager.loadSkyboxFromDisk(hash);
+            loadCubemap(skybox.cubeMapTexture);
+
+            skybox.irradienceMapTexture = createEmptyCubeMap(32, 32);
+            m_renderAPI.bakeCubemapIrradiance(m_loadedTextures[skybox.cubeMapTexture].gpuID, m_loadedTextures[skybox.irradienceMapTexture].gpuID);
+
+            m_loadedSkyboxes[skybox.id] = skybox;
+            return skybox.id;
+    }
+
+    uint64_t ResourceManager::loadMesh(uint64_t hash)
+    {
+        m_loadedMeshes[hash] = m_assetManager.loadMeshFromDisk(hash);
+        return hash; // do we really need this lol?
     }
 
     unsigned int ResourceManager::createMaterial(Material* material)
@@ -235,12 +229,17 @@ namespace Aozora {
 
         return -1;
     }
+
+    Material& ResourceManager::getMaterial(uint32_t id)
+    {
+        return m_loadedmaterials[id];
+    }
     
 
     // Check if texture is loaded, if it is loaded return it's id, else return -1
-    int ResourceManager::textureLoaded(const std::string path)
+    uint64_t ResourceManager::textureLoaded(uint64_t hash)
     {
-        auto it = m_loadedTextures.find(path);
+        auto it = m_loadedTextures.find(hash);
         if (it != m_loadedTextures.end()){
             return it->second.id;
         }
@@ -248,20 +247,20 @@ namespace Aozora {
     }
 
     // return the index of the loaded mesh or -1 if its not loaded
-    unsigned int ResourceManager::meshLoaded(const std::string path)
+    bool ResourceManager::meshLoaded(uint64_t hash)
     {
-        auto it = m_meshPathToID.find(path);
-        if (it != m_meshPathToID.end()) {
-            std::cout << "Mesh already loaded\n";
-            return it->second;
+        auto it = m_loadedMeshes.find(hash);
+        if (it != m_loadedMeshes.end()) {
+            Log::info("Mesh already loaded");
+            return true;
         }
 
-        return -1;
+        return false;
     }
 
-    bool ResourceManager::modelLoaded(const std::string path) {
+    bool ResourceManager::modelLoaded(uint64_t hash) {
 
-        auto it = m_loadedModels.find(path);
+        auto it = m_loadedModels.find(hash);
         if (it == m_loadedModels.end()) {
             return false;
         }
@@ -270,7 +269,8 @@ namespace Aozora {
 
     void ResourceManager::clearResources()
 	{
-		std::cout << "Clearing resources\n";
+        Log::info("Clearing resources");
+
 
         // list of textures to delete
         std::vector<GLuint> texturesToDelete;
@@ -287,8 +287,6 @@ namespace Aozora {
         // finally clear the old cpu data
 		m_loadedTextures.clear();
 
-        // delete vertex buffers etc from gpu
-		m_meshPathToID.clear();
 
         for (auto& mesh : m_loadedMeshes) {
             glDeleteBuffers(1, &mesh.second.VBO);
@@ -302,6 +300,8 @@ namespace Aozora {
 		m_nextMeshID = 0;
 		m_nextMaterialID = 0;
     }
+
+
 
 
 

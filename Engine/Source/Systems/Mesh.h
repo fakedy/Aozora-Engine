@@ -5,6 +5,10 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <Systems/Serialization/SerializationGLM.h>
+#include <cereal/cereal.hpp>
+#include <cereal/types/vector.hpp>
+
 
 namespace Aozora {
 
@@ -23,28 +27,45 @@ namespace Aozora {
 
 		struct MeshData {
 			std::vector<Vertex> vertices;
-			std::vector<unsigned int> indices;
+			std::vector<uint32_t> indices;
 		};
 
-		struct Texture {
-			unsigned int id{};
-			std::string type{};
-			std::string path{};
-		};
+		uint64_t id{ 0 };
+		std::string name{};
+		uint64_t materialID{0};
 
-		unsigned int id;
-
-		uint32_t materialID;
-
-		unsigned int VAO{};
-		unsigned int VBO{};
-		unsigned int EBO{};
+		uint32_t VAO{};
+		uint32_t VBO{};
+		uint32_t EBO{};
 
 		MeshData meshData;
+
+		bool isBuffered{ false };
+
 		void bufferData();
-		void draw(Shader& shader);
 		void drawGeometry();
-	private:
+
+		template<class Archive>
+		void serialize(Archive& archive) {
+			archive(CEREAL_NVP(id),
+				CEREAL_NVP(materialID),
+				CEREAL_NVP(meshData),
+				CEREAL_NVP(name));
+		}
 
 	};
+
+		template<class Archive>
+		void serialize(Archive& archive, Mesh::MeshData& meshData) {
+			archive(CEREAL_NVP(meshData.vertices),
+				CEREAL_NVP(meshData.indices));
+		}
+		template<class Archive>
+		void serialize(Archive& archive, Mesh::Vertex& vertex) {
+			archive(CEREAL_NVP(vertex.Position),
+				CEREAL_NVP(vertex.Normal),
+				CEREAL_NVP(vertex.Tangent),
+				CEREAL_NVP(vertex.TexCoords));
+		}
+
 }

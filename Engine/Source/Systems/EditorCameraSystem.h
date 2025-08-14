@@ -1,13 +1,18 @@
 #pragma once
 #include <memory>
 #include <entt/entt.hpp>
-#include <Systems/Events/Event.h>
+#include <Systems/Events/EventSystem.h>
 #include <Systems/Events/Events.h>
+
+
+/*
+* Basically this is a system that handle the editor camera logic
+*/
 
 
 namespace Aozora {
 
-	class EditorCameraSystem : public IEventListener
+	class EditorCameraSystem
 	{
 	public:
 
@@ -15,7 +20,6 @@ namespace Aozora {
 
 		void update(entt::registry& registry);
 
-		void onEvent(Event& e) override;
 
 	private:
 

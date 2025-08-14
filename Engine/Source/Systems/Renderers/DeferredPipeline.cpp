@@ -1,5 +1,6 @@
 #include "DeferredPipeline.h"
 #include "Application.h"
+#include <Systems/Input.h>
 
 namespace Aozora {
 
@@ -9,6 +10,8 @@ namespace Aozora {
 		setupGbuffer();
 		setupRenderBuffer();
 		setupPostfxBuffer();
+
+		m_outputAttachment = postfxBuffer->m_colorAttachments[0];
 
 		// We dont need normals but whatever
 		screenQuad.meshData.vertices = {
@@ -28,7 +31,37 @@ namespace Aozora {
 		// illegal type stuff
 		glGenVertexArrays(1, &skybox.VAO);
 
+		PSO gbufferPSO;
+		gbufferPSO.stateCommands = []() {
+			glEnable(GL_DEPTH_TEST);
+			glDepthMask(GL_TRUE);
+			glDisable(GL_BLEND);
+			};
 
+		glGenBuffers(1, &m_indirectBuffer);
+		glGenBuffers(1, &m_VBO);
+		glGenBuffers(1, &m_EBO);
+		glGenVertexArrays(1, &m_VAO);
+
+		glBindVertexArray(m_VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+		// vertex positions
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)0);
+		// vertex normals
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Mesh::Vertex, Normal));
+		// tangents
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Mesh::Vertex, Tangent));
+		// vertex texture coords
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Mesh::Vertex, TexCoords));
+
+		glBindVertexArray(0);
+
+		glGenBuffers(1, &objectSSBO);
 	}
 
 
@@ -42,8 +75,14 @@ namespace Aozora {
 
 	}
 
+
+
+
+
+
 	void DeferredPipeline::execute(IrenderAPI& renderAPI, Scene& scene, entt::entity camera, uint32_t width, uint32_t height)
 	{
+
 
 		auto MeshTransformEntities = scene.getRegistry().view<const MeshComponent, TransformComponent>(); // register of all mesh components
 		auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
@@ -57,7 +96,6 @@ namespace Aozora {
 
 
 			renderAPI.clear(0.0f, 0.0f, 0.0f, 1.0f);
-			glUseProgram(m_gBufferShader.ID);
 			glViewport(0, 0, width, height);
 
 			// get the camera from the cameraID
@@ -65,24 +103,91 @@ namespace Aozora {
 			current_camera.m_viewPortWidth = width;
 			current_camera.m_viewPortHeight = height;
 
-			glDisable(GL_BLEND);
 
-			// for every entity to be rendered
+			// submit render command
+			//draw commands can be generated on another thread
+			std::vector<DrawElementsIndirectCommand> commands;
+			std::vector<ObjectData> objectDataVector;
+
+			glDisable(GL_BLEND);
+			// use shader
+			glUseProgram(m_gBufferShader.ID);
+			// bind vao
+			glBindVertexArray(m_VAO);
+
+			// create commands
+			uint32_t i = 0;
+			uint32_t baseVertex = 0;
+			uint32_t firstIndex = 0;
+
+			m_gBufferShader.setMat4("view", current_camera.getView());
+			m_gBufferShader.setMat4("proj", current_camera.getProjection());
+			// assume the EBO/VBO have the exact same order as this loop
+			// it can be wrong and screw things up
+			commands.resize(MeshTransformEntities.size_hint());
+			objectDataVector.resize(MeshTransformEntities.size_hint());
 			for (const auto entity : MeshTransformEntities) {
 				auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
+
+				Mesh::MeshData& data = resourceManager.m_loadedMeshes[meshComponent.meshID].meshData;
+				uint64_t verticesAmount = data.vertices.size();
+				uint64_t indicesAmount = data.indices.size();
+
+				DrawElementsIndirectCommand command;
+				command.count = indicesAmount; 
+				command.instanceCount = 1; // draw 1 instance
+				command.firstIndex = firstIndex; // draw from index 0
+				command.baseVertex = baseVertex; // where the new "object" begins
+				command.baseInstance = i; // what object we are on?
+
+				commands[i] = command;
 				auto& transformComponent = MeshTransformEntities.get<TransformComponent>(entity);
+				ObjectData objectData;
+				objectData.model = transformComponent.model;
 
-				m_gBufferShader.setMat4("model", transformComponent.model);
-				m_gBufferShader.setMat4("view", current_camera.getView());
-				m_gBufferShader.setMat4("proj", current_camera.getProjection());
+				uint64_t diffuseTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
+				objectData.diffuseTextureHandle = resourceManager.m_loadedTextures[diffuseTextureID].handle;
 
-				// draw call
-				resourceManager.m_loadedMeshes[meshComponent.meshID].draw(m_gBufferShader);
+				uint64_t emissiveTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].emissiveTexture;
+				objectData.emissiveTextureHandle = resourceManager.m_loadedTextures[emissiveTextureID].handle;
 
+				uint64_t aoTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].aoTexture;
+				objectData.aoTextureHandle = resourceManager.m_loadedTextures[aoTextureID].handle;
+
+				uint64_t metallicTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].metallicTexture;
+				objectData.metallicTextureHandle = resourceManager.m_loadedTextures[metallicTextureID].handle;
+
+				uint64_t roughnessTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].roughnessTexture;
+				objectData.roughnessTextureHandle = resourceManager.m_loadedTextures[roughnessTextureID].handle;
+
+				uint64_t normalTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].normalTexture;
+				objectData.normalTextureHandle = resourceManager.m_loadedTextures[normalTextureID].handle;
+
+				objectDataVector[i] = objectData;
+				firstIndex += indicesAmount;
+				baseVertex += verticesAmount; // add offset
+				i++;
 			}
+
+			// upload the data to the gpu
+			glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_indirectBuffer);
+			glBufferData(GL_DRAW_INDIRECT_BUFFER, commands.size() * sizeof(DrawElementsIndirectCommand), commands.data(), GL_DYNAMIC_DRAW);
+
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, objectSSBO);
+			glBufferData(GL_SHADER_STORAGE_BUFFER, objectDataVector.size() * sizeof(ObjectData), objectDataVector.data(), GL_DYNAMIC_DRAW);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, objectSSBO);
+
+
+
+			glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, (GLvoid*)0, commands.size(), 0);
+			glBindVertexArray(0);
+			glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+			
 			//glEnable(GL_BLEND);
 
 			gBuffer->unbind();
+			
 
 			// copy the depth buffer to the lighting buffer
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer->framebufferID);
@@ -90,6 +195,7 @@ namespace Aozora {
 
 			glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 
 			renderBuffer->bind();
 			// light pass
@@ -108,9 +214,6 @@ namespace Aozora {
 			m_defaultShader.setInt("gProperties", 4);
 			m_defaultShader.setInt("gDepth", 5);
 
-			auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
-			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skyboxes.front()); // hack
-
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[0]);
 			glActiveTexture(GL_TEXTURE1);
@@ -123,13 +226,21 @@ namespace Aozora {
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[4]);
 			glActiveTexture(GL_TEXTURE5);
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_depthTextureID);
+
+			auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
+			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skyboxes.front()); // hack
+			Skybox& skyboxObject = resourceManager.m_loadedSkyboxes[skyboxComponent.id];
+			Texture& cubeMapTexture = resourceManager.m_loadedTextures[skyboxObject.cubeMapTexture];
+			Texture& irradienceMapTexture = resourceManager.m_loadedTextures[skyboxObject.irradienceMapTexture];
+
 			glActiveTexture(GL_TEXTURE6);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.data.irradianceTextureID);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, irradienceMapTexture.gpuID);
 			m_defaultShader.setInt("irradianceMap", 6);
 
 			glDepthMask(GL_FALSE);
 			renderLights(scene);
 			glDepthMask(GL_TRUE);
+
 
 			// render skybox
 			glDepthFunc(GL_LEQUAL);
@@ -141,7 +252,7 @@ namespace Aozora {
 				auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skybox);
 				glm::mat4 viewWithoutRotation = glm::mat4(glm::mat3(current_camera.getView()));
 				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.data.skyboxTextureID);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture.gpuID);
 				m_skyboxShader.setMat4("view", viewWithoutRotation);
 				m_skyboxShader.setMat4("proj", current_camera.getProjection());
 				glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -157,13 +268,31 @@ namespace Aozora {
 			postfxBuffer->bind();
 			postfxPass();
 			postfxBuffer->unbind();
-
+			
 		}
 
 	}
+
 	uint32_t DeferredPipeline::getFinalImage()
 	{
-		return postfxBuffer->m_colorAttachments[0];
+		
+		if (Input::getKeyDown(Input::Key::F1)) {
+			m_outputAttachment = postfxBuffer->m_colorAttachments[0];
+		}
+		if (Input::getKeyDown(Input::Key::F2)) {
+			m_outputAttachment = renderBuffer->m_colorAttachments[0];
+		}
+		if (Input::getKeyDown(Input::Key::F3)) {
+			m_outputAttachment = gBuffer->m_colorAttachments[1];
+		}
+		if (Input::getKeyDown(Input::Key::F4)) {
+			m_outputAttachment = gBuffer->m_colorAttachments[2];
+		}
+		if (Input::getKeyDown(Input::Key::F5)) {
+			m_outputAttachment = gBuffer->m_colorAttachments[4];
+		}
+
+		return m_outputAttachment;
 	}
 	void DeferredPipeline::setupGbuffer()
 	{
@@ -193,19 +322,19 @@ namespace Aozora {
 		albedoAttachment.textureTarget = FrameBuffer::TextureTarget::TEXTURE_2D;
 		albedoAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA8;
 		albedoAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
-		albedoAttachment.dataType = FrameBuffer::DataType::FLOAT;
+		albedoAttachment.dataType = FrameBuffer::DataType::UNSIGNED_BYTE;
 		albedoAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
 
 		emissiveAttachment.textureTarget = FrameBuffer::TextureTarget::TEXTURE_2D;
 		emissiveAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA8;
 		emissiveAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
-		emissiveAttachment.dataType = FrameBuffer::DataType::FLOAT;
+		emissiveAttachment.dataType = FrameBuffer::DataType::UNSIGNED_BYTE;
 		emissiveAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
 
 		propertiesAttachment.textureTarget = FrameBuffer::TextureTarget::TEXTURE_2D;
 		propertiesAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA8;
 		propertiesAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
-		propertiesAttachment.dataType = FrameBuffer::DataType::FLOAT;
+		propertiesAttachment.dataType = FrameBuffer::DataType::UNSIGNED_BYTE;
 		propertiesAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
 
 		gBufferDepthAttachment.textureTarget = FrameBuffer::TextureTarget::TEXTURE_2D;
@@ -314,5 +443,60 @@ namespace Aozora {
 		glBindTexture(GL_TEXTURE_2D, renderBuffer->m_colorAttachments[0]);
 		screenQuad.drawGeometry();
 		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	void DeferredPipeline::genMegaBuffer(Scene& scene)
+	{
+		// called everytime a new mesh is added to the scene, unoptimal
+		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
+
+		auto MeshTransformEntities = scene.getRegistry().view<const MeshComponent, TransformComponent>(); // register of all mesh components
+
+		// bind vao
+		glBindVertexArray(m_VAO);
+
+		uint32_t verticesSize = 0;
+		uint32_t indexSize = 0;
+		for (const auto entity : MeshTransformEntities) {
+			auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
+			Mesh::MeshData& data = resourceManager.m_loadedMeshes[meshComponent.meshID].meshData;
+			verticesSize += data.vertices.size() * sizeof(Mesh::Vertex);
+			indexSize += data.indices.size() * sizeof(uint64_t);
+
+		}
+
+
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+		glBufferData(GL_ARRAY_BUFFER, verticesSize, nullptr, GL_DYNAMIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize, nullptr, GL_DYNAMIC_DRAW);
+
+		uint32_t baseVertex = 0;
+		uint32_t firstIndex = 0;
+		uint32_t currentVertexOffsetBytes = 0;
+		uint32_t currentIndicesOffsetBytes = 0;
+		for (const auto entity : MeshTransformEntities) {
+			auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
+
+			Mesh::MeshData& data = resourceManager.m_loadedMeshes[meshComponent.meshID].meshData;
+			uint32_t verticesAmount = data.vertices.size();
+			uint32_t indicesAmount = data.indices.size();
+			glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+			glBufferSubData(GL_ARRAY_BUFFER, currentVertexOffsetBytes, verticesAmount * sizeof(Mesh::Vertex), data.vertices.data());
+
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, currentIndicesOffsetBytes, indicesAmount * sizeof(unsigned int), data.indices.data());
+
+			firstIndex += indicesAmount;
+			baseVertex += verticesAmount; // add offset
+			currentVertexOffsetBytes += verticesAmount * sizeof(Mesh::Vertex);
+			currentIndicesOffsetBytes += indicesAmount * sizeof(unsigned int);
+		}
+		glBindVertexArray(0);
+	}
+	void DeferredPipeline::updateMegaBuffer(Scene& scene)
+	{
+
+
 	}
 }

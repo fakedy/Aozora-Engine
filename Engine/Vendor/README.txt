@@ -5,5 +5,6 @@ glad,
 glm,
 entt,
 imgui,
-
+luau,
+cereal,
 assimp

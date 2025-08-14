@@ -1,5 +1,8 @@
 #version 450 core
 
+// remake this entire file
+
+
 layout (location = 0) out vec4 finalColor;
 
 in vec2 textureCoord;

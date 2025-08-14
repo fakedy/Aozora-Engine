@@ -10,10 +10,10 @@ ComponentsView::ComponentsView()
 
 }
 
-void ComponentsView::draw() {
+void ComponentsView::draw(const Aozora::Context& context) {
 
 	
-	entt::registry& registry = Aozora::Application::getApplication().getCurrentScene().getRegistry();
+	entt::registry& registry = context.sceneManager->getCurrentActiveScene()->getRegistry();
 
 	auto view = registry.view<Aozora::NameComponent>();
 	ImGui::Begin("Components View", NULL, ImGuiWindowFlags_MenuBar); // will display components
@@ -54,13 +54,13 @@ void ComponentsView::draw() {
 				ImGui::Text("Transform component");
 
 				if (ImGui::DragFloat3("Transform", glm::value_ptr(transformComp.pos), 0.1f)) {
-					Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
+					context.sceneManager->getCurrentActiveScene()->makeTransformDirty(m_selectedEntity);
 				}
 				if (ImGui::DragFloat3("Scale", glm::value_ptr(transformComp.scale), 0.1f)) {
-					Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
+					context.sceneManager->getCurrentActiveScene()->makeTransformDirty(m_selectedEntity);
 				}
 				if (ImGui::DragFloat3("Rotation", glm::value_ptr(transformComp.rot), 0.1f)) {
-					Aozora::SceneAPI::makeTransformDirty(m_selectedEntity);
+					context.sceneManager->getCurrentActiveScene()->makeTransformDirty(m_selectedEntity);
 				}
 			}
 		}
@@ -82,11 +82,17 @@ void ComponentsView::draw() {
 				ImGui::Text("Mesh ID: %i", meshComp.meshID);
 
 
-				Aozora::Material& mat = Aozora::ResourcesAPI::getMaterial(meshComp.materialID);
+				Aozora::Material& mat = context.resourcemanager->getMaterial(meshComp.materialID);
 				ImGui::Text("Material name: %s", mat.name);
 				ImGui::Text("Material ID: %i", meshComp.materialID);
-				ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.05f);
-				ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.05f);
+				// not sure this is correct but lets see
+				// I need to check how i actually did my refCount
+				if (context.resourcemanager->getMaterial(meshComp.materialID).diffuseTexture == 0) {
+					ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.05f);
+				}
+				if (context.resourcemanager->getMaterial(meshComp.materialID).emissiveTexture == 0) {
+					ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.05f);
+				}
 			}
 		}
 
@@ -104,9 +110,10 @@ void ComponentsView::draw() {
 		}
 		if (registry.all_of<Aozora::ScriptComponent>(m_selectedEntity)) {
 			if (ImGui::CollapsingHeader("ScriptComponent", ImGuiTreeNodeFlags_DefaultOpen)) {
-
 				auto& scriptComp = registry.get<Aozora::ScriptComponent>(m_selectedEntity);
-				ImGui::Text("Nothing here yet");
+				ImGui::Text("Script: %s", scriptComp.name);
+				ImGui::Text("Script ID: %i", scriptComp.scriptID); // will be able to select a script by filling this ID
+				ImGui::Checkbox("isActive", &scriptComp.isActive);
 			}
 		}
 

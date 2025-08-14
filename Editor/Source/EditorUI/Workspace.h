@@ -1,41 +1,29 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "AozoraAPI/Aozora.h"
 #include "imgui/imgui.h"
+#include <Context.h>
+#include <Systems/AssetManager/AssetManager.h>
 
 class Workspace {
 
 public:
 
-	class Asset {
 
-		enum class AssetType {
-			Texture,
-			Model,
-			Scene,
-			Material,
-			Folder,
-			Script
-		};
+	// gets called too early
+	Workspace(Aozora::Context& context) : m_context(context){
 
-		AssetType type;
-		std::string name;
-		uint32_t textureID; // for future custom thumbnails etc
-	};
+		m_file_3d_texture = (ImTextureID)context.resourcemanager->loadTexture(context.assetManager->createTexture("Resources/editor/file-3d.png"));
+		m_image_texture = (ImTextureID)context.resourcemanager->loadTexture(context.assetManager->createTexture("Resources/editor/image.png"));
+		m_folder_texture = (ImTextureID)context.resourcemanager->loadTexture(context.assetManager->createTexture("Resources/editor/folder.png"));
+		m_script_texture = (ImTextureID)context.resourcemanager->loadTexture(context.assetManager->createTexture("Resources/editor/folder.png"));
 
-	Workspace() {
-		// I added another storage in resourcemanager to store "persistent" textures that should stay there until shutdown.
-		// I do not know yet if it was wise, but we will eventually find out.
-		m_file_3d_texture = (ImTextureID)(intptr_t)Aozora::ResourcesAPI::loadTexture("Resources/editor/file-3d.png", true);
-		m_image_texture = (ImTextureID)(intptr_t)Aozora::ResourcesAPI::loadTexture("Resources/editor/image.png", true);
-		m_folder_texture = (ImTextureID)(intptr_t)Aozora::ResourcesAPI::loadTexture("Resources/editor/folder.png", true);
-		m_script_texture = (ImTextureID)(intptr_t)Aozora::ResourcesAPI::loadTexture("Resources/editor/folder.png", true); // TEMP it should be script
+		
 	}
 
 
 
-	void draw();
+	void draw(const Aozora::Context& context);
 
 private:
 
@@ -44,5 +32,6 @@ private:
 	ImTextureID m_folder_texture;
 	ImTextureID m_script_texture;
 
+	Aozora::Context& m_context;
 
 };

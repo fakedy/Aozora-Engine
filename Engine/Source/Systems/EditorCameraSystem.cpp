@@ -13,9 +13,7 @@ namespace Aozora {
 
 	EditorCameraSystem::EditorCameraSystem()
 	{
-		EventDispatcher::subscribe(EventType::ChangeScene, [this](Event& e) {
-			this->onEvent(e);
-			});
+
 	}
 
 	void EditorCameraSystem::update(entt::registry& registry)
@@ -121,20 +119,5 @@ namespace Aozora {
 
 		}
 		
-	}
-	void EditorCameraSystem::onEvent(Event& e)
-	{
-		switch (e.getEvent()) {
-		case(EventType::ChangeScene):
-		{
-			auto& scene = static_cast<ChangeSceneEvent&>(e).getScene();
-			m_currentScene = &scene;
-			break;
-		}
-
-		default:
-			break;
-		}
-
 	}
 }

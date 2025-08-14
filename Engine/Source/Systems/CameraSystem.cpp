@@ -29,10 +29,9 @@ namespace Aozora {
 				glm::vec3 currentPos = transform.pos;
 				
 				
-
 				glm::quat rotQuart = glm::quat(glm::radians(transform.rot));
 
-	
+
 				camera.m_forward = rotQuart * glm::vec3(0.0f, 0.0f, -1.0f);
 				camera.m_forward = glm::normalize(camera.m_forward); 
 

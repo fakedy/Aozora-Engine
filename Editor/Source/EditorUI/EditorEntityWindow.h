@@ -1,8 +1,7 @@
 #pragma once 
-#include "AozoraAPI/Aozora.h"
 #include "ComponentsView.h"
 #include "Systems/ResourceManager/ResourceManager.h"
-
+#include <Context.h>
 
 class EditorEntityWindow {
 public:
@@ -10,9 +9,9 @@ public:
 		m_componentsView = componentsView;
 	}
 
-	void draw();
+	void draw(const Aozora::Context& context);
 
-	void drawEntityNode(entt::entity entity);
+	void drawEntityNode(entt::entity entity, const Aozora::Context& context);
 
 private:
 	std::shared_ptr<ComponentsView> m_componentsView;

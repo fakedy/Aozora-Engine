@@ -3,9 +3,8 @@
 #include "glad/glad.h"
 #include "Opengl/OpenglShader.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include "Systems/Windows/Window.h"
-#include <unordered_map>
 #include "Opengl/OpenglFrameBuffer.h"
+#include <Systems/Mesh.h>
 
 
 namespace Aozora {
@@ -22,7 +21,7 @@ namespace Aozora {
 
 
 	private:
-		Mesh irradianceBox;
+		GLuint VAO;
 		OpenglShader m_irradianceShader{ OpenglShader("Resources/Shaders/v_irradiance.glsl", "Resources/Shaders/f_irradiance.glsl") };
 	
 		void init();

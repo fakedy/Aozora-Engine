@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /Editor/Resources
 /Binaries
+/Editor/Projects/MyProject/Assets

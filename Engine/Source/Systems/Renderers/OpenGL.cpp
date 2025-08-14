@@ -1,14 +1,9 @@
 #include "OpenGL.h"
 #include <iostream>
 #include "Opengl/OpenglShader.h"
-#include <GLFW/glfw3.h>
-#include "Systems/Windows/Window.h"
-
-#include "Systems/ECS/Components/Components.h"
-#include "Systems/ResourceManager/ResourceManager.h"
-#include "Application.h"
 #include "Systems/Renderers/FrameBuffer.h"
 #include "Systems/Renderers/Opengl/OpenglFrameBuffer.h"
+#include <Systems/Logging/Logger.h>
 
 namespace Aozora {
 
@@ -27,8 +22,8 @@ namespace Aozora {
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		// temp ?
-		glGenVertexArrays(1, &irradianceBox.VAO);
+
+		glGenVertexArrays(1, &VAO);
 	}
 
 
@@ -43,16 +38,18 @@ namespace Aozora {
 		glViewport(x, y, width, height);
 	}
 
+	// takes in a source and target texture
 	uint32_t OpenGL::bakeCubemapIrradiance(uint32_t sourceID, uint32_t targetID)
 	{
-		std::cout << "Baking Cubemap Irradiance Texture\n";
+		Log::info("Baking Cubemap Irradiance Texture");
+		
 		// setup FBO
 		uint32_t captureFBO;
 		glGenFramebuffers(1, &captureFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
 
 		glUseProgram(m_irradianceShader.ID);
-		glBindVertexArray(irradianceBox.VAO);
+		glBindVertexArray(VAO);
 
 		m_irradianceShader.setInt("environmentMap", 0);
 		glActiveTexture(GL_TEXTURE0);
@@ -85,7 +82,7 @@ namespace Aozora {
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, targetID, 0);
 
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-				std::cout << "framebuffer not complete\n";
+				Log::error("framebuffer not complete");
 			}
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

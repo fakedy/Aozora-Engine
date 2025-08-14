@@ -7,11 +7,11 @@
     <Filter Include="Source">
       <UniqueIdentifier>{56EB95D1-428D-C0A7-2B48-D4FB178947F8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\AozoraAPI">
-      <UniqueIdentifier>{CBFDE3F3-B7F6-0246-E028-E8CACC80E251}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Systems">
       <UniqueIdentifier>{5D37F96B-4905-ED71-3299-5D981E06C9D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Systems\AssetManager">
+      <UniqueIdentifier>{07CB6479-73D8-925F-FCBE-8E4A68CB5E16}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Systems\ECS">
       <UniqueIdentifier>{27926AAA-1376-2B00-7CD6-255368D91582}</UniqueIdentifier>
@@ -55,16 +55,31 @@
     <Filter Include="Source\Systems\Windows">
       <UniqueIdentifier>{97EE82E8-83E8-AB3A-6C55-424B58EE11A7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="vendor">
+      <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\include">
+      <UniqueIdentifier>{269ED467-126C-C86D-FBFF-3894E76CA4D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\include\xxHash">
+      <UniqueIdentifier>{E94DFDC6-55BA-B8C1-1EAE-501F8AD9DA29}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\AozoraAPI\Aozora.h">
-      <Filter>Source\AozoraAPI</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Application.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Context.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\AssetManager\AssetManager.h">
+      <Filter>Source\Systems\AssetManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\AssetManager\ModelLoader.h">
+      <Filter>Source\Systems\AssetManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\AssetManager\TextureLoader.h">
+      <Filter>Source\Systems\AssetManager</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\CameraSystem.h">
       <Filter>Source\Systems</Filter>
@@ -108,7 +123,7 @@
     <ClInclude Include="Source\Systems\EditorCameraSystem.h">
       <Filter>Source\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Systems\Events\Event.h">
+    <ClInclude Include="Source\Systems\Events\EventSystem.h">
       <Filter>Source\Systems\Events</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Events\Events.h">
@@ -116,9 +131,6 @@
     </ClInclude>
     <ClInclude Include="Source\Systems\Input.h">
       <Filter>Source\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Systems\Layers\ImguiLayer.h">
-      <Filter>Source\Systems\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Layers\Layer.h">
       <Filter>Source\Systems\Layers</Filter>
@@ -135,13 +147,13 @@
     <ClInclude Include="Source\Systems\Mesh.h">
       <Filter>Source\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Systems\MeshSystem.h">
-      <Filter>Source\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Systems\Model.h">
       <Filter>Source\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Project\Project.h">
+      <Filter>Source\Systems\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Project\ProjectManager.h">
       <Filter>Source\Systems\Project</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\Renderers\DeferredPipeline.h">
@@ -174,9 +186,6 @@
     <ClInclude Include="Source\Systems\Renderers\Viewport.h">
       <Filter>Source\Systems\Renderers</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Systems\ResourceManager\ModelLoader.h">
-      <Filter>Source\Systems\ResourceManager</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Systems\ResourceManager\ResourceManager.h">
       <Filter>Source\Systems\ResourceManager</Filter>
     </ClInclude>
@@ -195,6 +204,12 @@
     <ClInclude Include="Source\Systems\Serialization\Serializer.h">
       <Filter>Source\Systems\Serialization</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\Skybox.h">
+      <Filter>Source\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\Texture.h">
+      <Filter>Source\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\Time.h">
       <Filter>Source\Systems</Filter>
     </ClInclude>
@@ -206,20 +221,17 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\AozoraAPI\ApplicationAPI.cpp">
-      <Filter>Source\AozoraAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\AozoraAPI\RenderAPI.cpp">
-      <Filter>Source\AozoraAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\AozoraAPI\ResourcesAPI.cpp">
-      <Filter>Source\AozoraAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\AozoraAPI\SceneAPI.cpp">
-      <Filter>Source\AozoraAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application.cpp">
+    <ClCompile Include="Source\APPLICATION.CPP">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\AssetManager\AssetManager.cpp">
+      <Filter>Source\Systems\AssetManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\AssetManager\ModelLoader.cpp">
+      <Filter>Source\Systems\AssetManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\AssetManager\TextureLoader.cpp">
+      <Filter>Source\Systems\AssetManager</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\CameraSystem.cpp">
       <Filter>Source\Systems</Filter>
@@ -230,12 +242,6 @@
     <ClCompile Include="Source\Systems\Input.cpp">
       <Filter>Source\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Systems\Layers\ImguiLayer.cpp">
-      <Filter>Source\Systems\Layers</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Systems\Layers\Layer.cpp">
-      <Filter>Source\Systems\Layers</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Systems\Layers\LayerStack.cpp">
       <Filter>Source\Systems\Layers</Filter>
     </ClCompile>
@@ -245,10 +251,7 @@
     <ClCompile Include="Source\Systems\Mesh.cpp">
       <Filter>Source\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Systems\MeshSystem.cpp">
-      <Filter>Source\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Systems\Project\Project.cpp">
+    <ClCompile Include="Source\Systems\Project\ProjectManager.cpp">
       <Filter>Source\Systems\Project</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\Renderers\DeferredPipeline.cpp">
@@ -268,9 +271,6 @@
     </ClCompile>
     <ClCompile Include="Source\Systems\Renderers\Viewport.cpp">
       <Filter>Source\Systems\Renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Systems\ResourceManager\ModelLoader.cpp">
-      <Filter>Source\Systems\ResourceManager</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\ResourceManager\ResourceManager.cpp">
       <Filter>Source\Systems\ResourceManager</Filter>
@@ -307,6 +307,9 @@
     </ClCompile>
     <ClCompile Include="Vendor\include\imgui\imgui_widgets.cpp">
       <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\include\xxHash\xxhash.c">
+      <Filter>vendor\include\xxHash</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
