@@ -58,7 +58,7 @@ namespace Aozora {
             using VecType = std::decay_t<decltype(data[0])>;
             using PixelType = typename VecType::value_type;
 
-            // basically check if they are the same type
+            // if the image is HDR we assume its also in linear space
             if (std::is_same_v<PixelType, float>) {
                 internalFormat = GL_R11F_G11F_B10F;
                 sourceFormat = GL_RGB;
@@ -67,7 +67,7 @@ namespace Aozora {
                 glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, tex.width, tex.height, 0, sourceFormat, sourceType, data[0].data());
             }
             else {
-                if (tex.isSrgb) {
+                if (tex.isSrgb) { // if the image is in gamma mode
                     internalFormat = (tex.nrChannels == 4) ? GL_SRGB8_ALPHA8 : GL_SRGB8;
                 }
                 else {
@@ -117,7 +117,7 @@ namespace Aozora {
             using PixelType = typename VecType::value_type;
             int width = texture.width;
             int height = texture.height;
-            // basically check if they are the same type
+            // if the image is HDR we assume its also in linear space
             if (std::is_same_v<PixelType, float>) {
                 internalFormat = GL_R11F_G11F_B10F;
                 sourceFormat = GL_RGB;
@@ -163,7 +163,7 @@ namespace Aozora {
 
 
 
-        internalFormat = GL_RGBA16F;
+        internalFormat = GL_R11F_G11F_B10F;
         sourceFormat = GL_RGBA;
         sourceType = GL_FLOAT;
         for (int i = 0; i < 6; i++) {

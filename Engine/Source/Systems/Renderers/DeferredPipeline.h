@@ -73,6 +73,8 @@ namespace Aozora {
 		void renderLights(Scene& scene);
 		void postfxPass();
 
+		uint32_t m_outputAttachment{ 0 };
+
 	};
 
 

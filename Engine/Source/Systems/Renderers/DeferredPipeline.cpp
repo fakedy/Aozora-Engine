@@ -1,5 +1,6 @@
 #include "DeferredPipeline.h"
 #include "Application.h"
+#include <Systems/Input.h>
 
 namespace Aozora {
 
@@ -9,6 +10,8 @@ namespace Aozora {
 		setupGbuffer();
 		setupRenderBuffer();
 		setupPostfxBuffer();
+
+		m_outputAttachment = postfxBuffer->m_colorAttachments[0];
 
 		// We dont need normals but whatever
 		screenQuad.meshData.vertices = {
@@ -145,19 +148,19 @@ namespace Aozora {
 				uint64_t diffuseTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
 				objectData.diffuseTextureHandle = resourceManager.m_loadedTextures[diffuseTextureID].handle;
 
-				uint64_t emissiveTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
+				uint64_t emissiveTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].emissiveTexture;
 				objectData.emissiveTextureHandle = resourceManager.m_loadedTextures[emissiveTextureID].handle;
 
-				uint64_t aoTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
+				uint64_t aoTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].aoTexture;
 				objectData.aoTextureHandle = resourceManager.m_loadedTextures[aoTextureID].handle;
 
-				uint64_t metallicTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
+				uint64_t metallicTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].metallicTexture;
 				objectData.metallicTextureHandle = resourceManager.m_loadedTextures[metallicTextureID].handle;
 
-				uint64_t roughnessTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
+				uint64_t roughnessTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].roughnessTexture;
 				objectData.roughnessTextureHandle = resourceManager.m_loadedTextures[roughnessTextureID].handle;
 
-				uint64_t normalTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
+				uint64_t normalTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].normalTexture;
 				objectData.normalTextureHandle = resourceManager.m_loadedTextures[normalTextureID].handle;
 
 				objectDataVector[i] = objectData;
@@ -272,7 +275,24 @@ namespace Aozora {
 
 	uint32_t DeferredPipeline::getFinalImage()
 	{
-		return postfxBuffer->m_colorAttachments[0];
+		
+		if (Input::getKeyDown(Input::Key::F1)) {
+			m_outputAttachment = postfxBuffer->m_colorAttachments[0];
+		}
+		if (Input::getKeyDown(Input::Key::F2)) {
+			m_outputAttachment = renderBuffer->m_colorAttachments[0];
+		}
+		if (Input::getKeyDown(Input::Key::F3)) {
+			m_outputAttachment = gBuffer->m_colorAttachments[1];
+		}
+		if (Input::getKeyDown(Input::Key::F4)) {
+			m_outputAttachment = gBuffer->m_colorAttachments[2];
+		}
+		if (Input::getKeyDown(Input::Key::F5)) {
+			m_outputAttachment = gBuffer->m_colorAttachments[4];
+		}
+
+		return m_outputAttachment;
 	}
 	void DeferredPipeline::setupGbuffer()
 	{
@@ -302,19 +322,19 @@ namespace Aozora {
 		albedoAttachment.textureTarget = FrameBuffer::TextureTarget::TEXTURE_2D;
 		albedoAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA8;
 		albedoAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
-		albedoAttachment.dataType = FrameBuffer::DataType::FLOAT;
+		albedoAttachment.dataType = FrameBuffer::DataType::UNSIGNED_BYTE;
 		albedoAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
 
 		emissiveAttachment.textureTarget = FrameBuffer::TextureTarget::TEXTURE_2D;
 		emissiveAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA8;
 		emissiveAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
-		emissiveAttachment.dataType = FrameBuffer::DataType::FLOAT;
+		emissiveAttachment.dataType = FrameBuffer::DataType::UNSIGNED_BYTE;
 		emissiveAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
 
 		propertiesAttachment.textureTarget = FrameBuffer::TextureTarget::TEXTURE_2D;
 		propertiesAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA8;
 		propertiesAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
-		propertiesAttachment.dataType = FrameBuffer::DataType::FLOAT;
+		propertiesAttachment.dataType = FrameBuffer::DataType::UNSIGNED_BYTE;
 		propertiesAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
 
 		gBufferDepthAttachment.textureTarget = FrameBuffer::TextureTarget::TEXTURE_2D;

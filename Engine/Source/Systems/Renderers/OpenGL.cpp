@@ -22,8 +22,8 @@ namespace Aozora {
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		// temp ?
-		glGenVertexArrays(1, &irradianceBox.VAO);
+
+		glGenVertexArrays(1, &VAO);
 	}
 
 
@@ -49,7 +49,7 @@ namespace Aozora {
 		glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
 
 		glUseProgram(m_irradianceShader.ID);
-		glBindVertexArray(irradianceBox.VAO);
+		glBindVertexArray(VAO);
 
 		m_irradianceShader.setInt("environmentMap", 0);
 		glActiveTexture(GL_TEXTURE0);
