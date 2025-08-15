@@ -1,6 +1,7 @@
 #include "DeferredPipeline.h"
 #include "Application.h"
 #include <Systems/Input.h>
+#include <Systems/Logging/Logger.h>
 
 namespace Aozora {
 
@@ -133,6 +134,7 @@ namespace Aozora {
 				uint64_t verticesAmount = data.vertices.size();
 				uint64_t indicesAmount = data.indices.size();
 
+				// indirect draw command for glMultiDrawElementsIndirect
 				DrawElementsIndirectCommand command;
 				command.count = indicesAmount; 
 				command.instanceCount = 1; // draw 1 instance
@@ -142,25 +144,29 @@ namespace Aozora {
 
 				commands[i] = command;
 				auto& transformComponent = MeshTransformEntities.get<TransformComponent>(entity);
-				ObjectData objectData;
+
+				// data to be uploaded to gpu so we can access variables inside the shaders
+				ObjectData objectData = {}; // set all to 0
 				objectData.model = transformComponent.model;
 
-				uint64_t diffuseTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
+				Material& mat = resourceManager.m_loadedmaterials[meshComponent.materialID];
+
+				uint64_t diffuseTextureID = mat.diffuseTexture;
 				objectData.diffuseTextureHandle = resourceManager.m_loadedTextures[diffuseTextureID].handle;
 
-				uint64_t emissiveTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].emissiveTexture;
+				uint64_t emissiveTextureID = mat.emissiveTexture;
 				objectData.emissiveTextureHandle = resourceManager.m_loadedTextures[emissiveTextureID].handle;
 
-				uint64_t aoTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].aoTexture;
+				uint64_t aoTextureID = mat.aoTexture;
 				objectData.aoTextureHandle = resourceManager.m_loadedTextures[aoTextureID].handle;
 
-				uint64_t metallicTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].metallicTexture;
+				uint64_t metallicTextureID = mat.metallicTexture;
 				objectData.metallicTextureHandle = resourceManager.m_loadedTextures[metallicTextureID].handle;
 
-				uint64_t roughnessTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].roughnessTexture;
+				uint64_t roughnessTextureID = mat.roughnessTexture;
 				objectData.roughnessTextureHandle = resourceManager.m_loadedTextures[roughnessTextureID].handle;
 
-				uint64_t normalTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].normalTexture;
+				uint64_t normalTextureID = mat.normalTexture;
 				objectData.normalTextureHandle = resourceManager.m_loadedTextures[normalTextureID].handle;
 
 				objectDataVector[i] = objectData;
@@ -228,7 +234,7 @@ namespace Aozora {
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_depthTextureID);
 
 			auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
-			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skyboxes.front()); // hack
+			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skyboxes.front()); // hack (crash if we dont have a skybox entity)
 			Skybox& skyboxObject = resourceManager.m_loadedSkyboxes[skyboxComponent.id];
 			Texture& cubeMapTexture = resourceManager.m_loadedTextures[skyboxObject.cubeMapTexture];
 			Texture& irradienceMapTexture = resourceManager.m_loadedTextures[skyboxObject.irradienceMapTexture];
@@ -275,21 +281,21 @@ namespace Aozora {
 
 	uint32_t DeferredPipeline::getFinalImage()
 	{
-		
+		// for debug
 		if (Input::getKeyDown(Input::Key::F1)) {
-			m_outputAttachment = postfxBuffer->m_colorAttachments[0];
+			m_outputAttachment = postfxBuffer->m_colorAttachments[0]; // postfx
 		}
 		if (Input::getKeyDown(Input::Key::F2)) {
-			m_outputAttachment = renderBuffer->m_colorAttachments[0];
+			m_outputAttachment = renderBuffer->m_colorAttachments[0]; // lighting output
 		}
 		if (Input::getKeyDown(Input::Key::F3)) {
-			m_outputAttachment = gBuffer->m_colorAttachments[1];
+			m_outputAttachment = gBuffer->m_colorAttachments[1]; // gbuffer color
 		}
 		if (Input::getKeyDown(Input::Key::F4)) {
-			m_outputAttachment = gBuffer->m_colorAttachments[2];
+			m_outputAttachment = gBuffer->m_colorAttachments[2]; // normal
 		}
 		if (Input::getKeyDown(Input::Key::F5)) {
-			m_outputAttachment = gBuffer->m_colorAttachments[4];
+			m_outputAttachment = gBuffer->m_colorAttachments[4]; // properties
 		}
 
 		return m_outputAttachment;

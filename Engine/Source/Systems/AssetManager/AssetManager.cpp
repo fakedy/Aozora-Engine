@@ -35,8 +35,9 @@ namespace Aozora::Resources {
 				archive(m_importRegistry);
 			}
 			loadAsset("Resources/testcube/testcube.obj");
-			//loadAsset("Resources/sponza2/sponza.obj");
-			loadAsset("Resources/main_sponza/NewSponza_Main_glTF_003.gltf");
+			loadAsset("Resources/sponza2/sponza.obj");
+			//loadAsset("Resources/main_sponza/NewSponza_Main_glTF_003.gltf");
+			loadAsset("Resources/DamagedHelmet/DamagedHelmet.gltf");
 			return true;
 		}
 
@@ -52,8 +53,9 @@ namespace Aozora::Resources {
 		}
 
 		loadAsset("Resources/testcube/testcube.obj");
-		loadAsset("Resources/main_sponza/NewSponza_Main_glTF_003.gltf");
-		//loadAsset("Resources/sponza2/sponza.obj");
+		//loadAsset("Resources/main_sponza/NewSponza_Main_glTF_003.gltf");
+		loadAsset("Resources/sponza2/sponza.obj");
+		loadAsset("Resources/DamagedHelmet/DamagedHelmet.gltf");
 		return false;
 	}
 
@@ -274,14 +276,7 @@ namespace Aozora::Resources {
 			cereal::BinaryOutputArchive archive(os);
 			archive(cubeMapTexture);
 		}
-		/*
-		{
-			// update the manifest
-			std::ofstream os(m_workingDirectory + std::to_string(irradienceMapTexture.id) + ".texture", std::ios::binary);
-			cereal::BinaryOutputArchive archive(os);
-			archive(irradienceMapTexture);
-		}
-		*/
+
 		// update the manifest
 		std::ofstream os(m_workingDirectory + "manifest.manifest", std::ios::binary);
 		cereal::BinaryOutputArchive archive(os);

@@ -111,10 +111,11 @@ namespace Aozora::Resources {
 
                 loadMaterialTextures(material, aimaterial, aiTextureType_NORMALS, Texture::TextureType::Texture2D, iModel);
             }
+            /* // will crash because its not finished
             else if (aimaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
                 loadMaterialTextures(material, aimaterial, aiTextureType_HEIGHT, Texture::TextureType::Texture2D, iModel);
             }
-
+            */
             loadMaterialTextures(material, aimaterial, aiTextureType_EMISSIVE, Texture::TextureType::Texture2D, iModel);
 
             loadMaterialTextures(material, aimaterial, aiTextureType_AMBIENT_OCCLUSION, Texture::TextureType::Texture2D, iModel);
@@ -258,6 +259,7 @@ namespace Aozora::Resources {
 
             Texture targetTexture = m_textureLoader.loadTexture(str.C_Str(), m_directory, isSrgb);
             *targetID = targetTexture.id;
+
             if (targetTexture.hasData) {
                 targetTexture.type = typeName;
                 targetTexture.path = str.C_Str();

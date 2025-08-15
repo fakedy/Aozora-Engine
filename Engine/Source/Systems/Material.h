@@ -16,13 +16,14 @@ namespace Aozora {
 
 		// storing textures like this is not efficient and its expensive
 		// the Texture files contain the raw data for that texture
-		uint64_t diffuseTexture;
-		uint64_t normalTexture;
-		uint64_t heightTexture;
-		uint64_t emissiveTexture;
-		uint64_t aoTexture;
-		uint64_t metallicTexture;
-		uint64_t roughnessTexture;
+		uint64_t diffuseTexture{ 0 };
+		uint64_t normalTexture{ 0 };
+		uint64_t heightTexture{ 0 };
+		uint64_t emissiveTexture{ 0 };
+		uint64_t aoTexture{ 0 };
+		uint64_t metallicTexture{ 0 };
+		uint64_t roughnessTexture{ 0 };
+
 		
 		std::vector<uint64_t> textureIDs;
 		

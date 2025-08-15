@@ -73,6 +73,7 @@ namespace Aozora {
 
 		glDisable(GL_CULL_FACE);
 		glDisable(GL_DEPTH_TEST);
+		// one render for each face of the cube, its why we have a captureViews vector too
 		for (uint32_t i = 0; i < 6; i++) {
 
 			// set view matrix
