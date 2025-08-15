@@ -84,6 +84,11 @@ namespace Aozora {
 	void DeferredPipeline::execute(IrenderAPI& renderAPI, Scene& scene, entt::entity camera, uint32_t width, uint32_t height)
 	{
 
+		if (Input::getKeyPressed(Input::Key::F6)) {
+			Log::info("Recompiling lighting shader");
+			m_defaultShader.recompile();
+		}
+
 
 		auto MeshTransformEntities = scene.getRegistry().view<const MeshComponent, TransformComponent>(); // register of all mesh components
 		auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
@@ -282,20 +287,25 @@ namespace Aozora {
 	uint32_t DeferredPipeline::getFinalImage()
 	{
 		// for debug
-		if (Input::getKeyDown(Input::Key::F1)) {
+		if (Input::getKeyPressed(Input::Key::F1)) {
 			m_outputAttachment = postfxBuffer->m_colorAttachments[0]; // postfx
+			Log::info("output image: postfx");
 		}
-		if (Input::getKeyDown(Input::Key::F2)) {
+		if (Input::getKeyPressed(Input::Key::F2)) {
 			m_outputAttachment = renderBuffer->m_colorAttachments[0]; // lighting output
+			Log::info("output image: lighting output");
 		}
-		if (Input::getKeyDown(Input::Key::F3)) {
-			m_outputAttachment = gBuffer->m_colorAttachments[1]; // gbuffer color
+		if (Input::getKeyPressed(Input::Key::F3)) {
+			m_outputAttachment = gBuffer->m_colorAttachments[2]; // gbuffer color
+			Log::info("output image: gbuffer color");
 		}
-		if (Input::getKeyDown(Input::Key::F4)) {
-			m_outputAttachment = gBuffer->m_colorAttachments[2]; // normal
+		if (Input::getKeyPressed(Input::Key::F4)) {
+			m_outputAttachment = gBuffer->m_colorAttachments[1]; // normal
+			Log::info("output image: gbuffer normal");
 		}
-		if (Input::getKeyDown(Input::Key::F5)) {
+		if (Input::getKeyPressed(Input::Key::F5)) {
 			m_outputAttachment = gBuffer->m_colorAttachments[4]; // properties
+			Log::info("output image: gbuffer properties");
 		}
 
 		return m_outputAttachment;
