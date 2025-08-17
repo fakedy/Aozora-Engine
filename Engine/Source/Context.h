@@ -8,6 +8,7 @@
 #include "Systems/Renderers/SceneRenderer.h"
 #include "Systems/Renderers/IrenderAPI.h"
 #include "Systems/Project/ProjectManager.h"
+#include "Systems/CommandQueue/CommandQueue.h"
 
 namespace Aozora {
 
@@ -20,5 +21,7 @@ namespace Aozora {
         ResourceManager* resourcemanager{ nullptr };
         ProjectManager* projectManager{ nullptr };
         Resources::AssetManager* assetManager{ nullptr };
+        CommandQueue* commandQueue{ nullptr };
+
 	};
 }

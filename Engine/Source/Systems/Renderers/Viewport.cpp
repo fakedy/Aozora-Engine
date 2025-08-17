@@ -18,8 +18,8 @@ namespace Aozora {
 			renderPipeline->resize(newWidth, newHeight);
 		}
 	}
-	void Viewport::setScene(Scene& scene)
+	void Viewport::setScene(uint64_t sceneID)
 	{
-		this->scene = &scene;
+		this->sceneID = sceneID;
 	}
 }

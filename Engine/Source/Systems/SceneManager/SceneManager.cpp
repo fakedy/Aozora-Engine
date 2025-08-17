@@ -3,7 +3,7 @@
 
 namespace Aozora {
 
-	uint32_t SceneManager::createScene()
+	uint64_t SceneManager::createScene()
 	{
 		// scene id 0 should be the base scene for the project
 		m_scenes[nextSceneID] = std::make_unique<Scene>();
@@ -15,11 +15,11 @@ namespace Aozora {
 		nextSceneID++;
 		return nextSceneID - 1; // lol
 	}
-	void SceneManager::deleteScene(uint32_t id)
+	void SceneManager::deleteScene(uint64_t id)
 	{
 		m_scenes.erase(id);
 	}
-	Scene* SceneManager::getScene(uint32_t id)
+	Scene* SceneManager::getScene(uint64_t id)
 	{
 		auto it = m_scenes.find(id);
 		if (it != m_scenes.end()) {
@@ -32,6 +32,27 @@ namespace Aozora {
 	Scene* SceneManager::getCurrentActiveScene()
 	{
 		return m_activeScene;
+	}
+
+	void SceneManager::loadScene(const Scene& scene)
+	{
+
+		// need to load in the required stuff into ram using the IDS
+		// Maybe i should serialize the resourcemanager 
+
+
+		// make sure its not the same scene
+		if (scene.hash == m_activeScene->hash) {
+			m_activeScene->loadSnapShot();
+			return;
+		}
+		
+		// add the new scene to the unordered map
+		m_scenes[scene.hash] = std::make_unique<Scene>(scene);
+		// load the saved scene data
+		m_scenes[scene.hash]->loadSnapShot();
+		deleteScene(m_activeScene->hash);
+		m_activeScene = m_scenes[scene.hash].get();
 	}
 	
 	void SceneManager::clearScenes()

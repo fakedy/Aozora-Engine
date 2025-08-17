@@ -60,6 +60,36 @@ namespace Aozora {
 		Scene& m_scene;
 	};
 
+	class SaveSceneRquest : public Event {
+
+	public:
+
+		SaveSceneRquest(Scene& scene) : Event(EventType::saveSceneRequest), m_scene(scene) {}
+
+		Scene& getScene() const {
+			return m_scene;
+		}
+
+	protected:
+
+		Scene& m_scene;
+	};
+
+	class LoadSceneRequest : public Event {
+
+	public:
+
+		LoadSceneRequest(uint64_t id) : Event(EventType::loadSceneRequest), id(id) {}
+
+		int getID() const {
+			return id;
+		}
+
+	protected:
+
+		uint64_t id;
+	};
+
 	class viewportResize : public Event {
 
 	public:

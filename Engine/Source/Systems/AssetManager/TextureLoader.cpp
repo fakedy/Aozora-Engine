@@ -122,8 +122,9 @@ namespace Aozora::Resources {
         texture.nrChannels = nrChannels;
         texture.name = filename;
 
+        uint64_t hash = XXH64(fileName.c_str(), fileName.length(), 0);
 
-        m_importRegistry[fileName] = XXH64(fileName.c_str(), fileName.length(), 0);
+        m_importRegistry[fileName] = hash;
         texture.id = m_importRegistry[fileName];
         Log::info("Successfully loaded texture: " + fileName);
         return texture;

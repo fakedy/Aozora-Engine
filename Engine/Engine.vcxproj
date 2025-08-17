@@ -156,6 +156,7 @@
     <ClInclude Include="Source\Systems\AssetManager\ModelLoader.h" />
     <ClInclude Include="Source\Systems\AssetManager\TextureLoader.h" />
     <ClInclude Include="Source\Systems\CameraSystem.h" />
+    <ClInclude Include="Source\Systems\CommandQueue\CommandQueue.h" />
     <ClInclude Include="Source\Systems\ECS\Components\CameraComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\Components.h" />
     <ClInclude Include="Source\Systems\ECS\Components\EditorEntityTag.h" />
@@ -208,6 +209,7 @@
     <ClCompile Include="Source\Systems\AssetManager\ModelLoader.cpp" />
     <ClCompile Include="Source\Systems\AssetManager\TextureLoader.cpp" />
     <ClCompile Include="Source\Systems\CameraSystem.cpp" />
+    <ClCompile Include="Source\Systems\CommandQueue\CommandQueue.cpp" />
     <ClCompile Include="Source\Systems\EditorCameraSystem.cpp" />
     <ClCompile Include="Source\Systems\Input.cpp" />
     <ClCompile Include="Source\Systems\Layers\LayerStack.cpp" />

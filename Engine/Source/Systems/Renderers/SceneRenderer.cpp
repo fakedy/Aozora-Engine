@@ -4,7 +4,7 @@
 #include <Systems/Logging/Logger.h>
 
 namespace Aozora::Graphics {
-	SceneRenderer::SceneRenderer(IrenderAPI* api)
+	SceneRenderer::SceneRenderer(IrenderAPI* api, SceneManager& sceneManager) : m_sceneManager(sceneManager)
 	{
 
 		m_RenderAPI = api;
@@ -15,15 +15,15 @@ namespace Aozora::Graphics {
 
 	}
 
-	void SceneRenderer::updatePrimaryScene(Scene& scene)
+	void SceneRenderer::updatePrimaryScene(uint64_t sceneID)
 	{
-
-		auto view = scene.getRegistry().view<CameraComponent, EditorEntityTag>();
+		Scene* scene = m_sceneManager.getCurrentActiveScene();
+		auto view = scene->getRegistry().view<CameraComponent, EditorEntityTag>();
 		
 		for (auto& [ID, viewport] : m_viewports) {
 
 			if (viewport.type == ViewportType::PrimaryEditor) {
-				viewport.setScene(scene);
+				viewport.setScene(scene->hash);
 				viewport.camera = view.front(); // temp
 			}
 		}
@@ -39,7 +39,7 @@ namespace Aozora::Graphics {
 			// find viewport with this scene
 			// kinda whack
 			for (auto& [ID, viewport] : m_viewports) {
-				if (viewport.scene == scene) {
+				if (viewport.sceneID == scene->hash) {
 					viewport.renderPipeline->genMegaBuffer(*scene);
 				}
 			}
@@ -60,8 +60,9 @@ namespace Aozora::Graphics {
 			
 			// make sure viewport is active before doing this.
 			// if viewport have a scene
-			if (viewport.scene != nullptr && viewport.isActive) {
-				viewport.renderPipeline->execute(*m_RenderAPI, *viewport.scene, viewport.camera, viewport.width, viewport.height);
+			Scene* scene = m_sceneManager.getCurrentActiveScene();
+			if (scene != nullptr && viewport.isActive) {
+				viewport.renderPipeline->execute(*m_RenderAPI, *scene, viewport.camera, viewport.width, viewport.height);
 			}
 		}
 	}

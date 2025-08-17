@@ -16,6 +16,8 @@ namespace Aozora {
 		ChangeScene,
 		CreateProjectRequest,
 		SaveProjectRequest,
+		loadSceneRequest,
+		saveSceneRequest,
 		ViewportResize,
 		NewMesh
 	};

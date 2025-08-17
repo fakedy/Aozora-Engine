@@ -39,7 +39,10 @@ void EditorUILayer::onUpdate(const Aozora::Context& context){
 			}
 			if (ImGui::BeginMenu("Save")) {
 				if (ImGui::MenuItem("Project")) {
-
+					context.assetManager->saveProject();
+				}
+				if (ImGui::MenuItem("Scene")) {
+					context.assetManager->saveSceneToDisk(*context.sceneManager->getCurrentActiveScene());
 				}
 				ImGui::EndMenu();
 			}

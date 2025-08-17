@@ -8,54 +8,53 @@
 #include <fstream>
 #include <random>
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif // _WIN32
+
+
+
 namespace Aozora::Resources {
 
 	AssetManager::AssetManager()
 	{
-		
-
-
 	}
 
 	bool AssetManager::createProject(std::string name)
 	{
-		// use serializer class instead for most things but whatever
-		m_workingDirectory = "Projects/" + name + "/Assets/";
-		m_projectDir = "Projects/" + name;
+		wchar_t exePath[512] = {0};
+		GetModuleFileNameW(NULL, exePath, 512);
 		
+		std::filesystem::path exedir = std::filesystem::path(exePath).parent_path();
+		// use serializer class instead for most things but whatever
+		m_workingDirectory = (exedir / "Projects" / name / "Assets/").string();
+		m_projectDir = (exedir / "Projects" / name).string();
 
-		if (std::filesystem::create_directories(m_workingDirectory)) {
-			Log::info("Successfully created project folder");
-			// load base assets and serialize to store binary data
+		std::error_code errorC;
+		std::filesystem::create_directories(m_workingDirectory, errorC);
+		// if we get an error
+		if (errorC) {
+			Log::error(std::format("Failed to create project directory. Reason: {}", errorC.message()));
+			return false;
+		}
 
+
+		Log::info(std::format("Successfully created project folder at: {} ", m_projectDir));
+
+		if (std::filesystem::exists((exedir / "Projects" / name / "Assets" / "project.project"))) {
+			loadProject();
 			std::ifstream os(m_workingDirectory + "manifest.manifest", std::ios::binary);
 			if (os) {
-
 				cereal::BinaryInputArchive archive(os);
 				archive(m_importRegistry);
 			}
-			loadAsset("Resources/testcube/testcube.obj");
-			loadAsset("Resources/sponza2/sponza.obj");
-			//loadAsset("Resources/main_sponza/NewSponza_Main_glTF_003.gltf");
-			loadAsset("Resources/DamagedHelmet/DamagedHelmet.gltf");
-			return true;
-		}
-
-		Log::error("Failed to create project directory. It may already exist.");
-
-
-		
-		std::ifstream os(m_workingDirectory + "manifest.manifest", std::ios::binary);
-		if (os) {
-
-			cereal::BinaryInputArchive archive(os);
-			archive(m_importRegistry);
 		}
 
 		loadAsset("Resources/testcube/testcube.obj");
 		//loadAsset("Resources/main_sponza/NewSponza_Main_glTF_003.gltf");
-		loadAsset("Resources/sponza2/sponza.obj");
+		//loadAsset("Resources/sponza2/sponza.obj");
 		loadAsset("Resources/DamagedHelmet/DamagedHelmet.gltf");
+		//loadAsset("Resources/survival-guitar-backpack/source/Survival_BackPack_2.fbx");
 		return false;
 	}
 
@@ -95,8 +94,7 @@ namespace Aozora::Resources {
 				archive(iModel.model);
 
 				m_importRegistry[(path).c_str()] = asset.hash;
-				m_assets[m_nextAssetID] = asset;
-				m_nextAssetID++;
+				m_assets[asset.hash] = asset;
 			}
 
 			// serialize meshes
@@ -113,8 +111,7 @@ namespace Aozora::Resources {
 				cereal::BinaryOutputArchive archive(os);
 				archive(mesh);
 
-				m_assets[m_nextAssetID] = asset;
-				m_nextAssetID++;
+				m_assets[asset.hash] = asset;
 			}
 
 			// serialize materials
@@ -131,8 +128,7 @@ namespace Aozora::Resources {
 				cereal::BinaryOutputArchive archive(os);
 				archive(mat);
 
-				m_assets[m_nextAssetID] = asset;
-				m_nextAssetID++;
+				m_assets[asset.hash] = asset;
 			}
 
 			
@@ -150,8 +146,7 @@ namespace Aozora::Resources {
 				cereal::BinaryOutputArchive archive(os);
 				archive(tex);
 
-				m_assets[m_nextAssetID] = asset;
-				m_nextAssetID++;
+				m_assets[asset.hash] = asset;
 			}
 		}
 
@@ -162,8 +157,7 @@ namespace Aozora::Resources {
 			asset.icon = 0;
 			asset.name = filename;
 			asset.hash = XXH64(filename.c_str(), filename.length(), 0);
-			m_assets[m_nextAssetID] = asset;
-			m_nextAssetID++;
+			m_assets[asset.hash] = asset;
 		}
 
 
@@ -181,7 +175,6 @@ namespace Aozora::Resources {
 		Log::info(std::format("Loading model: {} from disk", hash));
 		Model model; // parse the file with the hash
 
-
 		std::ifstream os(m_workingDirectory + std::to_string(hash) +".model", std::ios::binary);
 		cereal::BinaryInputArchive archive(os);
 		archive(model);
@@ -193,8 +186,8 @@ namespace Aozora::Resources {
 	{
 		Log::info(std::format("Loading mesh: {} from disk", hash));
 		Mesh mesh;
-		std::ifstream os(m_workingDirectory + std::to_string(hash) + ".mesh", std::ios::binary);
-		cereal::BinaryInputArchive archive(os);
+		std::ifstream is(m_workingDirectory + std::to_string(hash) + ".mesh", std::ios::binary);
+		cereal::BinaryInputArchive archive(is);
 		archive(mesh);
 		return mesh;
 	}
@@ -204,8 +197,8 @@ namespace Aozora::Resources {
 		Log::info(std::format("Loading texture: {} from disk", hash));
 		Texture tex;
 		// load from disk
-		std::ifstream os(m_workingDirectory + std::to_string(hash) + ".texture", std::ios::binary);
-		cereal::BinaryInputArchive archive(os);
+		std::ifstream is(m_workingDirectory + std::to_string(hash) + ".texture", std::ios::binary);
+		cereal::BinaryInputArchive archive(is);
 		archive(tex);
 		return tex;
 	}
@@ -214,8 +207,8 @@ namespace Aozora::Resources {
 	{
 		Log::info(std::format("Loading material: {} from disk", hash));
 		Material mat;
-		std::ifstream os(m_workingDirectory + std::to_string(hash) + ".material", std::ios::binary);
-		cereal::BinaryInputArchive archive(os);
+		std::ifstream is(m_workingDirectory + std::to_string(hash) + ".material", std::ios::binary);
+		cereal::BinaryInputArchive archive(is);
 		archive(mat);
 		return mat;
 	}
@@ -224,10 +217,64 @@ namespace Aozora::Resources {
 	{
 		Log::info(std::format("Loading skybox: {} from disk", hash));
 		Skybox skybox;
-		std::ifstream os(m_workingDirectory + std::to_string(hash) + ".skybox", std::ios::binary);
-		cereal::BinaryInputArchive archive(os);
+		std::ifstream is(m_workingDirectory + std::to_string(hash) + ".skybox", std::ios::binary);
+		cereal::BinaryInputArchive archive(is);
 		archive(skybox);
 		return skybox;
+	}
+
+	Scene AssetManager::loadSceneFromDisk(uint64_t hash)
+	{
+
+		Log::info(std::format("Loading scene: {} from disk", hash));
+		Scene scene;
+		std::ifstream is(m_workingDirectory + std::to_string(hash) + ".scene", std::ios::binary);
+		cereal::BinaryInputArchive archive(is);
+		archive(scene);
+		return scene;
+
+	}
+
+	uint64_t AssetManager::saveSceneToDisk(Scene& scene)
+	{
+		Log::info(std::format("Saving scene to disk"));
+		// if scene is not loaded
+		if (m_assets.find(scene.hash) == m_assets.end()) {
+
+			Asset asset;
+			asset.type = AssetType::Scene;
+			asset.parentDir = "";
+			asset.icon = 0;
+			asset.name = scene.m_sceneName;
+			asset.hidden = false;
+			asset.hash = getUniqueID();
+			scene.hash = asset.hash;
+			m_assets[asset.hash] = asset;
+
+		}
+		scene.takeSnapshot();
+		std::ofstream os(m_workingDirectory + std::to_string(scene.hash) + ".scene", std::ios::binary);
+		cereal::BinaryOutputArchive archive(os);
+		archive(scene);
+
+		m_importRegistry[scene.m_sceneName] = scene.hash;
+		return scene.hash;
+	}
+
+	void AssetManager::saveProject()
+	{
+		Log::info(std::format("Saving project to disk"));
+		std::ofstream os(m_workingDirectory + "project.project", std::ios::binary);
+		cereal::BinaryOutputArchive archive(os);
+		archive(m_assets);
+	}
+
+	void AssetManager::loadProject()
+	{
+		Log::info(std::format("Reading scene from disk"));
+		std::ifstream is(m_workingDirectory + "project.project", std::ios::binary);
+		cereal::BinaryInputArchive archive(is);
+		archive(m_assets);
 	}
 
 	uint64_t AssetManager::createSkybox()
@@ -312,6 +359,7 @@ namespace Aozora::Resources {
 
 	uint64_t AssetManager::getUniqueID()
 	{
+		
 		std::random_device rd;
 		std::mt19937_64 gen(rd());
 		std::uniform_int_distribution<uint64_t> dis;
@@ -329,6 +377,8 @@ namespace Aozora::Resources {
 		}
 		return data;
 	}
+
+
 
 
 }

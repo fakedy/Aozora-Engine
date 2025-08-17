@@ -21,9 +21,10 @@ namespace Aozora {
 		props = Window::WindowProps(title, 1920, 1080);
 
 		m_window = Window::create(props);
+		m_commandQueue = std::make_unique<CommandQueue>();
 		m_renderAPI = std::unique_ptr<IrenderAPI>(IrenderAPI::create());
 		m_sceneManager = std::make_unique<SceneManager>();
-		m_sceneRenderer = std::make_unique<Graphics::SceneRenderer>(m_renderAPI.get());
+		m_sceneRenderer = std::make_unique<Graphics::SceneRenderer>(m_renderAPI.get(), *m_sceneManager.get());
 		m_assetManager = std::make_unique<Resources::AssetManager>();
 		m_resourceManager = std::make_unique<ResourceManager>(*m_assetManager.get(), *m_renderAPI.get());
 		m_projectManager = std::make_unique<ProjectManager>(*m_sceneManager.get());
@@ -39,6 +40,7 @@ namespace Aozora {
 		context.resourcemanager = m_resourceManager.get();
 		context.projectManager = m_projectManager.get();
 		context.assetManager = m_assetManager.get();
+		context.commandQueue = m_commandQueue.get();
 
 	
 		EventDispatcher::subscribe(EventType::CreateProjectRequest, [this](Event& e) {
@@ -55,7 +57,7 @@ namespace Aozora {
 
 		while (!m_window->windowShouldClose()) {
 			auto start = std::chrono::high_resolution_clock::now();
-			processActions(); // process non event based queued functions
+			m_commandQueue->processActions(); // process non event based queued functions
 			EventDispatcher::flush(); // goes through events queued for processing
 
 			// TODO render after updated layers
@@ -72,21 +74,9 @@ namespace Aozora {
 		}
 	}
 
-	void Application::queueAction(std::function<void()> func)
-	{
-		m_actionQueue.push(func);
-	}
-	void Application::processActions()
-	{
-		while (!m_actionQueue.empty()) {
-			m_actionQueue.front()();
-			m_actionQueue.pop();
-		}
-	}
-
 	void Application::createProject()
 	{
-		m_resourceManager->clearResources();
+		//m_resourceManager->clearResources();
 		m_sceneManager->clearScenes();
 
 		// init new project directory
@@ -96,6 +86,7 @@ namespace Aozora {
 		m_projectManager->createProject("MyProject");
 
 		uint32_t sceneID = m_sceneManager->createScene();
+		m_resourceManager->m_containerMap[sceneID] = ResourceManager::ResourceContainer();
 		Scene* scene = m_sceneManager->getScene(sceneID);
 		// creating the editor camera
 		// will be invisible to the scene graph
@@ -114,13 +105,13 @@ namespace Aozora {
 		registry.emplace_or_replace<EditorEntityTag>(skyboxEntity);
 
 
-		uint64_t skyboxID = m_resourceManager->loadSkybox(m_assetManager->createSkybox());
+		uint64_t skyboxID = m_resourceManager->loadSkybox(m_assetManager->createSkybox(), sceneID);
 
 
 		registry.emplace_or_replace<SkyboxComponent>(skyboxEntity).id = skyboxID;
 
 		
-		m_sceneRenderer->updatePrimaryScene(*scene);
+		m_sceneRenderer->updatePrimaryScene(scene->hash);
 
 	}
 

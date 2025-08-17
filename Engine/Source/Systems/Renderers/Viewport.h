@@ -26,14 +26,14 @@ namespace Aozora {
 		std::unique_ptr<IrenderPipeline> renderPipeline;
 		
 
-		Scene* scene{ nullptr };
-		uint32_t sceneID{ 0 };
+		
+		uint64_t sceneID{ 0 };
 		entt::entity camera; // noooooo. I have no idea what this comment references.
 
 		bool isActive{ false };
 		void resize(uint32_t width, uint32_t height);
 
-		void setScene(Scene& scene);
+		void setScene(uint64_t scene);
 
 
 	};

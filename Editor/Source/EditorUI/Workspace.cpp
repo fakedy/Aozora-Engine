@@ -60,6 +60,14 @@ void Workspace::draw(const Aozora::Context& context)
 		case(Aozora::Resources::AssetType::Material):
 			break;
 		case(Aozora::Resources::AssetType::Scene):
+			if (ImGui::ImageButton(asset.name.c_str(), m_image_texture, ImVec2(thumbnailSize, thumbnailSize))) {
+				context.commandQueue->queueAction([&]() {
+					Aozora::Scene scene = context.assetManager->loadSceneFromDisk(asset.hash);
+					context.sceneManager->loadScene(scene);
+					context.resourcemanager->m_containerMap[scene.hash] = Aozora::ResourceManager::ResourceContainer();
+					context.sceneRenderer->updatePrimaryScene(0); // argument doesnt matter atm
+					});
+			}
 			break;
 		case(Aozora::Resources::AssetType::Skybox):
 			break;

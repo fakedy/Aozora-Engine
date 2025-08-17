@@ -128,6 +128,8 @@ namespace Aozora {
 
 			m_gBufferShader.setMat4("view", current_camera.getView());
 			m_gBufferShader.setMat4("proj", current_camera.getProjection());
+
+			ResourceManager::ResourceContainer& map = resourceManager.m_containerMap[scene.hash];
 			// assume the EBO/VBO have the exact same order as this loop
 			// it can be wrong and screw things up
 			commands.resize(MeshTransformEntities.size_hint());
@@ -135,7 +137,7 @@ namespace Aozora {
 			for (const auto entity : MeshTransformEntities) {
 				auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
 
-				Mesh::MeshData& data = resourceManager.m_loadedMeshes[meshComponent.meshID].meshData;
+				Mesh::MeshData& data = map.m_loadedMeshes[meshComponent.meshID].meshData;
 				uint64_t verticesAmount = data.vertices.size();
 				uint64_t indicesAmount = data.indices.size();
 
@@ -154,25 +156,26 @@ namespace Aozora {
 				ObjectData objectData = {}; // set all to 0
 				objectData.model = transformComponent.model;
 
-				Material& mat = resourceManager.m_loadedmaterials[meshComponent.materialID];
+
+				Material& mat = map.m_loadedmaterials[meshComponent.materialID];
 
 				uint64_t diffuseTextureID = mat.diffuseTexture;
-				objectData.diffuseTextureHandle = resourceManager.m_loadedTextures[diffuseTextureID].handle;
+				objectData.diffuseTextureHandle = map.m_loadedTextures[diffuseTextureID].handle;
 
 				uint64_t emissiveTextureID = mat.emissiveTexture;
-				objectData.emissiveTextureHandle = resourceManager.m_loadedTextures[emissiveTextureID].handle;
+				objectData.emissiveTextureHandle = map.m_loadedTextures[emissiveTextureID].handle;
 
 				uint64_t aoTextureID = mat.aoTexture;
-				objectData.aoTextureHandle = resourceManager.m_loadedTextures[aoTextureID].handle;
+				objectData.aoTextureHandle = map.m_loadedTextures[aoTextureID].handle;
 
 				uint64_t metallicTextureID = mat.metallicTexture;
-				objectData.metallicTextureHandle = resourceManager.m_loadedTextures[metallicTextureID].handle;
+				objectData.metallicTextureHandle = map.m_loadedTextures[metallicTextureID].handle;
 
 				uint64_t roughnessTextureID = mat.roughnessTexture;
-				objectData.roughnessTextureHandle = resourceManager.m_loadedTextures[roughnessTextureID].handle;
+				objectData.roughnessTextureHandle = map.m_loadedTextures[roughnessTextureID].handle;
 
 				uint64_t normalTextureID = mat.normalTexture;
-				objectData.normalTextureHandle = resourceManager.m_loadedTextures[normalTextureID].handle;
+				objectData.normalTextureHandle = map.m_loadedTextures[normalTextureID].handle;
 
 				objectDataVector[i] = objectData;
 				firstIndex += indicesAmount;
@@ -240,9 +243,9 @@ namespace Aozora {
 
 			auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
 			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skyboxes.front()); // hack (crash if we dont have a skybox entity)
-			Skybox& skyboxObject = resourceManager.m_loadedSkyboxes[skyboxComponent.id];
-			Texture& cubeMapTexture = resourceManager.m_loadedTextures[skyboxObject.cubeMapTexture];
-			Texture& irradienceMapTexture = resourceManager.m_loadedTextures[skyboxObject.irradienceMapTexture];
+			Skybox& skyboxObject = map.m_loadedSkyboxes[skyboxComponent.id];
+			Texture& cubeMapTexture = map.m_loadedTextures[skyboxObject.cubeMapTexture];
+			Texture& irradienceMapTexture = map.m_loadedTextures[skyboxObject.irradienceMapTexture];
 
 			glActiveTexture(GL_TEXTURE6);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, irradienceMapTexture.gpuID);
@@ -474,7 +477,7 @@ namespace Aozora {
 		uint32_t indexSize = 0;
 		for (const auto entity : MeshTransformEntities) {
 			auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
-			Mesh::MeshData& data = resourceManager.m_loadedMeshes[meshComponent.meshID].meshData;
+			Mesh::MeshData& data = resourceManager.m_containerMap[scene.hash].m_loadedMeshes[meshComponent.meshID].meshData;
 			verticesSize += data.vertices.size() * sizeof(Mesh::Vertex);
 			indexSize += data.indices.size() * sizeof(uint64_t);
 
@@ -494,7 +497,7 @@ namespace Aozora {
 		for (const auto entity : MeshTransformEntities) {
 			auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
 
-			Mesh::MeshData& data = resourceManager.m_loadedMeshes[meshComponent.meshID].meshData;
+			Mesh::MeshData& data = resourceManager.m_containerMap[scene.hash].m_loadedMeshes[meshComponent.meshID].meshData;
 			uint32_t verticesAmount = data.vertices.size();
 			uint32_t indicesAmount = data.indices.size();
 			glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
