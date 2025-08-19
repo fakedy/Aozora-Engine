@@ -1,10 +1,33 @@
-// Game.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+#pragma once
+#include <Application.h>
+#include <GameLayer.h>
+#include <GameUILayer.h>
+class Game : public Aozora::Application {
 
-#include <iostream>
+public:
 
-int main()
-{
-    std::cout << "Hello World!\n";
+
+
+	Game() : Application("Aozora Editor") { // calls the constructor of Application
+
+		GameLayer* gameLayer = new GameLayer(getSceneManager(), *m_sceneRenderer.get());
+		layerStack->addLayer(gameLayer);
+
+		loadProject(); // load scene or something instead, or setup for scene
+
+		layerStack->addOverlay(new GameUILayer());
+
+
+		run(); // run the app
+	}
+
+private:
+
+
+};
+
+
+int main() {
+	Game editor;
+
 }
-

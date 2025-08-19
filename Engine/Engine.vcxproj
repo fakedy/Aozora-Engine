@@ -162,6 +162,7 @@
     <ClInclude Include="Source\Systems\ECS\Components\EditorEntityTag.h" />
     <ClInclude Include="Source\Systems\ECS\Components\LightComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\MeshComponent.h" />
+    <ClInclude Include="Source\Systems\ECS\Components\ModelComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\NameComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\RelationComponent.h" />
     <ClInclude Include="Source\Systems\ECS\Components\RigidBodyComponent.h" />

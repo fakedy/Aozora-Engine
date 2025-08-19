@@ -62,10 +62,14 @@ void Workspace::draw(const Aozora::Context& context)
 		case(Aozora::Resources::AssetType::Scene):
 			if (ImGui::ImageButton(asset.name.c_str(), m_image_texture, ImVec2(thumbnailSize, thumbnailSize))) {
 				context.commandQueue->queueAction([&]() {
-					Aozora::Scene scene = context.assetManager->loadSceneFromDisk(asset.hash);
-					context.sceneManager->loadScene(scene);
-					context.resourcemanager->m_containerMap[scene.hash] = Aozora::ResourceManager::ResourceContainer();
-					context.sceneRenderer->updatePrimaryScene(0); // argument doesnt matter atm
+					// make sure we dont load the scene we are already on
+					if (context.sceneManager->getCurrentActiveScene()->hash != asset.hash) {
+						Aozora::Scene scene = context.assetManager->loadSceneFromDisk(asset.hash);
+						// doing this if we load the same scene as the existing one is dumb
+						context.resourcemanager->m_containerMap[scene.hash] = Aozora::ResourceManager::ResourceContainer();
+						context.sceneManager->loadScene(scene);
+						context.sceneRenderer->updatePrimaryScene(0); // argument doesnt matter atm
+					}
 					});
 			}
 			break;

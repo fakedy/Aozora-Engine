@@ -59,7 +59,7 @@ namespace Aozora::Resources {
 	}
 
 
-	Asset& AssetManager::getAsset(uint32_t ID)
+	Asset& AssetManager::getAsset(uint64_t ID)
 	{
 		if (m_assets.find(ID) != m_assets.end()) {
 			return m_assets[ID];
@@ -93,6 +93,7 @@ namespace Aozora::Resources {
 				cereal::BinaryOutputArchive archive(os);
 				archive(iModel.model);
 
+				model.hash = asset.hash;
 				m_importRegistry[(path).c_str()] = asset.hash;
 				m_assets[asset.hash] = asset;
 			}
@@ -163,10 +164,7 @@ namespace Aozora::Resources {
 
 		//Log::error("Invalid extension or file");
 
-		// update the manifest
-		std::ofstream os(m_workingDirectory + "manifest.manifest", std::ios::binary);
-		cereal::BinaryOutputArchive archive(os);
-		archive(m_importRegistry);
+		saveManifest();
 
 	}
 
@@ -174,6 +172,7 @@ namespace Aozora::Resources {
 	{
 		Log::info(std::format("Loading model: {} from disk", hash));
 		Model model; // parse the file with the hash
+		model.hash = hash;
 
 		std::ifstream os(m_workingDirectory + std::to_string(hash) +".model", std::ios::binary);
 		cereal::BinaryInputArchive archive(os);
@@ -247,18 +246,29 @@ namespace Aozora::Resources {
 			asset.icon = 0;
 			asset.name = scene.m_sceneName;
 			asset.hidden = false;
-			asset.hash = getUniqueID();
-			scene.hash = asset.hash;
+			asset.hash = scene.hash;
 			m_assets[asset.hash] = asset;
 
 		}
-		scene.takeSnapshot();
-		std::ofstream os(m_workingDirectory + std::to_string(scene.hash) + ".scene", std::ios::binary);
-		cereal::BinaryOutputArchive archive(os);
-		archive(scene);
+		{
+			scene.takeSnapshot();
+			std::ofstream os(m_workingDirectory + std::to_string(scene.hash) + ".scene", std::ios::binary);
+			cereal::BinaryOutputArchive archive(os);
+			archive(scene);
+		}
 
 		m_importRegistry[scene.m_sceneName] = scene.hash;
+
+		saveManifest();
 		return scene.hash;
+	}
+
+	void AssetManager::saveManifest()
+	{
+		// update the manifest
+		std::ofstream os(m_workingDirectory + "manifest.manifest", std::ios::binary);
+		cereal::BinaryOutputArchive archive(os);
+		archive(m_importRegistry);
 	}
 
 	void AssetManager::saveProject()
@@ -267,6 +277,7 @@ namespace Aozora::Resources {
 		std::ofstream os(m_workingDirectory + "project.project", std::ios::binary);
 		cereal::BinaryOutputArchive archive(os);
 		archive(m_assets);
+		saveManifest();
 	}
 
 	void AssetManager::loadProject()
@@ -301,15 +312,8 @@ namespace Aozora::Resources {
 		"Resources/cubemap/nz.hdr"
 		};
 
-		// this is unironically so bad design
 		Texture cubeMapTexture = m_textureLoader.loadCubemap(paths);
-
-		// confusing situation
-		//Texture irradienceMapTexture = m_textureLoader.loadCubemap(paths);
-
-		// temp
 		skybox.cubeMapTexture = cubeMapTexture.id;
-		skybox.irradienceMapTexture = cubeMapTexture.id;
 
 		{
 
@@ -324,10 +328,7 @@ namespace Aozora::Resources {
 			archive(cubeMapTexture);
 		}
 
-		// update the manifest
-		std::ofstream os(m_workingDirectory + "manifest.manifest", std::ios::binary);
-		cereal::BinaryOutputArchive archive(os);
-		archive(m_importRegistry);
+		saveManifest();
 
 		return skybox.id;
 	}

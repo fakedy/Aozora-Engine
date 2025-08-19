@@ -58,7 +58,8 @@ namespace Aozora {
 			.get<RigidBodyComponent>(output)
 			.get<ScriptComponent>(output)
 			.get<TagComponent>(output)
-			.get<SkyboxComponent>(output);
+			.get<SkyboxComponent>(output)
+			.get<ModelComponent>(output);
 		m_snapshotData = data.str();
 	}
 
@@ -86,7 +87,8 @@ namespace Aozora {
 			.get<RigidBodyComponent>(input)
 			.get<ScriptComponent>(input)
 			.get<TagComponent>(input)
-			.get<SkyboxComponent>(input).orphans();
+			.get<SkyboxComponent>(input)
+			.get<ModelComponent>(input).orphans();
 		
 
 		data.clear();
@@ -137,7 +139,9 @@ namespace Aozora {
 		m_registry->emplace<Aozora::NameComponent>(entity).name = node.name.c_str();
 		m_registry->emplace<Aozora::TagComponent>(entity);
 		m_registry->emplace<Aozora::TransformComponent>(entity).baseModel = node.transform;
-		
+		if (parent == entt::null) {
+			m_registry->emplace<Aozora::ModelComponent>(entity).ID = model.hash;
+		}
 		if (node.hasMesh) {
 			// add a mesh component to the entity with the id of the mesh
 			auto& meshComp = m_registry->emplace<Aozora::MeshComponent>(entity);

@@ -12,6 +12,8 @@
 #include <Systems/Renderers/OpenGL.h>
 #include <Systems/Renderers/IrenderAPI.h>
 
+#include <cereal/cereal.hpp>
+#include <cereal/types/unordered_map.hpp>
 namespace Aozora {
 
 	class ResourceManager {
@@ -62,8 +64,24 @@ namespace Aozora {
 		Resources::AssetManager& m_assetManager;
 		IrenderAPI& m_renderAPI;
 
+		template<class Archive>
+		void serialize(Archive& archive) {
+			archive(CEREAL_NVP(m_containerMap));
+		}
+
 	private:
 
 
 	};
+
+	template<class Archive>
+	void serialize(Archive& archive, ResourceManager::ResourceContainer& container) {
+		archive(CEREAL_NVP(container.m_loadedTextures),
+			CEREAL_NVP(container.m_loadedMeshes),
+			CEREAL_NVP(container.m_loadedmaterials),
+			CEREAL_NVP(container.m_loadedModels),
+			CEREAL_NVP(container.m_loadedSkyboxes),
+			CEREAL_NVP(container.m_nextMeshID),
+			CEREAL_NVP(container.m_nextMaterialID));
+	}
 }

@@ -45,7 +45,8 @@ namespace Aozora::Resources {
 
 		bool createProject(std::string name);
 
-		Asset& getAsset(uint32_t ID);
+
+		Asset& getAsset(uint64_t ID);
 
 		void loadAsset(const std::string& path);
 
@@ -56,6 +57,8 @@ namespace Aozora::Resources {
 		Skybox loadSkyboxFromDisk(uint64_t hash);
 		Scene loadSceneFromDisk(uint64_t hash);
 		uint64_t saveSceneToDisk(Scene& scene);
+
+		void saveManifest();
 		void saveProject();
 		void loadProject();
 

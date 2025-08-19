@@ -12,9 +12,8 @@ project "Game"
       "Source",
 
 	  -- Include Engine
-	  "../Aozora Engine/Source",
-	  "../Aozora Engine/Vendor/include",
-	  "../Aozora Engine/Vendor/imgui/"
+	  "../Engine/Source",
+	  "../Engine/Vendor/include",
    }
 
    links

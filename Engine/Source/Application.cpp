@@ -23,10 +23,10 @@ namespace Aozora {
 		m_window = Window::create(props);
 		m_commandQueue = std::make_unique<CommandQueue>();
 		m_renderAPI = std::unique_ptr<IrenderAPI>(IrenderAPI::create());
-		m_sceneManager = std::make_unique<SceneManager>();
-		m_sceneRenderer = std::make_unique<Graphics::SceneRenderer>(m_renderAPI.get(), *m_sceneManager.get());
 		m_assetManager = std::make_unique<Resources::AssetManager>();
 		m_resourceManager = std::make_unique<ResourceManager>(*m_assetManager.get(), *m_renderAPI.get());
+		m_sceneManager = std::make_unique<SceneManager>(*m_resourceManager.get());
+		m_sceneRenderer = std::make_unique<Graphics::SceneRenderer>(m_renderAPI.get(), *m_sceneManager.get());
 		m_projectManager = std::make_unique<ProjectManager>(*m_sceneManager.get());
 		
 		
@@ -85,9 +85,12 @@ namespace Aozora {
 		// create the project object (for future settings?)
 		m_projectManager->createProject("MyProject");
 
-		uint32_t sceneID = m_sceneManager->createScene();
+		uint64_t sceneID = m_sceneManager->createScene();
 		m_resourceManager->m_containerMap[sceneID] = ResourceManager::ResourceContainer();
 		Scene* scene = m_sceneManager->getScene(sceneID);
+
+
+
 		// creating the editor camera
 		// will be invisible to the scene graph
 		Aozora::CameraComponent* cameraComponent;
@@ -111,10 +114,13 @@ namespace Aozora {
 		registry.emplace_or_replace<SkyboxComponent>(skyboxEntity).id = skyboxID;
 
 		
-		m_sceneRenderer->updatePrimaryScene(scene->hash);
+		m_sceneRenderer->updatePrimaryScene(sceneID);
 
 	}
 
+	void Application::loadProject() {
+		m_assetManager->loadProject();
+	}
 	void Application::saveProject()
 	{
 	}

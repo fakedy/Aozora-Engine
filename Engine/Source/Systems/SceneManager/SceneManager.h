@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <Systems/Scene/Scene.h>
 #include <memory>
+#include <Systems/ResourceManager/ResourceManager.h>
 
 /*
 * The role of the scenemanager is to hold active scenes
@@ -15,7 +16,7 @@ namespace Aozora {
 	class SceneManager {
 	public:
 
-		SceneManager() {
+		SceneManager(ResourceManager& resourceManager) : m_resourceManager(resourceManager) {
 
 		}
 
@@ -37,6 +38,7 @@ namespace Aozora {
 		int nextSceneID{ 0 };
 
 		Scene* m_activeScene = nullptr;
+		ResourceManager& m_resourceManager;
 
 
 

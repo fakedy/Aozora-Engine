@@ -105,6 +105,9 @@
     <ClInclude Include="Source\Systems\ECS\Components\MeshComponent.h">
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\ECS\Components\ModelComponent.h">
+      <Filter>Source\Systems\ECS\Components</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\ECS\Components\NameComponent.h">
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>

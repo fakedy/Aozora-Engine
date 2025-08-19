@@ -1,19 +1,23 @@
 #include "SceneManager.h"
 #include <Systems/Logging/Logger.h>
-
+#include <random>
 namespace Aozora {
 
 	uint64_t SceneManager::createScene()
 	{
-		// scene id 0 should be the base scene for the project
-		m_scenes[nextSceneID] = std::make_unique<Scene>();
 
+		std::random_device rd;
+		std::mt19937_64 gen(rd());
+		std::uniform_int_distribution<uint64_t> dis;
+
+		uint64_t genID = dis(gen);
+		m_scenes[genID] = std::make_unique<Scene>();
+		m_scenes[genID]->hash = genID;
 		// temp stuff
-		if (nextSceneID == 0) {
-			m_activeScene = getScene(0);
+		if (m_scenes.size() == 1) {
+			m_activeScene = getScene(genID);
 		}
-		nextSceneID++;
-		return nextSceneID - 1; // lol
+		return genID; // lol
 	}
 	void SceneManager::deleteScene(uint64_t id)
 	{
@@ -53,6 +57,20 @@ namespace Aozora {
 		m_scenes[scene.hash]->loadSnapShot();
 		deleteScene(m_activeScene->hash);
 		m_activeScene = m_scenes[scene.hash].get();
+
+		auto view = scene.m_registry->view<ModelComponent>();
+		for (auto& entity : view) {
+			auto& model = view.get<ModelComponent>(entity);
+			m_resourceManager.loadModel(model.ID, scene.hash);
+		}
+
+		// skyboxes?
+		auto viewSkyboxes = scene.m_registry->view<SkyboxComponent>();
+		for (auto& entity : viewSkyboxes) {
+			auto& skybox = viewSkyboxes.get<SkyboxComponent>(entity);
+			m_resourceManager.loadSkybox(skybox.id, scene.hash);
+		}
+
 	}
 	
 	void SceneManager::clearScenes()

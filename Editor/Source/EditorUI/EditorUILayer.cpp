@@ -46,6 +46,9 @@ void EditorUILayer::onUpdate(const Aozora::Context& context){
 				}
 				ImGui::EndMenu();
 			}
+
+			if (ImGui::MenuItem("Build")) {
+			}
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Edit")) {

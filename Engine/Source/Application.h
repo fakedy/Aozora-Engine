@@ -69,6 +69,7 @@ namespace Aozora {
 
 		
 		void createProject();
+		void loadProject();
 
 
 		std::unique_ptr<IrenderAPI> m_renderAPI;

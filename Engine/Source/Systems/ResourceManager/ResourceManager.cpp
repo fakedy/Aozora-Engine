@@ -166,8 +166,10 @@ namespace Aozora {
 
     uint64_t ResourceManager::loadMaterial(uint64_t hash, uint64_t sceneID)
     {
-        if (!materialLoaded(hash, sceneID)) {
-            m_containerMap[sceneID].m_loadedmaterials[hash] = m_assetManager.loadMaterialFromDisk(hash);
+        if (hash != 0) {
+            if (!materialLoaded(hash, sceneID)) {
+                m_containerMap[sceneID].m_loadedmaterials[hash] = m_assetManager.loadMaterialFromDisk(hash);
+            }
         }
         return hash;
     }
@@ -268,13 +270,14 @@ namespace Aozora {
 
     uint64_t ResourceManager::loadSkybox(uint64_t hash, uint64_t sceneID)
     {
-            // yes its confusing, yes its temporary
+            // yes its confusing, yes its temporary, said the guy who now dont remember what is confusing about this
+            // must be because of how messy this is to read
             Skybox skybox = m_assetManager.loadSkyboxFromDisk(hash);
             loadCubemap(skybox.cubeMapTexture, sceneID);
 
             skybox.irradienceMapTexture = createEmptyCubeMap(32, 32, sceneID);
             m_renderAPI.bakeCubemapIrradiance(m_containerMap[sceneID].m_loadedTextures[skybox.cubeMapTexture].gpuID,
-                m_containerMap[sceneID].m_loadedTextures[skybox.irradienceMapTexture].gpuID);
+            m_containerMap[sceneID].m_loadedTextures[skybox.irradienceMapTexture].gpuID);
 
             m_containerMap[sceneID].m_loadedSkyboxes[skybox.id] = skybox;
             return skybox.id;
