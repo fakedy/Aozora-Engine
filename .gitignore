@@ -361,6 +361,21 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/Editor/Resources
 /Binaries
 /Editor/Projects/MyProject/Assets
+/Editor/Resources/concrete
+/Editor/Resources/thing
+/Editor/Resources/survival-guitar-backpack
+/Editor/Resources/sponza2
+/Editor/Resources/sphere
+/Editor/Resources/sibenik
+/Editor/Resources/NieRReincarnation_Chr_2B
+/Editor/Resources/mummy
+/Editor/Resources/main_sponza
+/Editor/Resources/living_room
+/Editor/Resources/gpmesh
+/Editor/Resources/DamagedHelmet
+/Editor/Resources/conference
+/Editor/Resources/cone
+/Editor/Resources/clank
+/Editor/Resources/bedroom
