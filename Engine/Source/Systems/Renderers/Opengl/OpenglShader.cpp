@@ -46,7 +46,7 @@ Aozora::OpenglShader::OpenglShader(const char* vertexPath, const char* fragmentP
 
 	// compile shaders
 	glCompileShader(vertexShader);
-
+	m_attachedShaders.push_back(vertexShader);
 	int success;
 	char info[512];
 
@@ -58,6 +58,7 @@ Aozora::OpenglShader::OpenglShader(const char* vertexPath, const char* fragmentP
 	}
 
 	glCompileShader(fragmentShader);
+	m_attachedShaders.push_back(fragmentShader);
 
 	// error checking
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
@@ -165,6 +166,12 @@ void Aozora::OpenglShader::setVec4fv(const std::string& varName, const glm::vec4
 
 void Aozora::OpenglShader::recompile()
 {
+	
+	// detach old shaders
+	for (const uint32_t& shaderID : m_attachedShaders) {
+		glDetachShader(ID, shaderID);
+	}
+	m_attachedShaders.clear();
 
 	std::ifstream vertexFile;
 	std::ifstream fragmentFile;
@@ -201,6 +208,9 @@ void Aozora::OpenglShader::recompile()
 	// create our shaders
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	m_attachedShaders.push_back(vertexShader);
+	m_attachedShaders.push_back(fragmentShader);
+
 
 	// specify the shader source
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -230,6 +240,17 @@ void Aozora::OpenglShader::recompile()
 
 	glAttachShader(ID, vertexShader);
 	glAttachShader(ID, fragmentShader);
+
+	glLinkProgram(ID);
+	glGetProgramInfoLog(ID, 512, NULL, info);
+	glGetProgramiv(ID, GL_LINK_STATUS, &success);
+	if (!success) {
+		std::cout << "Shader Linking Fail\n" << info << std::endl;
+	}
+
+
+	uniformLocationMap.clear();
+
 	// delete the shaders as we have the program
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
