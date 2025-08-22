@@ -4,7 +4,12 @@
 #include <GLFW/glfw3.h>
 #include <Application.h>
 #include <Systems/Logging/Logger.h>
-#include <Systems/AssetManager/AssetManager.h>
+#include <cereal/cereal.hpp>
+#include <cereal/archives/json.hpp>
+#include <cereal/archives/binary.hpp>
+#include "..\ResourceManager\ResourceManager.h"
+
+
 
 namespace Aozora {
 	Scene::Scene()
@@ -37,6 +42,7 @@ namespace Aozora {
 	void Scene::takeSnapshot()
 	{
 		// TODO make it exclude the editor camera
+		std::stringstream data;
 		data.str("");
 		data.clear();
 		cereal::BinaryOutputArchive output(data); // what a most vexing parse
@@ -52,18 +58,19 @@ namespace Aozora {
 			.get<RigidBodyComponent>(output)
 			.get<ScriptComponent>(output)
 			.get<TagComponent>(output)
-			.get<SkyboxComponent>(output);
+			.get<SkyboxComponent>(output)
+			.get<ModelComponent>(output);
+		m_snapshotData = data.str();
 	}
 
 	void Scene::loadSnapShot()
 	{
 		// check if we have any data
-		if (data.str().empty()) {
+		if (m_snapshotData.empty()) {
 			return;
 		}
 
-		// reset read position
-		data.seekg(0);
+		std::stringstream data(m_snapshotData);
 
 		cereal::BinaryInputArchive input(data);
 		m_registry->clear();
@@ -80,10 +87,12 @@ namespace Aozora {
 			.get<RigidBodyComponent>(input)
 			.get<ScriptComponent>(input)
 			.get<TagComponent>(input)
-			.get<SkyboxComponent>(input).orphans();
+			.get<SkyboxComponent>(input)
+			.get<ModelComponent>(input).orphans();
 		
 
 		data.clear();
+		m_snapshotData.clear();
 
 	}
 
@@ -109,7 +118,7 @@ namespace Aozora {
 		glm::quat rotation = glm::quat(glm::radians(transform.rot));
 		tempModel = tempModel * glm::mat4_cast(rotation);
 		tempModel = glm::scale(tempModel, transform.scale);
-		tempModel = model * tempModel;
+		tempModel = model * tempModel * transform.baseModel;
 		transform.model = tempModel;
 		
 		const std::vector<entt::entity>& children = getEntityChildren(entity);
@@ -129,15 +138,18 @@ namespace Aozora {
 
 		m_registry->emplace<Aozora::NameComponent>(entity).name = node.name.c_str();
 		m_registry->emplace<Aozora::TagComponent>(entity);
-		m_registry->emplace<Aozora::TransformComponent>(entity);
+		m_registry->emplace<Aozora::TransformComponent>(entity).baseModel = node.transform;
+		if (parent == entt::null) {
+			m_registry->emplace<Aozora::ModelComponent>(entity).ID = model.hash;
+		}
 		if (node.hasMesh) {
 			// add a mesh component to the entity with the id of the mesh
 			auto& meshComp = m_registry->emplace<Aozora::MeshComponent>(entity);
 			meshComp.meshID = node.meshID;
-			meshComp.materialID = resourceManager.m_loadedMeshes.at(node.meshID).materialID;
+			meshComp.materialID = resourceManager.m_containerMap[this->hash].m_loadedMeshes.at(node.meshID).materialID;
 
 			// this is for the deferred rendering buffer, should take a look at this later
-			if (!resourceManager.m_loadedMeshes.at(node.meshID).isBuffered) {
+			if (!resourceManager.m_containerMap[this->hash].m_loadedMeshes.at(node.meshID).isBuffered) {
 				
 				EntityCreatedWithMeshEvent* event = new EntityCreatedWithMeshEvent(entity, node.meshID, this);
 				EventDispatcher::dispatch(event);
@@ -160,12 +172,13 @@ namespace Aozora {
 
 		Log::info(std::format("Instantiating {}", hash));
 
-		resourceManager.loadModel(hash);
-		Model& model = resourceManager.m_loadedModels.at(hash);
+		// load model
+		resourceManager.loadModel(hash, this->hash);
+		// get reference to model
+		Model& model = resourceManager.m_containerMap[this->hash].m_loadedModels.at(hash);
 
 		// could totally cache the entity too so I dont have to do this node work
 		createEntityFromNodes(model, model.allNodes[0], entt::null);
-
 	}
 
 	void Scene::deleteEntity(const entt::entity entity) {

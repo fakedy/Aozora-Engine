@@ -13,10 +13,10 @@ public:
 	// gets called too early
 	Workspace(Aozora::Context& context) : m_context(context){
 
-		m_file_3d_texture = (ImTextureID)context.resourcemanager->loadTexture(context.assetManager->createTexture("Resources/editor/file-3d.png"));
-		m_image_texture = (ImTextureID)context.resourcemanager->loadTexture(context.assetManager->createTexture("Resources/editor/image.png"));
-		m_folder_texture = (ImTextureID)context.resourcemanager->loadTexture(context.assetManager->createTexture("Resources/editor/folder.png"));
-		m_script_texture = (ImTextureID)context.resourcemanager->loadTexture(context.assetManager->createTexture("Resources/editor/folder.png"));
+		m_file_3d_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/file-3d.png"));
+		m_image_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/image.png"));
+		m_folder_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/folder.png"));
+		m_script_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/folder.png"));
 
 		
 	}

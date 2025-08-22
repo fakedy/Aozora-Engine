@@ -6,6 +6,7 @@
 #include "IrenderAPI.h"
 #include <Systems/Events/EventSystem.h>
 #include <Systems/Events/Events.h>
+#include <Systems/SceneManager/SceneManager.h>
 
 namespace Aozora::Graphics {
 
@@ -13,7 +14,7 @@ namespace Aozora::Graphics {
 	class SceneRenderer : public IEventListener{
 	public:
 
-		SceneRenderer(IrenderAPI* api);
+		SceneRenderer(IrenderAPI* api, SceneManager& sceneManager);
 
 
 
@@ -37,9 +38,13 @@ namespace Aozora::Graphics {
 		OpenglShader m_postfxShader{ OpenglShader("Resources/Shaders/v_postfxShader.glsl", "Resources/Shaders/f_postfxShader.glsl") };
 		OpenglShader m_skyboxShader{ OpenglShader("Resources/Shaders/v_cubemap.glsl", "Resources/Shaders/f_cubemap.glsl") };
 
-		void updatePrimaryScene(Scene& scene);
+		void updatePrimaryScene(uint64_t sceneID);
 
 		void onEvent(Event& e) override;
+
+
+	private:
+		SceneManager& m_sceneManager;
 
 	};
 }

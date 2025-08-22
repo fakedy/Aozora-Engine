@@ -7,6 +7,7 @@ namespace Aozora {
 
 	struct TransformComponent {
 		glm::mat4 model = glm::mat4(1.0f); // mat4 storage of the pos/rot/scale
+		glm::mat4 baseModel = glm::mat4(1.0f);
 		glm::vec3 pos = glm::vec3(0.0f);
 		glm::vec3 rot = glm::vec3(0.0f);
 		glm::vec3 scale = glm::vec3(1.0f);
@@ -16,6 +17,7 @@ namespace Aozora {
 		template<class Archive>
 		void serialize(Archive& archive) {
 			archive(CEREAL_NVP(model),
+				CEREAL_NVP(baseModel),
 				CEREAL_NVP(pos),
 				CEREAL_NVP(rot),
 				CEREAL_NVP(scale),

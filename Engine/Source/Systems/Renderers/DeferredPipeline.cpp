@@ -1,6 +1,7 @@
 #include "DeferredPipeline.h"
 #include "Application.h"
 #include <Systems/Input.h>
+#include <Systems/Logging/Logger.h>
 
 namespace Aozora {
 
@@ -83,6 +84,11 @@ namespace Aozora {
 	void DeferredPipeline::execute(IrenderAPI& renderAPI, Scene& scene, entt::entity camera, uint32_t width, uint32_t height)
 	{
 
+		if (Input::getKeyPressed(Input::Key::F6)) {
+			Log::info("Recompiling lighting shader");
+			m_defaultShader.recompile();
+		}
+
 
 		auto MeshTransformEntities = scene.getRegistry().view<const MeshComponent, TransformComponent>(); // register of all mesh components
 		auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
@@ -122,6 +128,8 @@ namespace Aozora {
 
 			m_gBufferShader.setMat4("view", current_camera.getView());
 			m_gBufferShader.setMat4("proj", current_camera.getProjection());
+
+			ResourceManager::ResourceContainer& map = resourceManager.m_containerMap[scene.hash];
 			// assume the EBO/VBO have the exact same order as this loop
 			// it can be wrong and screw things up
 			commands.resize(MeshTransformEntities.size_hint());
@@ -129,10 +137,11 @@ namespace Aozora {
 			for (const auto entity : MeshTransformEntities) {
 				auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
 
-				Mesh::MeshData& data = resourceManager.m_loadedMeshes[meshComponent.meshID].meshData;
+				Mesh::MeshData& data = map.m_loadedMeshes[meshComponent.meshID].meshData;
 				uint64_t verticesAmount = data.vertices.size();
 				uint64_t indicesAmount = data.indices.size();
 
+				// indirect draw command for glMultiDrawElementsIndirect
 				DrawElementsIndirectCommand command;
 				command.count = indicesAmount; 
 				command.instanceCount = 1; // draw 1 instance
@@ -142,26 +151,31 @@ namespace Aozora {
 
 				commands[i] = command;
 				auto& transformComponent = MeshTransformEntities.get<TransformComponent>(entity);
-				ObjectData objectData;
+
+				// data to be uploaded to gpu so we can access variables inside the shaders
+				ObjectData objectData = {}; // set all to 0
 				objectData.model = transformComponent.model;
 
-				uint64_t diffuseTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].diffuseTexture;
-				objectData.diffuseTextureHandle = resourceManager.m_loadedTextures[diffuseTextureID].handle;
 
-				uint64_t emissiveTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].emissiveTexture;
-				objectData.emissiveTextureHandle = resourceManager.m_loadedTextures[emissiveTextureID].handle;
+				Material& mat = map.m_loadedmaterials[meshComponent.materialID];
 
-				uint64_t aoTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].aoTexture;
-				objectData.aoTextureHandle = resourceManager.m_loadedTextures[aoTextureID].handle;
+				uint64_t diffuseTextureID = mat.diffuseTexture;
+				objectData.diffuseTextureHandle = map.m_loadedTextures[diffuseTextureID].handle;
 
-				uint64_t metallicTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].metallicTexture;
-				objectData.metallicTextureHandle = resourceManager.m_loadedTextures[metallicTextureID].handle;
+				uint64_t emissiveTextureID = mat.emissiveTexture;
+				objectData.emissiveTextureHandle = map.m_loadedTextures[emissiveTextureID].handle;
 
-				uint64_t roughnessTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].roughnessTexture;
-				objectData.roughnessTextureHandle = resourceManager.m_loadedTextures[roughnessTextureID].handle;
+				uint64_t aoTextureID = mat.aoTexture;
+				objectData.aoTextureHandle = map.m_loadedTextures[aoTextureID].handle;
 
-				uint64_t normalTextureID = resourceManager.m_loadedmaterials[meshComponent.materialID].normalTexture;
-				objectData.normalTextureHandle = resourceManager.m_loadedTextures[normalTextureID].handle;
+				uint64_t metallicTextureID = mat.metallicTexture;
+				objectData.metallicTextureHandle = map.m_loadedTextures[metallicTextureID].handle;
+
+				uint64_t roughnessTextureID = mat.roughnessTexture;
+				objectData.roughnessTextureHandle = map.m_loadedTextures[roughnessTextureID].handle;
+
+				uint64_t normalTextureID = mat.normalTexture;
+				objectData.normalTextureHandle = map.m_loadedTextures[normalTextureID].handle;
 
 				objectDataVector[i] = objectData;
 				firstIndex += indicesAmount;
@@ -228,10 +242,10 @@ namespace Aozora {
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_depthTextureID);
 
 			auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
-			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skyboxes.front()); // hack
-			Skybox& skyboxObject = resourceManager.m_loadedSkyboxes[skyboxComponent.id];
-			Texture& cubeMapTexture = resourceManager.m_loadedTextures[skyboxObject.cubeMapTexture];
-			Texture& irradienceMapTexture = resourceManager.m_loadedTextures[skyboxObject.irradienceMapTexture];
+			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skyboxes.front()); // hack (crash if we dont have a skybox entity)
+			Skybox& skyboxObject = map.m_loadedSkyboxes[skyboxComponent.id];
+			Texture& cubeMapTexture = map.m_loadedTextures[skyboxObject.cubeMapTexture];
+			Texture& irradienceMapTexture = map.m_loadedTextures[skyboxObject.irradienceMapTexture];
 
 			glActiveTexture(GL_TEXTURE6);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, irradienceMapTexture.gpuID);
@@ -275,21 +289,26 @@ namespace Aozora {
 
 	uint32_t DeferredPipeline::getFinalImage()
 	{
-		
-		if (Input::getKeyDown(Input::Key::F1)) {
-			m_outputAttachment = postfxBuffer->m_colorAttachments[0];
+		// for debug
+		if (Input::getKeyPressed(Input::Key::F1)) {
+			m_outputAttachment = postfxBuffer->m_colorAttachments[0]; // postfx
+			Log::info("output image: postfx");
 		}
-		if (Input::getKeyDown(Input::Key::F2)) {
-			m_outputAttachment = renderBuffer->m_colorAttachments[0];
+		if (Input::getKeyPressed(Input::Key::F2)) {
+			m_outputAttachment = renderBuffer->m_colorAttachments[0]; // lighting output
+			Log::info("output image: lighting output");
 		}
-		if (Input::getKeyDown(Input::Key::F3)) {
-			m_outputAttachment = gBuffer->m_colorAttachments[1];
+		if (Input::getKeyPressed(Input::Key::F3)) {
+			m_outputAttachment = gBuffer->m_colorAttachments[2]; // gbuffer color
+			Log::info("output image: gbuffer color");
 		}
-		if (Input::getKeyDown(Input::Key::F4)) {
-			m_outputAttachment = gBuffer->m_colorAttachments[2];
+		if (Input::getKeyPressed(Input::Key::F4)) {
+			m_outputAttachment = gBuffer->m_colorAttachments[1]; // normal
+			Log::info("output image: gbuffer normal");
 		}
-		if (Input::getKeyDown(Input::Key::F5)) {
-			m_outputAttachment = gBuffer->m_colorAttachments[4];
+		if (Input::getKeyPressed(Input::Key::F5)) {
+			m_outputAttachment = gBuffer->m_colorAttachments[4]; // properties
+			Log::info("output image: gbuffer properties");
 		}
 
 		return m_outputAttachment;
@@ -458,7 +477,7 @@ namespace Aozora {
 		uint32_t indexSize = 0;
 		for (const auto entity : MeshTransformEntities) {
 			auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
-			Mesh::MeshData& data = resourceManager.m_loadedMeshes[meshComponent.meshID].meshData;
+			Mesh::MeshData& data = resourceManager.m_containerMap[scene.hash].m_loadedMeshes[meshComponent.meshID].meshData;
 			verticesSize += data.vertices.size() * sizeof(Mesh::Vertex);
 			indexSize += data.indices.size() * sizeof(uint64_t);
 
@@ -478,7 +497,7 @@ namespace Aozora {
 		for (const auto entity : MeshTransformEntities) {
 			auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
 
-			Mesh::MeshData& data = resourceManager.m_loadedMeshes[meshComponent.meshID].meshData;
+			Mesh::MeshData& data = resourceManager.m_containerMap[scene.hash].m_loadedMeshes[meshComponent.meshID].meshData;
 			uint32_t verticesAmount = data.vertices.size();
 			uint32_t indicesAmount = data.indices.size();
 			glBindBuffer(GL_ARRAY_BUFFER, m_VBO);

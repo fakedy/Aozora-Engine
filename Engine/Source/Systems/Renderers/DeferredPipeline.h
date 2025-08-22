@@ -48,7 +48,6 @@ namespace Aozora {
 			glm::vec4 emissive;
 			glm::vec3 normal;
 			float pad1;
-
 			float metallic;
 			float roughness;
 			float ao;

@@ -39,5 +39,7 @@ namespace Aozora::Resources {
 		std::string m_directory;
 		std::unordered_map<std::string, uint64_t>& m_importRegistry;
 		TextureLoader& m_textureLoader;
+
+		glm::mat4 toGLMMat4(aiMatrix4x4& f);
 	};
 }

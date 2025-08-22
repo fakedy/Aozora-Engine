@@ -4,6 +4,7 @@
 #include <cereal/cereal.hpp>
 #include <cereal/types/string.hpp>
 #include <cereal/types/vector.hpp>
+#include <Systems/Serialization/SerializationGLM.h>
 
 namespace Aozora {
 
@@ -14,7 +15,7 @@ namespace Aozora {
 		public:
 			uint32_t parentNode{0};
 			std::vector<uint32_t> childrenNodes{};
-		
+			glm::mat4 transform = glm::mat4(1.0f);
 			uint64_t meshID; // hash
 			bool hasMesh{ false };
 			std::string name{};
@@ -40,7 +41,8 @@ namespace Aozora {
 			CEREAL_NVP(node.childrenNodes),
 			CEREAL_NVP(node.meshID),
 			CEREAL_NVP(node.hasMesh),
-			CEREAL_NVP(node.name));
+			CEREAL_NVP(node.name),
+			CEREAL_NVP(node.transform));
 	}
 
 }

@@ -18,7 +18,10 @@ namespace Aozora::Resources {
         const aiScene* scene = m_importer.ReadFile(file,
             aiProcess_Triangulate |
             aiProcess_FlipUVs |
-            aiProcess_CalcTangentSpace);
+            aiProcess_CalcTangentSpace |
+            aiProcessPreset_TargetRealtime_MaxQuality);
+
+        
 
         if (scene == nullptr) {
             std::cerr << "Error importing file: " << m_importer.GetErrorString() << std::endl;
@@ -37,6 +40,8 @@ namespace Aozora::Resources {
         Model::Node& newNode = model.allNodes[parentIndex];
         newNode.name = node->mName.C_Str();
         
+        glm::mat4 nodeT = toGLMMat4(node->mTransformation);
+        newNode.transform = nodeT;
 
         for (unsigned int i = 0; i < node->mNumMeshes; i++) {
             uint32_t meshIndex = node->mMeshes[i];
@@ -107,14 +112,13 @@ namespace Aozora::Resources {
 
             loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE, Texture::TextureType::Texture2D, iModel);
 
-            if (aimaterial->GetTextureCount(aiTextureType_NORMALS) > 0) {
 
-                loadMaterialTextures(material, aimaterial, aiTextureType_NORMALS, Texture::TextureType::Texture2D, iModel);
-            }
+            loadMaterialTextures(material, aimaterial, aiTextureType_NORMALS, Texture::TextureType::Texture2D, iModel);
+            /* // will crash because its not finished
             else if (aimaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
                 loadMaterialTextures(material, aimaterial, aiTextureType_HEIGHT, Texture::TextureType::Texture2D, iModel);
             }
-
+            */
             loadMaterialTextures(material, aimaterial, aiTextureType_EMISSIVE, Texture::TextureType::Texture2D, iModel);
 
             loadMaterialTextures(material, aimaterial, aiTextureType_AMBIENT_OCCLUSION, Texture::TextureType::Texture2D, iModel);
@@ -169,7 +173,6 @@ namespace Aozora::Resources {
 
 
         }
-
         // fix indices
         for (unsigned int f = 0; f < mesh->mNumFaces; f++) { // for every face in mesh i
 
@@ -258,6 +261,7 @@ namespace Aozora::Resources {
 
             Texture targetTexture = m_textureLoader.loadTexture(str.C_Str(), m_directory, isSrgb);
             *targetID = targetTexture.id;
+
             if (targetTexture.hasData) {
                 targetTexture.type = typeName;
                 targetTexture.path = str.C_Str();
@@ -267,6 +271,17 @@ namespace Aozora::Resources {
 
         }
         
+    }
+
+    glm::mat4 ModelLoader::toGLMMat4(aiMatrix4x4& f)
+    {
+        glm::mat4 tm;
+        tm[0][0] = f.a1; tm[1][0] = f.a2; tm[2][0] = f.a3; tm[3][0] = f.a4;
+        tm[0][1] = f.b1; tm[1][1] = f.b2; tm[2][1] = f.b3; tm[3][1] = f.b4;
+        tm[0][2] = f.c1; tm[1][2] = f.c2; tm[2][2] = f.c3; tm[3][2] = f.c4;
+        tm[0][3] = f.d1; tm[1][3] = f.d2; tm[2][3] = f.d3; tm[3][3] = f.d4;
+        
+        return tm;
     }
 
 

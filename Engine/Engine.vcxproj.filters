@@ -13,6 +13,9 @@
     <Filter Include="Source\Systems\AssetManager">
       <UniqueIdentifier>{07CB6479-73D8-925F-FCBE-8E4A68CB5E16}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Systems\CommandQueue">
+      <UniqueIdentifier>{907ED9B9-FC8B-07A0-8572-038BF17ED356}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Systems\ECS">
       <UniqueIdentifier>{27926AAA-1376-2B00-7CD6-255368D91582}</UniqueIdentifier>
     </Filter>
@@ -84,6 +87,9 @@
     <ClInclude Include="Source\Systems\CameraSystem.h">
       <Filter>Source\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Systems\CommandQueue\CommandQueue.h">
+      <Filter>Source\Systems\CommandQueue</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Systems\ECS\Components\CameraComponent.h">
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
@@ -97,6 +103,9 @@
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\ECS\Components\MeshComponent.h">
+      <Filter>Source\Systems\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Systems\ECS\Components\ModelComponent.h">
       <Filter>Source\Systems\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\Systems\ECS\Components\NameComponent.h">
@@ -235,6 +244,9 @@
     </ClCompile>
     <ClCompile Include="Source\Systems\CameraSystem.cpp">
       <Filter>Source\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Systems\CommandQueue\CommandQueue.cpp">
+      <Filter>Source\Systems\CommandQueue</Filter>
     </ClCompile>
     <ClCompile Include="Source\Systems\EditorCameraSystem.cpp">
       <Filter>Source\Systems</Filter>

@@ -2,14 +2,12 @@
 #include <entt/entt.hpp>
 #include <memory>
 #include "Systems/Renderers/Opengl/OpenglShader.h"
-#include "..\ResourceManager\ResourceManager.h"
-#include <string>
 #include <Systems/ECS/Components/Components.h>
+#include <Systems/Model.h>
 #include <cereal/cereal.hpp>
-#include <cereal/archives/json.hpp>
-#include <cereal/archives/binary.hpp>
-#include <Systems/ECS/Components/Components.h>
-
+#include <cereal/types/vector.hpp>
+#include <cereal/types/string.hpp>
+#include <string>
 
 namespace Aozora {
 
@@ -27,9 +25,11 @@ namespace Aozora {
 		// ECS SYSTEM
 		std::shared_ptr<entt::registry> m_registry;
 
-		std::stringstream data;
+		std::string m_snapshotData;
 
-		const char* m_sceneName{ "New Scene" };
+		uint64_t hash{ 0 };
+
+		std::string m_sceneName{ "New Scene" };
 
 		void update();
 
@@ -54,8 +54,18 @@ namespace Aozora {
 
 		entt::entity& getEntityParent(entt::entity entity);
 
-
 		void makeTransformDirty(entt::entity entity);
+
+		template<class Archive>
+		void serialize(Archive& archive) {
+			archive(CEREAL_NVP(m_gameViewPortX),
+				CEREAL_NVP(m_gameViewPortY),
+				CEREAL_NVP(hash),
+				CEREAL_NVP(m_snapshotData),
+				CEREAL_NVP(m_sceneName));
+		}
+
+
 
 	private:
 
@@ -63,4 +73,6 @@ namespace Aozora {
 
 		
 	};
+
+
 }

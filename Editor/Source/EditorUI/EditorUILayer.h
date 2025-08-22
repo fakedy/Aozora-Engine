@@ -14,7 +14,6 @@
 #include "EditorLayer.h"
 #include "Workspace.h"
 #include <Context.h>
-#include <Systems/AssetManager/AssetManager.h>
 
 class EditorUILayer : public Aozora::Layer {
 public:

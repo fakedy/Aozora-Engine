@@ -16,6 +16,7 @@
 #include <Context.h>
 #include <Systems/Events/Events.h>
 #include <Systems/Events/EventSystem.h>
+#include <Systems/CommandQueue/CommandQueue.h>
 
 namespace Aozora {
 
@@ -66,10 +67,9 @@ namespace Aozora {
 
 		std::unique_ptr<CameraSystem> m_cameraSystem;
 
-		void queueAction(std::function<void()> func);
-		void processActions();
 		
 		void createProject();
+		void loadProject();
 
 
 		std::unique_ptr<IrenderAPI> m_renderAPI;
@@ -80,6 +80,7 @@ namespace Aozora {
 		std::unique_ptr<Graphics::SceneRenderer> m_sceneRenderer;
 		std::unique_ptr<SceneManager> m_sceneManager;
 		std::unique_ptr<ScriptSystem> m_scriptSystem;
+		std::unique_ptr<CommandQueue> m_commandQueue;
 
 		Aozora::Context context;
 	private:
@@ -88,7 +89,6 @@ namespace Aozora {
 		Window* m_window;
 		Window::WindowProps props;
 
-		std::queue<std::function<void()>> m_actionQueue;
 		
 		void saveProject();
 		void onEvent(Event& e);

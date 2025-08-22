@@ -8,6 +8,7 @@
 #include <Systems/Events/Events.h>
 #include <Systems/Project/Project.h>
 #include <Systems/Scene/Scene.h>
+
 class Editor : public Aozora::Application {
 
 public:

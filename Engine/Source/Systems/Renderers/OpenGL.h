@@ -4,7 +4,6 @@
 #include "Opengl/OpenglShader.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "Opengl/OpenglFrameBuffer.h"
-#include <Systems/Mesh.h>
 
 
 namespace Aozora {

@@ -10,6 +10,7 @@
 #include "EditorEntityTag.h"
 #include "LightComponent.h"
 #include "SkyboxComponent.h"
+#include "ModelComponent.h"
 
 // A class that can be imported when one need several components
 // Just a shortcut
