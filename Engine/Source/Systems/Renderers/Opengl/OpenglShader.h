@@ -19,6 +19,8 @@ namespace Aozora {
 		unsigned int shaderProgram;
 		unsigned int fragmentShader;
 
+		std::vector<uint32_t> m_attachedShaders;
+
 		std::string m_vertexPath;
 		std::string m_fragmentPath;
 

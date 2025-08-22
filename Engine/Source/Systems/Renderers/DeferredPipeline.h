@@ -74,6 +74,7 @@ namespace Aozora {
 
 		uint32_t m_outputAttachment{ 0 };
 
+
 	};
 
 
