@@ -5,6 +5,14 @@ A project for learning c++ and game engine development.
 
 <img width="1924" height="1127" alt="image" src="https://github.com/user-attachments/assets/1fe65847-a6a0-403a-8299-dddc2db92a65" />
 
+## Features
+
+* Image based diffuse lighting (specular is not done)
+* Serialization
+* Deffered rendering
+* ECS using ENTT library
+
+
 
 ## Technologies & Libraries Used
 
