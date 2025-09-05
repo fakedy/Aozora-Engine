@@ -7,9 +7,9 @@ A project for learning c++ and game engine development.
 
 ## Features
 
-* Image based diffuse lighting (specular is not done)
+* Image based diffuse lighting (specular is not done yet)
 * Serialization
-* Deffered rendering
+* Deferred rendering
 * ECS using ENTT library
 
 
