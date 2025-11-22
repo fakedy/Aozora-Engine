@@ -67,7 +67,7 @@ namespace Aozora {
 
 
 
-
+	// would be call to setup settings for this to allow customization
 	void DeferredPipeline::resize(uint32_t width, uint32_t height)
 	{
 		gBuffer->updateTexture(width, height);
@@ -85,8 +85,10 @@ namespace Aozora {
 	{
 
 		if (Input::getKeyPressed(Input::Key::F6)) {
-			Log::info("Recompiling lighting shader");
+			Log::info("Recompiling shaders");
+			m_gBufferShader.recompile();
 			m_defaultShader.recompile();
+			m_postfxShader.recompile();
 		}
 
 
@@ -250,6 +252,10 @@ namespace Aozora {
 			glActiveTexture(GL_TEXTURE6);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, irradienceMapTexture.gpuID);
 			m_defaultShader.setInt("irradianceMap", 6);
+
+			glActiveTexture(GL_TEXTURE7);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture.gpuID);
+			m_defaultShader.setInt("skybox", 6);
 
 			glDepthMask(GL_FALSE);
 			renderLights(scene);

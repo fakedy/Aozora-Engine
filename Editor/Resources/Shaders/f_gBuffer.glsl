@@ -1,7 +1,7 @@
 #version 430 core
 
-#extension GL_ARB_bindless_texture : enable      // ADD THIS
-#extension GL_ARB_shader_draw_parameters : enable // Keep this for gl_DrawIDARB
+#extension GL_ARB_bindless_texture : enable      
+#extension GL_ARB_shader_draw_parameters : enable 
 #extension GL_ARB_gpu_shader_int64  : enable
 
 
@@ -76,11 +76,11 @@ void main() {
 	usedMaterial.albedo = mix(data.albedo, diffuseSample, float(data.diffuseTextureHandle != 0));
 
 	// Metallic
-	float metallicSample = texture(sampler2D(data.metallicTextureHandle), textureCoord).r;
+	float metallicSample = texture(sampler2D(data.metallicTextureHandle), textureCoord).b;
 	usedMaterial.metallic = mix(data.metallic, metallicSample, float(data.metallicTextureHandle != 0));
 
 	// Roughness
-	float roughnessSample = texture(sampler2D(data.roughnessTextureHandle), textureCoord).r;
+	float roughnessSample = texture(sampler2D(data.roughnessTextureHandle), textureCoord).g;
 	usedMaterial.roughness = mix(data.roughness, roughnessSample, float(data.roughnessTextureHandle != 0));
 
 	// Ambient Occlusion

@@ -15,6 +15,7 @@ uniform sampler2D gAlbedo;
 uniform sampler2D gEmissive;
 uniform sampler2D gProperties;
 uniform samplerCube irradianceMap;
+uniform samplerCube skybox;
 
 struct Light {
     vec3 position;
@@ -31,22 +32,42 @@ uniform int activeLights;
 
 const float PI = 3.14159265359;
 
+    vec3 fragPos;
+    vec3 normal;
+    vec4 albedo;
+    vec3 emissive; 
+    float metallic;
+    float roughness;
+    float ao;
 
-    // normal distribution function
-float GGXNormalDistribution(float roughness, float NdotH){
 
-    return 0;
-}
 
-    // Fresnel Schlick
-vec3 F(float cosTheta, vec3 F0){
+vec3 calcIndirectLighting(){
 
-    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
-}
+    // diffuse part of indirect lighting
+    vec3 irradiance = texture(irradianceMap, normal).rgb;
+    vec3 diffuse_term = albedo.rgb * irradiance;
 
-float G(){
 
-    return 0;
+    // specular part of indirect lighting
+    vec3 wo = normalize(cameraPos - fragPos);
+    vec3 wi = normalize(reflect(-wo, normal));
+    vec3 wh = normal; // or normalize(wi + wo)
+
+    vec3 R = reflect(-wo, normal);
+    vec3 Li = texture(skybox, R).rgb; // temp, should use a reflectionmap
+
+
+    // if plastic fresnel is 0.04, otherwise mixed by metallic
+    vec3 fresnel = vec3(0.04);
+    fresnel = mix(fresnel, albedo.rgb, metallic);
+
+
+    vec3 F = fresnel + (1.0 - fresnel) * pow(1.0 - dot(wo,wh), 5.0);
+
+    vec3 dialectric_term = F*Li + (1 - F) * diffuse_term;
+    vec3 metal_term = F * Li;
+    return metallic * metal_term + (1.0 - metallic) * dialectric_term;
 }
 
 
@@ -54,40 +75,22 @@ float G(){
 
 void main(){
 
-    vec3 fragPos = texture(gPosition, textureCoord).rgb;
-    vec3 normal = normalize(texture(gNormal, textureCoord).rgb);
-    vec4 albedo = texture(gAlbedo, textureCoord);
-    vec3 emissive = texture(gEmissive, textureCoord).rgb;
-    float metallic = texture(gProperties, textureCoord).r;
-    float roughness = texture(gProperties, textureCoord).g;
-    float ao = texture(gProperties, textureCoord).b;
+    fragPos = texture(gPosition, textureCoord).rgb;
+    normal = normalize(texture(gNormal, textureCoord).rgb);
+    albedo = texture(gAlbedo, textureCoord);
+    emissive = texture(gEmissive, textureCoord).rgb;
+    metallic = texture(gProperties, textureCoord).r;
+    roughness = texture(gProperties, textureCoord).g;
+    ao = texture(gProperties, textureCoord).b;
 
     if(albedo.a < 0.05f) {
         discard;
     }
 
-    vec3 viewV = normalize(cameraPos - fragPos);
-    vec3 F0 = mix(vec3(0.04), albedo.rgb, metallic);
 
-    vec3 diffuse = albedo.rgb;
-    vec3 specular = vec3(0.0,0.0,1.0);
+    vec3 light = calcIndirectLighting() + emissive;
+    
+    vec3 testcolor = texture(skybox, normal).rgb;
 
-    // implement light contributions
-    vec3 Lo = vec3(0.0);
-    for(int i = 0; i < activeLights; ++i){
-
-        
-    }
-
-    vec3 F_ambient = F(max(dot(normal, viewV), 0.0), F0);
-    vec3 kS_ambient = F_ambient;
-    vec3 kD_ambient = (vec3(1.0) - kS_ambient) * (1.0 - metallic);
-
-    // ambient light
-    vec3 irradiance = texture(irradianceMap, normal).rgb;
-    vec3 diffuse_ambient = irradiance * albedo.rgb;
-    vec3 finalAmbient = diffuse_ambient * kD_ambient;
-
-    vec3 color =  Lo + emissive + diffuse_ambient;
-    finalColor = vec4(color, albedo.a);
+    finalColor = vec4(light, albedo.a);
 }
