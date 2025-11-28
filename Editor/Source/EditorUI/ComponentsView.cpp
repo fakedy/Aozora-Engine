@@ -88,19 +88,11 @@ void ComponentsView::draw(const Aozora::Context& context) {
 				// not sure this is correct but lets see
 				// I need to check how i actually did my refCount
 
-				// if we dont have any textures
-				if (context.resourcemanager->getMaterial(meshComp.materialID, sceneID).diffuseTexture == false) {
-					ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.05f);
-				}
-				if (context.resourcemanager->getMaterial(meshComp.materialID, sceneID).emissiveTexture == false) {
-					ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.05f);
-				}
-				if (context.resourcemanager->getMaterial(meshComp.materialID, sceneID).roughnessTexture == false) {
-					ImGui::DragFloat("Roughness", &mat.roughness, 0.05f, 0.0f, 1.0f);
-				}
-				if (context.resourcemanager->getMaterial(meshComp.materialID, sceneID).metallicTexture == false) {
-					ImGui::DragFloat("Metallic", &mat.metallic, 0.05f, 0.0f, 1.0f);
-				}
+				ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.02f, 0.0f, 1.0f);
+				ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.02f, 0.0f, 1.0f);
+				ImGui::DragFloat("Roughness", &mat.roughness, 0.02f, 0.0f, 1.0f);
+				ImGui::DragFloat("Metallic", &mat.metallic, 0.02f, 0.0f, 1.0f);
+
 			}
 		}
 

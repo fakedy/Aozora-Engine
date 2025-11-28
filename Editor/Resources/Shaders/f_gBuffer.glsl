@@ -72,24 +72,40 @@ void main() {
 
 	// if we have a diffusetexture it will return true and then we take the float of that value and it returns 1
 	// Albedo
-	vec4 diffuseSample = texture(sampler2D(data.diffuseTextureHandle), textureCoord).rgba;
-	usedMaterial.albedo = mix(data.albedo, diffuseSample, float(data.diffuseTextureHandle != 0));
+	vec4 diffuseSample = vec4(1.0);
+	if(data.diffuseTextureHandle != 0){
+		diffuseSample = texture(sampler2D(data.diffuseTextureHandle), textureCoord).rgba;
+	}
+	usedMaterial.albedo = diffuseSample * data.albedo;
 
 	// Metallic
-	float metallicSample = texture(sampler2D(data.metallicTextureHandle), textureCoord).b;
-	usedMaterial.metallic = mix(data.metallic, metallicSample, float(data.metallicTextureHandle != 0));
+	float metallicSample = 1.0;
+	if(data.metallicTextureHandle != 0){
+		metallicSample = texture(sampler2D(data.metallicTextureHandle), textureCoord).b;
+	}
+
+	usedMaterial.metallic = metallicSample * data.metallic;
 
 	// Roughness
-	float roughnessSample = texture(sampler2D(data.roughnessTextureHandle), textureCoord).g;
-	usedMaterial.roughness = mix(data.roughness, roughnessSample, float(data.roughnessTextureHandle != 0));
+	float roughnessSample = 1.0;
+	if(data.roughnessTextureHandle != 0){
+		roughnessSample = texture(sampler2D(data.roughnessTextureHandle), textureCoord).g;
+	}
+	usedMaterial.roughness = roughnessSample * data.roughness;
 
 	// Ambient Occlusion
-	float aoSample = texture(sampler2D(data.aoTextureHandle), textureCoord).r;
-	usedMaterial.ao = mix(data.ao, aoSample, float(data.aoTextureHandle != 0));
+	float aoSample = 1.0;
+	if(data.aoTextureHandle != 0){	
+		aoSample = texture(sampler2D(data.aoTextureHandle), textureCoord).r;
+	}
+	usedMaterial.ao = aoSample * data.ao;
 
 	// Emissive
-	vec4 emissiveSample = texture(sampler2D(data.emissiveTextureHandle), textureCoord).rgba;
-	usedMaterial.emissive = mix(data.emissive, emissiveSample, float(data.emissiveTextureHandle != 0));
+	vec4 emissiveSample = vec4(1.0);
+	if(data.emissiveTextureHandle != 0){
+		 emissiveSample = texture(sampler2D(data.emissiveTextureHandle), textureCoord).rgba;
+	}
+	usedMaterial.emissive = emissiveSample * data.emissive;
 
 	// Normal
 	vec3 vertexNormalTangent = vec3(0.0, 0.0, 1.0);

@@ -28,12 +28,12 @@ namespace Aozora {
 		std::vector<uint64_t> textureIDs;
 		
 		// Default values incase we render without texture
-		glm::fvec4 baseColor{ glm::fvec4(0.3f, 1.0f, 1.0f , 1.0f) };
-		float metallic{ 0.0f };
-		float specular{ 0.0f };
-		float roughness{ 0.0f };
+		glm::fvec4 baseColor{ glm::fvec4(1.0f, 1.0f, 1.0f , 1.0f) };
+		float metallic{ 1.0f };
+		float specular{ 1.0f };
+		float roughness{ 1.0f };
 		float ao{ 1.0f };
-		glm::fvec4 emissive{ glm::fvec4(0.0f,0.0f,0.0f, 0.0f) };
+		glm::fvec4 emissive{ glm::fvec4(1.0f, 1.0f, 1.0f, 1.0f) };
 
 		uint64_t ID;
 		std::string name;

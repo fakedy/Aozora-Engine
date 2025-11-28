@@ -55,7 +55,9 @@ vec3 calcIndirectLighting(){
     vec3 wh = normal; // or normalize(wi + wo)
 
     vec3 R = reflect(-wo, normal);
-    vec3 Li = texture(skybox, R).rgb; // temp, should use a reflectionmap
+    // quick hack for testing
+    float lod = roughness * 5.0; // Assume 5 mip levels
+    vec3 Li = textureLod(skybox, R, lod).rgb;
 
 
     // if plastic fresnel is 0.04, otherwise mixed by metallic
