@@ -138,7 +138,6 @@ namespace Aozora {
 			objectDataVector.resize(MeshTransformEntities.size_hint());
 			for (const auto entity : MeshTransformEntities) {
 				auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
-
 				Mesh::MeshData& data = map.m_loadedMeshes[meshComponent.meshID].meshData;
 				uint64_t verticesAmount = data.vertices.size();
 				uint64_t indicesAmount = data.indices.size();
@@ -163,18 +162,23 @@ namespace Aozora {
 
 				uint64_t diffuseTextureID = mat.diffuseTexture;
 				objectData.diffuseTextureHandle = map.m_loadedTextures[diffuseTextureID].handle;
+				objectData.albedo = mat.baseColor;
 
 				uint64_t emissiveTextureID = mat.emissiveTexture;
 				objectData.emissiveTextureHandle = map.m_loadedTextures[emissiveTextureID].handle;
+				objectData.emissive = mat.emissive;
 
 				uint64_t aoTextureID = mat.aoTexture;
 				objectData.aoTextureHandle = map.m_loadedTextures[aoTextureID].handle;
+				objectData.ao = mat.ao;
 
 				uint64_t metallicTextureID = mat.metallicTexture;
 				objectData.metallicTextureHandle = map.m_loadedTextures[metallicTextureID].handle;
+				objectData.metallic = mat.metallic;
 
 				uint64_t roughnessTextureID = mat.roughnessTexture;
 				objectData.roughnessTextureHandle = map.m_loadedTextures[roughnessTextureID].handle;
+				objectData.roughness = mat.roughness;
 
 				uint64_t normalTextureID = mat.normalTexture;
 				objectData.normalTextureHandle = map.m_loadedTextures[normalTextureID].handle;

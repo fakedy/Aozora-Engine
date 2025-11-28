@@ -311,6 +311,7 @@ namespace Aozora {
 
     Material& ResourceManager::getMaterial(uint64_t id, uint64_t sceneID)
     {
+
         return m_containerMap[sceneID].m_loadedmaterials[id];
     }
     

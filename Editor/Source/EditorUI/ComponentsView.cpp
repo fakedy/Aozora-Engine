@@ -79,19 +79,27 @@ void ComponentsView::draw(const Aozora::Context& context) {
 			if (ImGui::CollapsingHeader("MeshComponent", ImGuiTreeNodeFlags_DefaultOpen)) {
 
 				auto& meshComp = registry.get<Aozora::MeshComponent>(m_selectedEntity);
-				ImGui::Text("Mesh ID: %i", meshComp.meshID);
+				ImGui::Text("Mesh ID: %llX", meshComp.meshID);
 
 
 				Aozora::Material& mat = context.resourcemanager->getMaterial(meshComp.materialID, sceneID);
 				ImGui::Text("Material name: %s", mat.name);
-				ImGui::Text("Material ID: %i", meshComp.materialID);
+				ImGui::Text("Material ID: %llX", meshComp.materialID);
 				// not sure this is correct but lets see
 				// I need to check how i actually did my refCount
-				if (context.resourcemanager->getMaterial(meshComp.materialID, sceneID).diffuseTexture == 0) {
+
+				// if we dont have any textures
+				if (context.resourcemanager->getMaterial(meshComp.materialID, sceneID).diffuseTexture == false) {
 					ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.05f);
 				}
-				if (context.resourcemanager->getMaterial(meshComp.materialID, sceneID).emissiveTexture == 0) {
+				if (context.resourcemanager->getMaterial(meshComp.materialID, sceneID).emissiveTexture == false) {
 					ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.05f);
+				}
+				if (context.resourcemanager->getMaterial(meshComp.materialID, sceneID).roughnessTexture == false) {
+					ImGui::DragFloat("Roughness", &mat.roughness, 0.05f, 0.0f, 1.0f);
+				}
+				if (context.resourcemanager->getMaterial(meshComp.materialID, sceneID).metallicTexture == false) {
+					ImGui::DragFloat("Metallic", &mat.metallic, 0.05f, 0.0f, 1.0f);
 				}
 			}
 		}
