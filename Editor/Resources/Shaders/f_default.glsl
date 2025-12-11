@@ -9,13 +9,13 @@ in vec2 textureCoord;
 
 // --- UNIFORMS & STRUCTS ---
 uniform vec3 cameraPos;
-uniform sampler2D gPosition;
-uniform sampler2D gNormal;
-uniform sampler2D gAlbedo;
-uniform sampler2D gEmissive;
-uniform sampler2D gProperties;
-uniform samplerCube irradianceMap;
-uniform samplerCube skybox;
+layout(binding = 0) uniform sampler2D gPosition;
+layout(binding = 1) uniform sampler2D gNormal;
+layout(binding = 2) uniform sampler2D gAlbedo;
+layout(binding = 3) uniform sampler2D gEmissive;
+layout(binding = 4) uniform sampler2D gProperties;
+layout(binding = 6) uniform samplerCube irradianceMap;
+layout(binding = 7) uniform samplerCube skybox;
 
 struct Light {
     vec3 position;
@@ -78,12 +78,12 @@ vec3 calcIndirectLighting(){
 void main(){
 
     fragPos = texture(gPosition, textureCoord).rgb;
-    normal = normalize(texture(gNormal, textureCoord).rgb);
+    normal = normalize(texture(gNormal, textureCoord).rgb * 2.0 - 1.0);
     albedo = texture(gAlbedo, textureCoord);
     emissive = texture(gEmissive, textureCoord).rgb;
-    metallic = texture(gProperties, textureCoord).r;
+    metallic = texture(gProperties, textureCoord).b;
     roughness = texture(gProperties, textureCoord).g;
-    ao = texture(gProperties, textureCoord).b;
+    ao = texture(gProperties, textureCoord).r;
 
     if(albedo.a < 0.05f) {
         discard;

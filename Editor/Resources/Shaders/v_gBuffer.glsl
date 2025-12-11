@@ -17,6 +17,8 @@ out vec3 fragPos;
 out mat3 TBN;
 flat out uint drawID;
 
+out vec3 testNormal;
+
 
 uniform mat4 view;
 uniform mat4 proj;
@@ -32,10 +34,11 @@ struct ObjectData {
 	uint64_t  normalTextureHandle;
 	vec4 albedo;
 	vec4 emissive;
-	vec3 normal;
+	vec4 normal;
 	float metallic;
 	float roughness;
 	float ao;
+	float pad2;
 };
 
 layout(std430, binding = 4) buffer ObjectBuffer {
@@ -51,13 +54,14 @@ void main() {
 	textureCoord = aTextureCoord;
 	fragPos = vec3(data.model * vec4(aPos, 1.0));
 
-	// temp
+
 	mat3 normalMatrix = mat3(transpose(inverse(data.model)));
 	vec3 N = normalize(normalMatrix * aNormal);
     vec3 T = normalize(normalMatrix * aTangent);
     T = normalize(T - dot(T, N) * N); 
     vec3 B = cross(N, T);
     TBN = mat3(T, B, N);
+	testNormal = aNormal;
 	gl_Position = proj * view * vec4(fragPos, 1.0);
 
 }

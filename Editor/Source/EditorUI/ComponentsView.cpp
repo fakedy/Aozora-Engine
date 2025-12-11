@@ -88,10 +88,10 @@ void ComponentsView::draw(const Aozora::Context& context) {
 				// not sure this is correct but lets see
 				// I need to check how i actually did my refCount
 
-				ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.02f, 0.0f, 1.0f);
-				ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.02f, 0.0f, 1.0f);
-				ImGui::DragFloat("Roughness", &mat.roughness, 0.02f, 0.0f, 1.0f);
-				ImGui::DragFloat("Metallic", &mat.metallic, 0.02f, 0.0f, 1.0f);
+				ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.01f, 0.0f, 1.0f);
+				ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.01f, 0.0f, 1.0f);
+				ImGui::DragFloat("Roughness", &mat.roughness, 0.01f, 0.0f, 1.0f);
+				ImGui::DragFloat("Metallic", &mat.metallic, 0.01f, 0.0f, 1.0f);
 
 			}
 		}

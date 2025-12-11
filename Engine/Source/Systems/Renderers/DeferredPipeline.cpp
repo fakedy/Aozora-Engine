@@ -259,7 +259,7 @@ namespace Aozora {
 
 			glActiveTexture(GL_TEXTURE7);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture.gpuID);
-			m_defaultShader.setInt("skybox", 6);
+			m_defaultShader.setInt("skybox", 7); // temp for calculations
 
 			glDepthMask(GL_FALSE);
 			renderLights(scene);
@@ -343,9 +343,9 @@ namespace Aozora {
 		positionAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
 
 		normalAttachment.textureTarget = FrameBuffer::TextureTarget::TEXTURE_2D;
-		normalAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA16F;
+		normalAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA8;
 		normalAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
-		normalAttachment.dataType = FrameBuffer::DataType::FLOAT;
+		normalAttachment.dataType = FrameBuffer::DataType::UNSIGNED_BYTE;
 		normalAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
 
 		albedoAttachment.textureTarget = FrameBuffer::TextureTarget::TEXTURE_2D;

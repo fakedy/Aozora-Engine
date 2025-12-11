@@ -6,7 +6,7 @@
 
 
 layout (location = 0) out vec3 gPosition;
-layout (location = 1) out vec3 gNormal;
+layout (location = 1) out vec4 gNormal;
 layout (location = 2) out vec4 gAlbedo;
 layout (location = 3) out vec4 gEmissive;
 layout (location = 4) out vec4 gProperties;
@@ -17,6 +17,8 @@ in vec3 fragPos;
 flat in uint drawID;
 
 in mat3 TBN;
+in vec3 testNormal;
+
 
 
 
@@ -45,10 +47,11 @@ struct ObjectData {
 	uint64_t   normalTextureHandle;
 	vec4 albedo;
 	vec4 emissive;
-	vec3 normal;
+	vec4 normal;
 	float metallic;
 	float roughness;
 	float ao;
+	float pad2;
 
 };
 
@@ -108,22 +111,20 @@ void main() {
 	usedMaterial.emissive = emissiveSample * data.emissive;
 
 	// Normal
-	vec3 vertexNormalTangent = vec3(0.0, 0.0, 1.0);
-	vec3 normalMapSample = texture(sampler2D(data.normalTextureHandle), textureCoord).rgb * 2.0 - 1.0;
-	vec3 tangentNormal = mix(vertexNormalTangent, normalMapSample, float(data.normalTextureHandle != 0));
+	vec3 tangentNormal = vec3(0.0, 0.0, 1.0); // Default flat normal
+	if(data.normalTextureHandle != 0) {
+    	tangentNormal = texture(sampler2D(data.normalTextureHandle), textureCoord).rgb * 2.0 - 1.0;
+	}
 	usedMaterial.normal = normalize(TBN * tangentNormal);
-
-	
-// dont do this unless textures are working
 
 	if(usedMaterial.albedo.a < 0.05f){
 		discard;
 	}
 
 	gPosition = fragPos;
-	gNormal = normalize(usedMaterial.normal);
+	gNormal = vec4(usedMaterial.normal* 0.5 + 0.5, 1.0);
 	gAlbedo =  usedMaterial.albedo;
 	gEmissive = usedMaterial.emissive;
-	gProperties = vec4(usedMaterial.metallic, usedMaterial.roughness, usedMaterial.ao, 1.0f);
+	gProperties = vec4(usedMaterial.ao, usedMaterial.roughness, usedMaterial.metallic, 1.0f);
 
 }
