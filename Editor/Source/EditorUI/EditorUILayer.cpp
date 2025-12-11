@@ -110,6 +110,40 @@ void EditorUILayer::onUpdate(const Aozora::Context& context){
 	m_componentsViewWindow->draw(context);
 
 	ImGui::Begin("Console");
+
+
+	ImGui::BeginChild("Scrolling");
+
+	for (const auto& log : Aozora::Log::textLog) {
+
+		switch (log.level)
+		{
+		case Aozora::Log::Info:
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0, 1.0, 1.0, 1.0));
+			break;
+		case Aozora::Log::Warning:
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0,1.0,0.0,1.0));
+			break;
+		case Aozora::Log::Error:
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0, 0.0, 0.0, 1.0));
+			break;
+		default:
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0, 1.0, 1.0, 1.0));
+			break;
+		}
+		ImGui::TextUnformatted(log.text.c_str());
+		ImGui::PopStyleColor();
+	}
+
+	if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+		ImGui::SetScrollHereY(1.0f);
+	}
+
+
+
+	ImGui::EndChild();
+
+
 	ImGui::End();
 
 	m_statsViewWindow->draw(context);

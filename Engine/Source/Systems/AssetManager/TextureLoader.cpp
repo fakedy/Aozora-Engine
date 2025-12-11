@@ -16,6 +16,11 @@ namespace Aozora::Resources {
         // this is without the parent directory which we need to create unique hashes
         std::string filename = std::string(fileName);
         std::string fullPath = directory + "/" + filename;
+
+        if (fullPath.find(".dds") != std::string::npos) {
+            Log::warning("DDS loading not implemented yet: " + fullPath);
+            return Texture(); 
+        }
   
         Log::info("Loading texture file: " + fullPath);
         if (m_importRegistry.count(fullPath)) {

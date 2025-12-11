@@ -14,6 +14,7 @@
 #include "EditorLayer.h"
 #include "Workspace.h"
 #include <Context.h>
+#include <Systems/Logging/Logger.h>
 
 class EditorUILayer : public Aozora::Layer {
 public:

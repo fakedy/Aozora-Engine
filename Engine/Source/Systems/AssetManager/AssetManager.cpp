@@ -51,8 +51,9 @@ namespace Aozora::Resources {
 		}
 
 		loadAsset("Resources/testcube/testcube.obj");
+		//loadAsset("Resources/Bistro_v5_2/BistroExterior.fbx");
 		//loadAsset("Resources/main_sponza/NewSponza_Main_glTF_003.gltf");
-		//loadAsset("Resources/sponza2/sponza.obj");
+		loadAsset("Resources/sponza2/sponza.obj");
 		loadAsset("Resources/DamagedHelmet/DamagedHelmet.gltf");
 		//loadAsset("Resources/survival-guitar-backpack/source/Survival_BackPack_2.fbx");
 		return false;

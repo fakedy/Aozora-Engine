@@ -39,19 +39,26 @@ void Workspace::draw(const Aozora::Context& context)
 
 
 	int thumbnailSize = 64;
-	float assetSpacing = 4.0f;
+	float padding = 8.0f;
 	float windowWidth = ImGui::GetContentRegionAvail().x; // to figure out where we create new row
 	
+	int columnCount = (int)(windowWidth / (thumbnailSize + padding));
+	if (columnCount < 1) columnCount = 1;
+	ImGui::Columns(columnCount, 0, false);
+
+
 	for (Aozora::Resources::Asset& asset : context.assetManager->getLoadedAssets()) {
-		if (asset.hidden) { // skip hidden assets
-			continue;
-		}
-		ImGui::SameLine(0.0f, assetSpacing);
+		if (asset.hidden) continue;
+
+
+		ImGui::PushID((int)asset.hash);
 		ImGui::BeginGroup();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 		switch (asset.type)
 		{
 		case(Aozora::Resources::AssetType::Model):
-			if (ImGui::ImageButton(asset.name.c_str(), m_file_3d_texture, ImVec2(thumbnailSize, thumbnailSize))) {
+			if (ImGui::ImageButton("##btn", m_file_3d_texture, ImVec2(thumbnailSize, thumbnailSize))) {
 				context.sceneManager->getCurrentActiveScene()->instantiateEntity(asset.hash);
 			}
 			break;
@@ -60,7 +67,7 @@ void Workspace::draw(const Aozora::Context& context)
 		case(Aozora::Resources::AssetType::Material):
 			break;
 		case(Aozora::Resources::AssetType::Scene):
-			if (ImGui::ImageButton(asset.name.c_str(), m_image_texture, ImVec2(thumbnailSize, thumbnailSize))) {
+			if (ImGui::ImageButton("##btn", m_image_texture, ImVec2(thumbnailSize, thumbnailSize))) {
 				context.commandQueue->queueAction([&]() {
 					// make sure we dont load the scene we are already on
 					if (context.sceneManager->getCurrentActiveScene()->hash != asset.hash) {
@@ -78,10 +85,18 @@ void Workspace::draw(const Aozora::Context& context)
 		default:
 			break;
 		}
-		ImGui::TextWrapped("%s", asset.name.c_str()); // i expected this to cut the name short to prevent oversize, but didnt do what i thought.
-		ImGui::EndGroup();
-	}
+		ImGui::PopStyleVar();
 
+		ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + thumbnailSize);
+		ImGui::TextUnformatted(asset.name.c_str());
+		ImGui::PopTextWrapPos();
+		ImGui::EndGroup();
+
+		ImGui::PopID();
+		ImGui::NextColumn();
+
+	}
+	ImGui::Columns(1);
 
 
 
