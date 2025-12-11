@@ -55,7 +55,7 @@ vec3 calcIndirectLighting(){
     vec3 wh = normal; // or normalize(wi + wo)
 
     vec3 R = reflect(-wo, normal);
-    // quick hack for testing
+    // quick hack for testing, should use Importance Sampling Convolution.
     float lod = roughness * 5.0; // Assume 5 mip levels
     vec3 Li = textureLod(skybox, R, lod).rgb;
 
