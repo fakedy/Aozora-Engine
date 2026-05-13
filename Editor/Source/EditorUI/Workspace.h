@@ -4,6 +4,10 @@
 #include "imgui/imgui.h"
 #include <Context.h>
 #include <Systems/AssetManager/AssetManager.h>
+#include <Systems/SceneManager/SceneManager.h>
+#include <Systems/ResourceManager/ResourceManager.h>
+#include <Systems/Renderers/SceneRenderer.h>
+#include <Systems/CommandQueue/CommandQueue.h>
 
 class Workspace {
 

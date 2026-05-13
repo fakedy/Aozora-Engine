@@ -1,5 +1,4 @@
 #include "DeferredPipeline.h"
-#include "Application.h"
 #include <Systems/Input.h>
 #include <Systems/Logging/Logger.h>
 
@@ -65,8 +64,6 @@ namespace Aozora {
 		glGenBuffers(1, &objectSSBO);
 	}
 
-
-
 	// would be call to setup settings for this to allow customization
 	void DeferredPipeline::resize(uint32_t width, uint32_t height)
 	{
@@ -76,12 +73,7 @@ namespace Aozora {
 
 	}
 
-
-
-
-
-
-	void DeferredPipeline::execute(IrenderAPI& renderAPI, Scene& scene, entt::entity camera, uint32_t width, uint32_t height)
+	void DeferredPipeline::execute(IrenderAPI& renderAPI, ResourceManager& resourceManager, Scene& scene, entt::entity camera, uint32_t width, uint32_t height)
 	{
 
 		if (Input::getKeyPressed(Input::Key::F6)) {
@@ -100,8 +92,6 @@ namespace Aozora {
 		if (camera != entt::null) {
 			// gBuffer pass
 			gBuffer->bind();
-			ResourceManager& resourceManager = Application::getApplication().getResourceManager();
-
 
 			renderAPI.clear(0.0f, 0.0f, 0.0f, 1.0f);
 			glViewport(0, 0, width, height);
@@ -473,10 +463,8 @@ namespace Aozora {
 		screenQuad.drawGeometry();
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-	void DeferredPipeline::genMegaBuffer(Scene& scene)
+	void DeferredPipeline::genMegaBuffer(Scene& scene, ResourceManager& resourceManager)
 	{
-		// called everytime a new mesh is added to the scene, unoptimal
-		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
 
 		auto MeshTransformEntities = scene.getRegistry().view<const MeshComponent, TransformComponent>(); // register of all mesh components
 
@@ -523,7 +511,7 @@ namespace Aozora {
 		}
 		glBindVertexArray(0);
 	}
-	void DeferredPipeline::updateMegaBuffer(Scene& scene)
+	void DeferredPipeline::updateMegaBuffer(Scene& scene, ResourceManager& resourceManager)
 	{
 
 

@@ -21,12 +21,9 @@ void EditorUILayer::onUpdate(const Aozora::Context& context){
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::BeginMenu("New")) {
 				if (ImGui::MenuItem("Project")) {
-
-					// create pop up to prevent accidental project deletion
+					// have this dispatch an event or something that request a project change
 					Aozora::CreateProjectRequest* event = new Aozora::CreateProjectRequest();
 					Aozora::EventDispatcher::dispatch(event);
-					
-					// have this dispatch an event or something that request a project change
 				}
 				ImGui::EndMenu();
 			}

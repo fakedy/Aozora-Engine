@@ -4,7 +4,6 @@
 #include <glad/glad.h>
 #include "Systems/Material.h"
 #include "Systems/Texture.h"
-#include "Systems/ResourceManager/ResourceManager.h"
 #include <Application.h>
 #include <Systems/Logging/Logger.h>
 #include <xxHash/xxhash.h>
@@ -288,7 +287,6 @@ namespace Aozora::Resources {
 
     IntermediateModel ModelLoader::loadModel(const std::string& file)
     {
-        ResourceManager& resourceManager = Application::getApplication().getResourceManager();
         Log::info(std::format("Loading model: {}", file));
         const aiScene* scene = importFile(file);
         m_directory = file.substr(0, file.find_last_of('/'));

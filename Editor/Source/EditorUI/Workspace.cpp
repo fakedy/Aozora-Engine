@@ -50,7 +50,6 @@ void Workspace::draw(const Aozora::Context& context)
 	for (Aozora::Resources::Asset& asset : context.assetManager->getLoadedAssets()) {
 		if (asset.hidden) continue;
 
-
 		ImGui::PushID((int)asset.hash);
 		ImGui::BeginGroup();
 
@@ -59,7 +58,7 @@ void Workspace::draw(const Aozora::Context& context)
 		{
 		case(Aozora::Resources::AssetType::Model):
 			if (ImGui::ImageButton("##btn", m_file_3d_texture, ImVec2(thumbnailSize, thumbnailSize))) {
-				context.sceneManager->getCurrentActiveScene()->instantiateEntity(asset.hash);
+				context.sceneManager->getCurrentActiveScene()->instantiateEntity(asset.hash, *context.resourcemanager);
 			}
 			break;
 		case(Aozora::Resources::AssetType::Texture):
@@ -68,6 +67,7 @@ void Workspace::draw(const Aozora::Context& context)
 			break;
 		case(Aozora::Resources::AssetType::Scene):
 			if (ImGui::ImageButton("##btn", m_image_texture, ImVec2(thumbnailSize, thumbnailSize))) {
+
 				context.commandQueue->queueAction([&]() {
 					// make sure we dont load the scene we are already on
 					if (context.sceneManager->getCurrentActiveScene()->hash != asset.hash) {
@@ -97,8 +97,6 @@ void Workspace::draw(const Aozora::Context& context)
 
 	}
 	ImGui::Columns(1);
-
-
 
 	ImGui::End();
 

@@ -10,9 +10,7 @@
 #include <string>
 
 namespace Aozora {
-
-	
-
+	class ResourceManager;
 
 	class Scene {
 	public:
@@ -40,8 +38,8 @@ namespace Aozora {
 		void addEntity();
 
 
-		entt::entity createEntityFromNodes(Model& model, Model::Node& node, entt::entity parent);
-		void instantiateEntity(uint64_t hash);
+		entt::entity createEntityFromNodes(Model& model, Model::Node& node, entt::entity parent, ResourceManager& resourceManager);
+		void instantiateEntity(uint64_t hash, ResourceManager& resourceManager);
 
 		void deleteEntity(const entt::entity entity);
 
@@ -71,7 +69,6 @@ namespace Aozora {
 
 		void updateTransform(entt::entity entity, const glm::dmat4& model);
 
-		
 	};
 
 

@@ -1,5 +1,5 @@
 #pragma once
-#include <Application.h> // temp
+#include <Application.h>
 #include <Systems/EditorCameraSystem.h>
 #include <memory>
 #include <entt/entt.hpp>
@@ -50,8 +50,5 @@ private:
 	EditorState m_currentState{ EditorState::EDIT };
 
 	std::unique_ptr<Aozora::EditorCameraSystem> m_editorCameraSystem;
-
-
-
 };
 

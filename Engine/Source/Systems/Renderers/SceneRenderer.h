@@ -7,6 +7,7 @@
 #include <Systems/Events/EventSystem.h>
 #include <Systems/Events/Events.h>
 #include <Systems/SceneManager/SceneManager.h>
+#include <Systems/ResourceManager/ResourceManager.h>
 
 namespace Aozora::Graphics {
 
@@ -14,7 +15,7 @@ namespace Aozora::Graphics {
 	class SceneRenderer : public IEventListener{
 	public:
 
-		SceneRenderer(IrenderAPI* api, SceneManager& sceneManager);
+		SceneRenderer(IrenderAPI* api, SceneManager& sceneManager, ResourceManager& resourceManager);
 
 
 
@@ -45,6 +46,7 @@ namespace Aozora::Graphics {
 
 	private:
 		SceneManager& m_sceneManager;
+		ResourceManager& m_resourceManager;
 
 	};
 }

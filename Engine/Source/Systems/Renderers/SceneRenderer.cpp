@@ -4,7 +4,8 @@
 #include <Systems/Logging/Logger.h>
 
 namespace Aozora::Graphics {
-	SceneRenderer::SceneRenderer(IrenderAPI* api, SceneManager& sceneManager) : m_sceneManager(sceneManager)
+	SceneRenderer::SceneRenderer(IrenderAPI* api, SceneManager& sceneManager, ResourceManager& resourceManager) :
+		m_sceneManager(sceneManager), m_resourceManager(resourceManager)
 	{
 
 		m_RenderAPI = api;
@@ -40,7 +41,7 @@ namespace Aozora::Graphics {
 			// kinda whack
 			for (auto& [ID, viewport] : m_viewports) {
 				if (viewport.sceneID == scene->hash) {
-					viewport.renderPipeline->genMegaBuffer(*scene);
+					viewport.renderPipeline->genMegaBuffer(*scene, m_resourceManager);
 				}
 			}
 			break;
@@ -62,7 +63,7 @@ namespace Aozora::Graphics {
 			// if viewport have a scene
 			Scene* scene = m_sceneManager.getCurrentActiveScene();
 			if (scene != nullptr && viewport.isActive) {
-				viewport.renderPipeline->execute(*m_RenderAPI, *scene, viewport.camera, viewport.width, viewport.height);
+				viewport.renderPipeline->execute(*m_RenderAPI, m_resourceManager, *scene, viewport.camera, viewport.width, viewport.height);
 			}
 		}
 	}

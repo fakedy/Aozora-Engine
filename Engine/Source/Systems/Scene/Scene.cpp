@@ -7,7 +7,7 @@
 #include <cereal/cereal.hpp>
 #include <cereal/archives/json.hpp>
 #include <cereal/archives/binary.hpp>
-#include "..\ResourceManager\ResourceManager.h"
+#include <Systems/ResourceManager/ResourceManager.h>
 
 
 
@@ -129,11 +129,8 @@ namespace Aozora {
 		}
 
 	}
-	entt::entity Scene::createEntityFromNodes(Model& model, Model::Node& node, entt::entity parent)
+	entt::entity Scene::createEntityFromNodes(Model& model, Model::Node& node, entt::entity parent, ResourceManager& resourceManager)
 	{
-
-		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
-
 		const auto entity = m_registry->create();
 
 		m_registry->emplace<Aozora::NameComponent>(entity).name = node.name.c_str();
@@ -160,16 +157,14 @@ namespace Aozora {
 
 		for (uint32_t childNode : node.childrenNodes) {
 
-			entt::entity childEntity = createEntityFromNodes(model, model.allNodes[childNode], entity);
+			entt::entity childEntity = createEntityFromNodes(model, model.allNodes[childNode], entity, resourceManager);
 			relationComponent.children.push_back(childEntity);
 
 		}
 		return entity;
 	}
-	void Scene::instantiateEntity(uint64_t hash)
+	void Scene::instantiateEntity(uint64_t hash, ResourceManager& resourceManager)
 	{
-		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
-
 		Log::info(std::format("Instantiating {}", hash));
 
 		// load model
@@ -178,7 +173,7 @@ namespace Aozora {
 		Model& model = resourceManager.m_containerMap[this->hash].m_loadedModels.at(hash);
 
 		// could totally cache the entity too so I dont have to do this node work
-		createEntityFromNodes(model, model.allNodes[0], entt::null);
+		createEntityFromNodes(model, model.allNodes[0], entt::null, resourceManager);
 	}
 
 	void Scene::deleteEntity(const entt::entity entity) {
@@ -223,8 +218,6 @@ namespace Aozora {
 	}
 	void Scene::makeTransformDirty(entt::entity entity)
 	{
-
-		
 		auto& transformComponent = m_registry->get<TransformComponent>(entity);
 		transformComponent.isDirty = true;
 
