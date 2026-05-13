@@ -140,22 +140,20 @@ void EditorUILayer::onUpdate(const Aozora::Context& context){
 	}
 
 
-
 	ImGui::EndChild();
-
 
 	ImGui::End();
 
 	m_statsViewWindow->draw(context);
 
-
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
 }
 
 void EditorUILayer::onAttach()
 {
+
+	// setup the theme, would be cool to have preset themes to be selectable
 	ImGuiStyle& style = ImGui::GetStyle();
 	ImGuiIO& io = ImGui::GetIO();
 

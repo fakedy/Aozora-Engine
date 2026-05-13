@@ -49,12 +49,6 @@ public:
 
 		ImGui_ImplGlfw_InitForOpenGL(m_window, true);
 		ImGui_ImplOpenGL3_Init();
-
-
-
-		
-
-
 	}
 
 	void onUpdate(const Aozora::Context& context) override;
