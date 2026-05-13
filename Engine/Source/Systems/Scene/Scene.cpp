@@ -107,15 +107,15 @@ namespace Aozora {
 		m_registry->emplace<Aozora::RelationComponent>(entity);
 	}
 
-	void Scene::updateTransform(entt::entity entity , const glm::mat4& model)
+	void Scene::updateTransform(entt::entity entity , const glm::dmat4& model)
 	{
 		auto view = m_registry->view<TransformComponent>();
 		
 		auto& transform = view.get<TransformComponent>(entity);
 
-		glm::mat4 tempModel = glm::mat4(1.0f);
-		tempModel = glm::translate(glm::mat4(1.0f), transform.pos);
-		glm::quat rotation = glm::quat(glm::radians(transform.rot));
+		glm::dmat4 tempModel = glm::dmat4(1.0f);
+		tempModel = glm::translate(glm::dmat4(1.0f), transform.pos);
+		glm::dquat rotation = glm::quat(glm::radians(transform.rot));
 		tempModel = tempModel * glm::mat4_cast(rotation);
 		tempModel = glm::scale(tempModel, transform.scale);
 		tempModel = model * tempModel * transform.baseModel;

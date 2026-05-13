@@ -69,7 +69,7 @@ namespace Aozora {
 
 	private:
 
-		void updateTransform(entt::entity entity, const glm::mat4& model);
+		void updateTransform(entt::entity entity, const glm::dmat4& model);
 
 		
 	};

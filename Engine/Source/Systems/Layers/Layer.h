@@ -6,7 +6,8 @@ namespace Aozora {
 	{
 	public:
 
-
+		virtual void onAttach() {}
+		virtual void onDetach() {}
 		virtual void onUpdate(const Aozora::Context& context) = 0;
 
 

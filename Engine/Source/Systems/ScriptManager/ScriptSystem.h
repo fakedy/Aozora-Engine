@@ -1,4 +1,5 @@
 #pragma once
+
 #include <luau/lua.h>
 #include <luau/lualib.h>
 #include <iostream>

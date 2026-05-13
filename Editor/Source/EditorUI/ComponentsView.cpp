@@ -53,13 +53,13 @@ void ComponentsView::draw(const Aozora::Context& context) {
 				auto& transformComp = registry.get<Aozora::TransformComponent>(m_selectedEntity);
 				ImGui::Text("Transform component");
 
-				if (ImGui::DragFloat3("Transform", glm::value_ptr(transformComp.pos), 0.1f)) {
+				if (ImGui::DragScalarN("Transform", ImGuiDataType_Double, glm::value_ptr(transformComp.pos), 3, 0.1f)) {
 					context.sceneManager->getCurrentActiveScene()->makeTransformDirty(m_selectedEntity);
 				}
-				if (ImGui::DragFloat3("Scale", glm::value_ptr(transformComp.scale), 0.1f)) {
+				if (ImGui::DragScalarN("Scale", ImGuiDataType_Double, glm::value_ptr(transformComp.scale), 3, 0.1f)) {
 					context.sceneManager->getCurrentActiveScene()->makeTransformDirty(m_selectedEntity);
 				}
-				if (ImGui::DragFloat3("Rotation", glm::value_ptr(transformComp.rot), 0.1f)) {
+				if (ImGui::DragScalarN("Rotation", ImGuiDataType_Double, glm::value_ptr(transformComp.rot), 3, 0.1f)) {
 					context.sceneManager->getCurrentActiveScene()->makeTransformDirty(m_selectedEntity);
 				}
 			}

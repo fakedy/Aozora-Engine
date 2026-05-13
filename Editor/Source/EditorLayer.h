@@ -23,6 +23,8 @@ public:
 	}
 
 	void onUpdate(const Aozora::Context& context) override;
+	
+	void onAttach() override;
 
 	void changeState(EditorState state);
 

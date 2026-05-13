@@ -58,6 +58,7 @@ public:
 	}
 
 	void onUpdate(const Aozora::Context& context) override;
+	void onAttach() override;
 
 
 private:

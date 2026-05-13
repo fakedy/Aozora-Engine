@@ -6,8 +6,6 @@
 
 void EditorLayer::onUpdate(const Aozora::Context& context)
 {
-
-
 	// update systems here instead of application
 
 	auto& app = Aozora::Application::getApplication();
@@ -33,9 +31,6 @@ void EditorLayer::onUpdate(const Aozora::Context& context)
 		app.getRenderer().render();
 
 	}
-
-
-
 }
 
 void EditorLayer::changeState(EditorState state)
@@ -56,6 +51,10 @@ void EditorLayer::changeState(EditorState state)
 	}
 	m_currentState = state;
 	
+}
+
+void EditorLayer::onAttach() {
+
 }
 
 EditorState EditorLayer::getState()

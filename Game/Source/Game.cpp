@@ -8,7 +8,7 @@ public:
 
 
 
-	Game() : Application("Aozora Editor") { // calls the constructor of Application
+	Game() : Application("Aozora Game") { // calls the constructor of Application
 
 		GameLayer* gameLayer = new GameLayer(getSceneManager(), *m_sceneRenderer.get());
 		layerStack->addLayer(gameLayer);
@@ -28,6 +28,6 @@ private:
 
 
 int main() {
-	Game editor;
+	Game game;
 
 }
