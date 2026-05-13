@@ -16,13 +16,24 @@ enum class EditorState { EDIT, PLAY };
 class EditorLayer : public Aozora::Layer
 {
 public:
-	EditorLayer(Aozora::SceneManager& sceneManager, Aozora::Graphics::SceneRenderer& sceneRenderer) : m_sceneManager(sceneManager){
+	EditorLayer(Aozora::SceneManager& sceneManager, Aozora::Graphics::SceneRenderer& sceneRenderer)
+		: m_sceneManager(sceneManager){
+
 		m_editorViewPortID = sceneRenderer.createViewport(Aozora::ViewportType::PrimaryEditor);
 		m_editorCameraSystem = std::make_unique<Aozora::EditorCameraSystem>();
 
 	}
 
+	struct EditorUpdateParams {
+		Aozora::Scene& scene;
+		entt::registry& registry;
+		Aozora::Graphics::SceneRenderer& renderer;
+		Aozora::ScriptSystem& scriptSystem;
+		Aozora::CameraSystem& cameraSystem;
+	};
+
 	void onUpdate(const Aozora::Context& context) override;
+
 	
 	void onAttach() override;
 
@@ -34,6 +45,7 @@ public:
 
 private:
 
+	void internalUpdate(const EditorUpdateParams& params);
 	Aozora::SceneManager& m_sceneManager;
 	EditorState m_currentState{ EditorState::EDIT };
 

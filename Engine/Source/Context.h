@@ -1,17 +1,24 @@
 #pragma once
-#include <Systems/SceneManager/SceneManager.h>
-#include <Systems/ScriptManager/ScriptSystem.h>
-#include "Systems/ResourceManager/ResourceManager.h"
-#include "Systems/AssetManager/AssetManager.h"
-#include "Systems/Scene/Scene.h"
-#include "Systems/CameraSystem.h"
-#include "Systems/Renderers/SceneRenderer.h"
-#include "Systems/Renderers/IrenderAPI.h"
-#include "Systems/Project/ProjectManager.h"
-#include "Systems/CommandQueue/CommandQueue.h"
-#include "Systems/EditorCameraSystem.h"
 
 namespace Aozora {
+
+    class SceneManager;
+    class IrenderAPI;
+    class ScriptSystem;
+    class ResourceManager;
+    class ProjectManager;
+    class CommandQueue;
+    class EditorCameraSystem;
+    class CameraSystem;
+
+    namespace Graphics {
+        class SceneRenderer;
+    }
+
+    namespace Resources {
+        class AssetManager;
+    }
+
 
 	class Context {
 	public:
@@ -24,7 +31,6 @@ namespace Aozora {
         Resources::AssetManager* assetManager{ nullptr };
         CommandQueue* commandQueue{ nullptr };
         EditorCameraSystem* editorCameraSystem{ nullptr };
-
-
+        CameraSystem* cameraSystem{ nullptr };
 	};
 }

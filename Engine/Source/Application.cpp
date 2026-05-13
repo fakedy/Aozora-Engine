@@ -41,6 +41,7 @@ namespace Aozora {
 		context.projectManager = m_projectManager.get();
 		context.assetManager = m_assetManager.get();
 		context.commandQueue = m_commandQueue.get();
+		context.cameraSystem = m_cameraSystem.get();
 
 	
 		EventDispatcher::subscribe(EventType::CreateProjectRequest, [this](Event& e) {

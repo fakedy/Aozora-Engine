@@ -6,29 +6,44 @@
 
 void EditorLayer::onUpdate(const Aozora::Context& context)
 {
-	// update systems here instead of application
+	auto scene = *context.sceneManager->getCurrentActiveScene();
+	auto& registry = scene.getRegistry();
+	auto renderer = *context.sceneRenderer;
+	auto scriptSystem = *context.scriptSystem;
+	auto cameraSystem = *context.cameraSystem;
+	EditorUpdateParams params{
+		scene,
+		registry,
+		renderer,
+		scriptSystem,
+		cameraSystem
+	};
+	internalUpdate(params);
+}
 
-	auto& app = Aozora::Application::getApplication();
-	auto current_scene = app.getSceneManager().getCurrentActiveScene();
+void EditorLayer::internalUpdate(const EditorUpdateParams& params) {
+	// update systems here instead of application
 
 	// We dont swap to the game camera during Game mode which make the viewport freeze during Game.
 	if (m_currentState == EditorState::EDIT) {
 
-		app.m_cameraSystem->update(current_scene->getRegistry());
-		m_editorCameraSystem->update(current_scene->getRegistry());
+		params.cameraSystem.update(params.registry);
 
-		app.getSceneManager().getCurrentActiveScene()->update();
 
-		app.getRenderer().render();
+		m_editorCameraSystem->update(params.registry);
+	
+
+		params.scene.update();
+
+		params.renderer.render();
 	}
 	else {
 
-		app.m_cameraSystem->update(current_scene->getRegistry());
+		params.cameraSystem.update(params.registry);
+		params.scriptSystem.update(params.registry);
+		params.scene.update();
 
-		app.getScriptSystem().update(current_scene->getRegistry());
-		app.getSceneManager().getCurrentActiveScene()->update();
-
-		app.getRenderer().render();
+		params.renderer.render();
 
 	}
 }
