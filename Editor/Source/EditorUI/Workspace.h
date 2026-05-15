@@ -1,27 +1,15 @@
 #pragma once
-#include <string>
-#include <vector>
 #include "imgui/imgui.h"
-#include <Context.h>
-#include <Systems/AssetManager/AssetManager.h>
+
+namespace Aozora {
+	class Context;
+}
 
 class Workspace {
 
 public:
 
-
-	// gets called too early
-	Workspace(Aozora::Context& context) : m_context(context){
-
-		m_file_3d_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/file-3d.png"));
-		m_image_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/image.png"));
-		m_folder_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/folder.png"));
-		m_script_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/folder.png"));
-
-		
-	}
-
-
+	Workspace(Aozora::Context& context);
 
 	void draw(const Aozora::Context& context);
 

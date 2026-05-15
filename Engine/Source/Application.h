@@ -32,39 +32,6 @@ namespace Aozora {
 
 		void run();
 
-		// TODO stop with this 
-		// getter for application singleton
-		static Application& getApplication() {
-			return *m_appInstance;
-		}
-
-		ResourceManager& getResourceManager() {
-			return *m_resourceManager.get();
-		}
-
-
-		Resources::AssetManager& getAssetManager() {
-			return *m_assetManager.get();
-		}
-
-		SceneManager& getSceneManager() {
-			return *m_sceneManager.get();
-		}
-
-		IrenderAPI& getRenderAPI() {
-			return *m_renderAPI.get();
-		}
-
-		Graphics::SceneRenderer& getRenderer() {
-			return *m_sceneRenderer.get();
-		}
-		ScriptSystem& getScriptSystem() {
-			return *m_scriptSystem.get();
-		}
-
-
-		inline Window& getWindow() { return *m_window; }
-
 		std::unique_ptr<CameraSystem> m_cameraSystem;
 
 		
@@ -84,7 +51,6 @@ namespace Aozora {
 
 		Aozora::Context context;
 	private:
-		static Application* m_appInstance;
 
 		Window* m_window;
 		Window::WindowProps props;

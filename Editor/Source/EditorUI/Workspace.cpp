@@ -1,4 +1,20 @@
 #include "Workspace.h"
+#include <Context.h>
+#include <Systems/AssetManager/AssetManager.h>
+#include <Systems/Scene/Scene.h>
+#include <Systems/SceneManager/SceneManager.h>
+#include <Systems/ResourceManager/ResourceManager.h>
+#include <Systems/Renderers/SceneRenderer.h>
+#include <Systems/CommandQueue/CommandQueue.h>
+
+
+Workspace::Workspace(Aozora::Context& context) : m_context(context)
+{
+	m_file_3d_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/file-3d.png"));
+	m_image_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/image.png"));
+	m_folder_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/folder.png"));
+	m_script_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/folder.png"));
+}
 
 void Workspace::draw(const Aozora::Context& context)
 {
@@ -50,7 +66,6 @@ void Workspace::draw(const Aozora::Context& context)
 	for (Aozora::Resources::Asset& asset : context.assetManager->getLoadedAssets()) {
 		if (asset.hidden) continue;
 
-
 		ImGui::PushID((int)asset.hash);
 		ImGui::BeginGroup();
 
@@ -59,7 +74,7 @@ void Workspace::draw(const Aozora::Context& context)
 		{
 		case(Aozora::Resources::AssetType::Model):
 			if (ImGui::ImageButton("##btn", m_file_3d_texture, ImVec2(thumbnailSize, thumbnailSize))) {
-				context.sceneManager->getCurrentActiveScene()->instantiateEntity(asset.hash);
+				context.sceneManager->getCurrentActiveScene()->instantiateEntity(asset.hash, *context.resourcemanager);
 			}
 			break;
 		case(Aozora::Resources::AssetType::Texture):
@@ -68,6 +83,7 @@ void Workspace::draw(const Aozora::Context& context)
 			break;
 		case(Aozora::Resources::AssetType::Scene):
 			if (ImGui::ImageButton("##btn", m_image_texture, ImVec2(thumbnailSize, thumbnailSize))) {
+
 				context.commandQueue->queueAction([&]() {
 					// make sure we dont load the scene we are already on
 					if (context.sceneManager->getCurrentActiveScene()->hash != asset.hash) {
@@ -97,8 +113,6 @@ void Workspace::draw(const Aozora::Context& context)
 
 	}
 	ImGui::Columns(1);
-
-
 
 	ImGui::End();
 

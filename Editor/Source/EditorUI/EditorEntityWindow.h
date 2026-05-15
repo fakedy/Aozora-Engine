@@ -1,6 +1,7 @@
 #pragma once 
 #include "ComponentsView.h"
 #include "Systems/ResourceManager/ResourceManager.h"
+#include <Systems/SceneManager/SceneManager.h>
 #include <Context.h>
 
 class EditorEntityWindow {

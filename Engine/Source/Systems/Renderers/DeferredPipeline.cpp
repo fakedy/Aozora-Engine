@@ -1,5 +1,4 @@
 #include "DeferredPipeline.h"
-#include "Application.h"
 #include <Systems/Input.h>
 #include <Systems/Logging/Logger.h>
 
@@ -65,8 +64,6 @@ namespace Aozora {
 		glGenBuffers(1, &objectSSBO);
 	}
 
-
-
 	// would be call to setup settings for this to allow customization
 	void DeferredPipeline::resize(uint32_t width, uint32_t height)
 	{
@@ -76,12 +73,8 @@ namespace Aozora {
 
 	}
 
-
-
-
-
-
-	void DeferredPipeline::execute(IrenderAPI& renderAPI, Scene& scene, entt::entity camera, uint32_t width, uint32_t height)
+	void DeferredPipeline::execute(IrenderAPI& renderAPI, ResourceManager& resourceManager,
+		Scene& scene, entt::entity camera, uint32_t width, uint32_t height, bool isEditor)
 	{
 
 		if (Input::getKeyPressed(Input::Key::F6)) {
@@ -89,6 +82,7 @@ namespace Aozora {
 			m_gBufferShader.recompile();
 			m_defaultShader.recompile();
 			m_postfxShader.recompile();
+			m_gridShader.recompile();
 		}
 
 
@@ -100,8 +94,6 @@ namespace Aozora {
 		if (camera != entt::null) {
 			// gBuffer pass
 			gBuffer->bind();
-			ResourceManager& resourceManager = Application::getApplication().getResourceManager();
-
 
 			renderAPI.clear(0.0f, 0.0f, 0.0f, 1.0f);
 			glViewport(0, 0, width, height);
@@ -200,6 +192,7 @@ namespace Aozora {
 
 
 			glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, (GLvoid*)0, commands.size(), 0);
+
 			glBindVertexArray(0);
 			glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -285,9 +278,33 @@ namespace Aozora {
 			}
 			glBindVertexArray(0);
 			glDepthFunc(GL_LESS);
+
+			// editor grid
+			if (isEditor) {
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				glEnable(GL_DEPTH_TEST);
+				glDepthMask(GL_FALSE);
+
+				glUseProgram(m_gridShader.ID);
+				m_gridShader.setMat4("view", current_camera.getView());
+				m_gridShader.setMat4("proj", current_camera.getProjection());
+				m_gridShader.setVec3fv("cameraPos", camera_transform.pos);
+
+				const GLint screenSizeLoc = glGetUniformLocation(m_gridShader.ID, "screenSize");
+				glUniform2f(screenSizeLoc, static_cast<float>(width), static_cast<float>(height));
+
+				glBindVertexArray(skybox.VAO);
+				glDrawArrays(GL_TRIANGLES, 0, 6);
+				glBindVertexArray(0);
+
+				glDepthMask(GL_TRUE);
+				glDisable(GL_BLEND);
+			}
 			glEnable(GL_CULL_FACE);
-			glEnable(GL_BLEND);
+
 			renderBuffer->unbind();
+
 
 			postfxBuffer->bind();
 			postfxPass();
@@ -473,10 +490,8 @@ namespace Aozora {
 		screenQuad.drawGeometry();
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-	void DeferredPipeline::genMegaBuffer(Scene& scene)
+	void DeferredPipeline::genMegaBuffer(Scene& scene, ResourceManager& resourceManager)
 	{
-		// called everytime a new mesh is added to the scene, unoptimal
-		ResourceManager& resourceManager = Application::getApplication().getResourceManager();
 
 		auto MeshTransformEntities = scene.getRegistry().view<const MeshComponent, TransformComponent>(); // register of all mesh components
 
@@ -523,9 +538,10 @@ namespace Aozora {
 		}
 		glBindVertexArray(0);
 	}
-	void DeferredPipeline::updateMegaBuffer(Scene& scene)
+	void DeferredPipeline::updateMegaBuffer(Scene& scene, ResourceManager& resourceManager)
 	{
-
+		// TODO WIGGLY WOBBLY WIGGLY WOBBLY WOOOAAAAAAAOOOO
 
 	}
+
 }

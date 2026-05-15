@@ -5,6 +5,7 @@
 #include "Opengl/OpenglFrameBuffer.h"
 #include <memory>
 #include <Systems/Mesh.h>
+#include <Systems/ResourceManager/ResourceManager.h>
 
 namespace Aozora {
 
@@ -14,13 +15,15 @@ namespace Aozora {
 		DeferredPipeline(uint32_t width, uint32_t height);
 
 		 void resize(uint32_t width, uint32_t height) override;
-		void execute(IrenderAPI& renderAPI, Scene& scene, entt::entity camera, uint32_t width, uint32_t height) override;
+		void execute(IrenderAPI& renderAPI,  ResourceManager& resourceManager,
+			Scene& scene, entt::entity camera, uint32_t width, uint32_t height, bool isEditor) override;
 
 		uint32_t getFinalImage() override;
 		std::unique_ptr<FrameBuffer> renderBuffer;
 
-		void genMegaBuffer(Scene& scene);
-		void updateMegaBuffer(Scene& scene);
+		void genMegaBuffer(Scene& scene, ResourceManager& resourceManager);
+		void updateMegaBuffer(Scene& scene, ResourceManager& resourceManager);
+
 
 	private:
 		std::unique_ptr<FrameBuffer> gBuffer;

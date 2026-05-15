@@ -50,13 +50,11 @@ namespace Aozora::Resources {
 			}
 		}
 
+		// TODO This does not belong here, move it out
 		loadAsset("Resources/testcube/testcube.obj");
-		//loadAsset("Resources/Bistro_v5_2/BistroExterior.fbx");
-		//loadAsset("Resources/main_sponza/NewSponza_Main_glTF_003.gltf");
-		loadAsset("Resources/sponza2/sponza.obj");
+		//loadAsset("Resources/sponza2/sponza.obj");
 		loadAsset("Resources/DamagedHelmet/DamagedHelmet.gltf");
-		//loadAsset("Resources/survival-guitar-backpack/source/Survival_BackPack_2.fbx");
-		return false;
+		return true;
 	}
 
 
@@ -161,9 +159,6 @@ namespace Aozora::Resources {
 			asset.hash = XXH64(filename.c_str(), filename.length(), 0);
 			m_assets[asset.hash] = asset;
 		}
-
-
-		//Log::error("Invalid extension or file");
 
 		saveManifest();
 
@@ -372,6 +367,7 @@ namespace Aozora::Resources {
 
 	std::vector<std::reference_wrapper<Asset>> AssetManager::getLoadedAssets()
 	{
+		// TODO cache this vector?
 		std::vector<std::reference_wrapper<Asset>> data;
 		data.reserve(m_assets.size());
 		for (auto& pair : m_assets) {
