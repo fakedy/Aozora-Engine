@@ -11,9 +11,9 @@ uniform vec3 cameraPos;
 
 
 float gridCellSize = 1.0;
-float lineWidth = 4.0;
+float lineWidth = 8.0;
 float minPixel = 2.0;
-vec3 lineColor = vec3(0.8392, 0.8392, 0.8392);
+vec3 lineColor = vec3(1.0, 1.0, 1.0);
 
 float log10(float x){
     return (0.4342944819) * log(x);
@@ -41,6 +41,9 @@ void main(){
     float fallOff = (1.0 - (length(worldPos.xz - cameraPos.xz) / gridSize) );
 
     float alpha = lod* fallOff;
+    if(alpha < 0.01){
+    discard;
+    }
 
 
     fragColor = vec4(lineColor, alpha);

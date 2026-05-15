@@ -10,6 +10,7 @@ namespace Aozora {
     class CommandQueue;
     class EditorCameraSystem;
     class CameraSystem;
+    class Window;
 
     namespace Graphics {
         class SceneRenderer;
@@ -18,7 +19,6 @@ namespace Aozora {
     namespace Resources {
         class AssetManager;
     }
-
 
 	class Context {
 	public:
@@ -32,5 +32,6 @@ namespace Aozora {
         CommandQueue* commandQueue{ nullptr };
         EditorCameraSystem* editorCameraSystem{ nullptr };
         CameraSystem* cameraSystem{ nullptr };
+        Window* window{ nullptr };
 	};
 }

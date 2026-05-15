@@ -10,16 +10,12 @@
 #include <Systems/Project/Project.h>
 namespace Aozora {
 
-	Application* Application::m_appInstance = nullptr;
-
 	Aozora::Application::Application(const char* title) : m_resourceManager()
 	{
-		// singleton
-		assert(m_appInstance == nullptr);
-		m_appInstance = this;
 
 		props = Window::WindowProps(title, 1920, 1080);
 
+		// create systems
 		m_window = Window::create(props);
 		m_commandQueue = std::make_unique<CommandQueue>();
 		m_renderAPI = std::unique_ptr<IrenderAPI>(IrenderAPI::create());
@@ -34,6 +30,7 @@ namespace Aozora {
 
 		layerStack = new LayerStack();
 
+		// setup context
 		context.renderAPI = m_renderAPI.get();
 		context.sceneManager = m_sceneManager.get();
 		context.sceneRenderer = m_sceneRenderer.get();
@@ -42,6 +39,7 @@ namespace Aozora {
 		context.assetManager = m_assetManager.get();
 		context.commandQueue = m_commandQueue.get();
 		context.cameraSystem = m_cameraSystem.get();
+		context.window = m_window;
 
 	
 		EventDispatcher::subscribe(EventType::CreateProjectRequest, [this](Event& e) {
@@ -91,7 +89,7 @@ namespace Aozora {
 		Scene* scene = m_sceneManager->getScene(sceneID);
 
 
-
+		// ------------------
 		// creating the editor camera
 		// will be invisible to the scene graph
 		Aozora::CameraComponent* cameraComponent;
@@ -101,7 +99,7 @@ namespace Aozora {
 		transformComponent = &registry.emplace<Aozora::TransformComponent>(editorCameraEntity);
 		cameraComponent = &registry.emplace<Aozora::CameraComponent>(editorCameraEntity);
 		registry.emplace<Aozora::EditorEntityTag>(editorCameraEntity);
-
+		// ---------------
 
 		
 		// create skybox

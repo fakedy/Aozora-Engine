@@ -44,6 +44,7 @@ namespace Aozora::Graphics {
 		void onEvent(Event& e) override;
 
 
+
 	private:
 		SceneManager& m_sceneManager;
 		ResourceManager& m_resourceManager;

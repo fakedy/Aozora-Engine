@@ -1,4 +1,20 @@
 #include "Workspace.h"
+#include <Context.h>
+#include <Systems/AssetManager/AssetManager.h>
+#include <Systems/Scene/Scene.h>
+#include <Systems/SceneManager/SceneManager.h>
+#include <Systems/ResourceManager/ResourceManager.h>
+#include <Systems/Renderers/SceneRenderer.h>
+#include <Systems/CommandQueue/CommandQueue.h>
+
+
+Workspace::Workspace(Aozora::Context& context) : m_context(context)
+{
+	m_file_3d_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/file-3d.png"));
+	m_image_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/image.png"));
+	m_folder_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/folder.png"));
+	m_script_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/folder.png"));
+}
 
 void Workspace::draw(const Aozora::Context& context)
 {

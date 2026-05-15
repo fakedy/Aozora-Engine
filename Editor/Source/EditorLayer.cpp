@@ -23,10 +23,11 @@ void EditorLayer::internalUpdate(const EditorUpdateParams& params) {
 
 	// We dont swap to the game camera during Game mode which make the viewport freeze during Game.
 	if (m_currentState == EditorState::EDIT) {
-		params.cameraSystem.update(params.registry);
 		m_editorCameraSystem->update(params.registry);
+		params.renderer.getViewport(m_editorViewPortID).type = Aozora::ViewportType::PrimaryEditor;
 	}
 	else {
+		params.renderer.getViewport(m_editorViewPortID).type = Aozora::ViewportType::PrimaryGame;
 		params.cameraSystem.update(params.registry);
 		params.scriptSystem.update(params.registry);
 	}

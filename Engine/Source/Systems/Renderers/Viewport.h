@@ -18,7 +18,7 @@ namespace Aozora {
 
 		Viewport(uint32_t width, uint32_t height, std::unique_ptr<IrenderPipeline> pipeline);
 
-		
+		bool isEditorViewport() const { return type == ViewportType::PrimaryEditor; }
 		ViewportType type{ ViewportType::Generic };
 		uint32_t width{1920};
 		uint32_t height{1080};
@@ -28,7 +28,8 @@ namespace Aozora {
 
 		
 		uint64_t sceneID{ 0 };
-		entt::entity camera; // noooooo. I have no idea what this comment references.
+		// so this doesnt me an a viewport have 1 camera, it is just a reference to current camera.
+		entt::entity camera; 
 
 		bool isActive{ false };
 		void resize(uint32_t width, uint32_t height);

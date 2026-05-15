@@ -3,6 +3,7 @@
 
 void GameLayer::onUpdate(const Aozora::Context& context)
 {
+	/*
 	// remove the getters and use context etc.
 	auto& app = Aozora::Application::getApplication();
 	auto current_scene = app.getSceneManager().getCurrentActiveScene();
@@ -13,6 +14,5 @@ void GameLayer::onUpdate(const Aozora::Context& context)
 	app.getSceneManager().getCurrentActiveScene()->update();
 
 	app.getRenderer().render();
-
-
+	*/
 }

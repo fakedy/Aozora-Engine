@@ -25,7 +25,7 @@ namespace Aozora::Graphics {
 
 			if (viewport.type == ViewportType::PrimaryEditor) {
 				viewport.setScene(scene->hash);
-				viewport.camera = view.front(); // temp
+				viewport.camera = view.front(); // grab camera
 			}
 		}
 		Log::info("Updated primary scene");
@@ -56,14 +56,25 @@ namespace Aozora::Graphics {
 
 	void SceneRenderer::render() {
 
+		Scene* scene = m_sceneManager.getCurrentActiveScene();
+		auto gameCameras = scene->getRegistry().view<CameraComponent>(entt::exclude<EditorEntityTag>);
+		auto editorCamera = scene->getRegistry().view<CameraComponent, EditorEntityTag>().front();
 		// loop through unordered_map of viewports
 		for (auto& [ID, viewport] : m_viewports) {
-			
-			// make sure viewport is active before doing this.
-			// if viewport have a scene
-			Scene* scene = m_sceneManager.getCurrentActiveScene();
 			if (scene != nullptr && viewport.isActive) {
-				viewport.renderPipeline->execute(*m_RenderAPI, m_resourceManager, *scene, viewport.camera, viewport.width, viewport.height);
+
+				if (viewport.isEditorViewport()) {
+					viewport.renderPipeline->execute(*m_RenderAPI, m_resourceManager,
+						*scene, editorCamera, viewport.width, viewport.height, viewport.isEditorViewport());
+				}
+				else {
+
+					for(auto& cameraEntity : gameCameras) {
+						viewport.renderPipeline->execute(*m_RenderAPI, m_resourceManager,
+						*scene, cameraEntity, viewport.width, viewport.height, viewport.isEditorViewport());
+					}
+				}
+
 			}
 		}
 	}

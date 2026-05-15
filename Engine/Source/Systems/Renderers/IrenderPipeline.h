@@ -14,7 +14,8 @@ namespace Aozora {
 
 
 
-		virtual void execute(IrenderAPI& renderAPI, ResourceManager& resourceManager, Scene& scene, entt::entity camera, uint32_t width, uint32_t height) = 0;
+		virtual void execute(IrenderAPI& renderAPI, ResourceManager& resourceManager,
+			Scene& scene, entt::entity camera, uint32_t width, uint32_t height, bool isEditor) = 0;
 
 		virtual uint32_t getFinalImage() = 0;
 
@@ -22,6 +23,7 @@ namespace Aozora {
 
 		virtual void genMegaBuffer(Scene& scene, ResourceManager& resourceManager) = 0;
 		virtual void updateMegaBuffer(Scene& scene, ResourceManager& resourceManager) = 0;
+
 
 		struct PSO {
 		public:

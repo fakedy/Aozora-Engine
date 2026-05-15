@@ -1,56 +1,22 @@
 #pragma once
-#include <Application.h> // temp
 #include "imgui/imgui.h"
-#include "imgui/imgui_internal.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
-#include "glad/glad.h"
-#include <iostream>
-#include "EditorEntityWindow.h"
-#include "ComponentsView.h"
-#include "StatsView.h"
-#include "Systems/Renderers/Viewport.h"
-#include <Systems/Scene/Scene.h>
 #include "EditorLayer.h"
-#include "Workspace.h"
-#include <Context.h>
-#include <Systems/Logging/Logger.h>
+#include <memory>
+
+namespace Aozora {
+	class Context;
+}
+
+class EditorLayer;
+class EditorEntityWindow;
+class ComponentsView;
+class StatsView;
+class Workspace;
 
 class EditorUILayer : public Aozora::Layer {
 public:
-	EditorUILayer(EditorLayer* editlayer, Aozora::Context& context) : m_editorLayer(editlayer), m_context(context) {
 
-
-		m_componentsViewWindow = std::make_shared<ComponentsView>();
-		m_editorEntityWindow = std::make_shared<EditorEntityWindow>(m_componentsViewWindow);
-		m_workspace = std::make_shared<Workspace>(m_context);
-
-		
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-		ImGui::StyleColorsDark();
-
-
-		// based on 4k for now. should use 1.0f for 1440p or something
-		float scaleFactor = 1.5f;
-
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.ScaleAllSizes(scaleFactor);
-
-		io.Fonts->AddFontFromFileTTF("Resources/moon_get-Heavy.ttf", 15.0f * scaleFactor);
-		
-
-		// use api?
-		Aozora::Application& m_app = Aozora::Application::getApplication();
-		GLFWwindow* m_window = static_cast<GLFWwindow*>(m_app.getWindow().getNativeWindow());
-
-		ImGui_ImplGlfw_InitForOpenGL(m_window, true);
-		ImGui_ImplOpenGL3_Init();
-	}
-
+	EditorUILayer(EditorLayer* editlayer, Aozora::Context& context);
 	void onUpdate(const Aozora::Context& context) override;
 	void onAttach() override;
 
@@ -68,5 +34,7 @@ private:
 	ImTextureID m_folder_texture;
 
 	EditorLayer* m_editorLayer;
+
+	void setUIStyle();
 
 };

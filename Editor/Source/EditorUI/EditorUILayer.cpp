@@ -1,6 +1,49 @@
 #include "EditorUILayer.h"
-#include "Application.h"
+#include "imgui/imgui_internal.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+#include "glad/glad.h"
+#include <iostream>
+#include "EditorEntityWindow.h"
+#include "ComponentsView.h"
+#include "StatsView.h"
+#include "Systems/Renderers/Viewport.h"
+#include <Systems/Scene/Scene.h>
+#include "Workspace.h"
+#include <Context.h>
+#include <Systems/Logging/Logger.h>
 
+
+EditorUILayer::EditorUILayer(EditorLayer* editlayer, Aozora::Context& context) : m_editorLayer(editlayer), m_context(context)
+{
+
+	m_componentsViewWindow = std::make_shared<ComponentsView>();
+	m_editorEntityWindow = std::make_shared<EditorEntityWindow>(m_componentsViewWindow);
+	m_workspace = std::make_shared<Workspace>(m_context);
+
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+	ImGui::StyleColorsDark();
+
+
+	// based on 4k for now. should use 1.0f for 1440p or something
+	float scaleFactor = 1.5f;
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.ScaleAllSizes(scaleFactor);
+
+	io.Fonts->AddFontFromFileTTF("Resources/moon_get-Heavy.ttf", 15.0f * scaleFactor);
+
+	Aozora::Window& window = *m_context.window;
+	GLFWwindow* m_window = static_cast<GLFWwindow*>(window.getNativeWindow());
+
+	ImGui_ImplGlfw_InitForOpenGL(m_window, true);
+	ImGui_ImplOpenGL3_Init();
+}
 
 void EditorUILayer::onUpdate(const Aozora::Context& context){
 
@@ -149,7 +192,11 @@ void EditorUILayer::onUpdate(const Aozora::Context& context){
 
 void EditorUILayer::onAttach()
 {
+	setUIStyle();
+}
 
+void EditorUILayer::setUIStyle()
+{
 	// setup the theme, would be cool to have preset themes to be selectable
 	ImGuiStyle& style = ImGui::GetStyle();
 	ImGuiIO& io = ImGui::GetIO();
@@ -187,9 +234,9 @@ void EditorUILayer::onAttach()
 	colors[ImGuiCol_MenuBarBg] = ImVec4(0.10f, 0.12f, 0.16f, 1.00f);
 
 	// Accents
-	colors[ImGuiCol_Button] = ImVec4(0.22f, 0.45f, 0.70f, 1.00f); 
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.30f, 0.55f, 0.85f, 1.00f); 
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.15f, 0.35f, 0.60f, 1.00f); 
+	colors[ImGuiCol_Button] = ImVec4(0.22f, 0.45f, 0.70f, 1.00f);
+	colors[ImGuiCol_ButtonHovered] = ImVec4(0.30f, 0.55f, 0.85f, 1.00f);
+	colors[ImGuiCol_ButtonActive] = ImVec4(0.15f, 0.35f, 0.60f, 1.00f);
 
 	colors[ImGuiCol_Header] = ImVec4(0.22f, 0.45f, 0.70f, 0.80f);
 	colors[ImGuiCol_HeaderHovered] = ImVec4(0.30f, 0.55f, 0.85f, 0.80f);
@@ -209,7 +256,6 @@ void EditorUILayer::onAttach()
 	colors[ImGuiCol_Separator] = ImVec4(0.25f, 0.35f, 0.45f, 1.00f);
 	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.30f, 0.55f, 0.85f, 1.00f);
 	colors[ImGuiCol_SeparatorActive] = ImVec4(0.40f, 0.65f, 0.95f, 1.00f);
-
 }
 
 
