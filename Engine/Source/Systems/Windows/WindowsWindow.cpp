@@ -1,6 +1,7 @@
 #include "WindowsWindow.h"
 #include <iostream>
 #include "Systems/Input.h"
+#include "Systems/Logging/Logger.h"
 
 // no logger implemented yet
 
@@ -51,7 +52,7 @@ namespace Aozora {
 		}
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 
 		m_window = glfwCreateWindow(m_props.width, m_props.height, m_props.title.c_str(), nullptr, nullptr);
 
@@ -61,6 +62,10 @@ namespace Aozora {
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 			std::cout << "Glad failed to load\n";
 		}
+		std::string gpuVendor = (const char*)glGetString(GL_VENDOR);
+		std::string gpuRenderer = (const char*)glGetString(GL_RENDERER);
+		Log::info(std::format("GPU Vendor: {}", gpuVendor));
+		Log::info(std::format("GPU Renderer: {}", gpuRenderer));
 
 		glfwSetKeyCallback(m_window, Input::keyCallback);
 		glfwSetCursorPosCallback(m_window, Input::mouseCallback);

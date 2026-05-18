@@ -152,18 +152,16 @@ namespace Aozora {
 			m_defaultShader.setInt("gProperties", 4);
 			m_defaultShader.setInt("gDepth", 5);
 
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[0]);
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[1]);
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[2]);
-			glActiveTexture(GL_TEXTURE3);
-			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[3]);
-			glActiveTexture(GL_TEXTURE4);
-			glBindTexture(GL_TEXTURE_2D, gBuffer->m_colorAttachments[4]);
-			glActiveTexture(GL_TEXTURE5);
-			glBindTexture(GL_TEXTURE_2D, gBuffer->m_depthTextureID);
+			GLuint gBufferTextures[] = {
+				gBuffer->m_colorAttachments[0],
+				gBuffer->m_colorAttachments[1],
+				gBuffer->m_colorAttachments[2],
+				gBuffer->m_colorAttachments[3],
+				gBuffer->m_colorAttachments[4],
+				gBuffer->m_depthTextureID
+			};
+			glBindTextures(0, 6, gBufferTextures);
+
 
 			ResourceManager::ResourceContainer& map = resourceManager.m_containerMap[scene.hash];
 
@@ -429,7 +427,7 @@ namespace Aozora {
 		auto MeshTransformEntities = scene.getRegistry().view<const MeshComponent, TransformComponent>(); // register of all mesh components
 
 		// step 1
-		// calculate the total size needed and allocate buffers
+		// calculate the total size needed and allocate buffers, we will use glBufferSubData to fill the buffers later
 		glBindVertexArray(m_VAO);
 
 		uint32_t verticesSize = 0;
@@ -442,6 +440,7 @@ namespace Aozora {
 
 		}
 
+		// Allocate GPU memory for all vertices and indices of all meshes in the scene
 		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 		glBufferData(GL_ARRAY_BUFFER, verticesSize, nullptr, GL_STATIC_DRAW);
 
@@ -451,7 +450,7 @@ namespace Aozora {
 		m_commands.resize(MeshTransformEntities.size_hint());
 		m_objectDataVector.resize(MeshTransformEntities.size_hint());
 
-		// step 2
+		// step 2 packing data
 		// create commands
 		uint32_t i = 0;
 		uint32_t baseVertex = 0;
@@ -467,6 +466,8 @@ namespace Aozora {
 			uint64_t verticesAmount = data.vertices.size();
 			uint64_t indicesAmount = data.indices.size();
 
+
+			// Upload data to the VBO and EBO with the correct offsets for each mesh
 			glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 			glBufferSubData(GL_ARRAY_BUFFER, currentVertexOffsetBytes, verticesAmount * sizeof(Mesh::Vertex), data.vertices.data());
 
