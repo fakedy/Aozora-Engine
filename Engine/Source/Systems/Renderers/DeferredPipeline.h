@@ -73,9 +73,14 @@ namespace Aozora {
 		void setupRenderBuffer();
 
 		void renderLights(Scene& scene);
+		void drawGrid(bool isEditor, const Aozora::CameraComponent& camera, const glm::vec3& cameraPos, uint32_t width, uint32_t height);
 		void postfxPass();
 
 		uint32_t m_outputAttachment{ 0 };
+
+		// submit render command
+		std::vector<DrawElementsIndirectCommand> m_commands;
+		std::vector<ObjectData> m_objectDataVector;
 
 
 	};

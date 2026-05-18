@@ -41,6 +41,7 @@ namespace Aozora::Graphics {
 			// kinda whack
 			for (auto& [ID, viewport] : m_viewports) {
 				if (viewport.sceneID == scene->hash) {
+					Log::info("Regenerating megabuffer for scene with new mesh");
 					viewport.renderPipeline->genMegaBuffer(*scene, m_resourceManager);
 				}
 			}
@@ -74,6 +75,10 @@ namespace Aozora::Graphics {
 						*scene, cameraEntity, viewport.width, viewport.height, viewport.isEditorViewport());
 					}
 				}
+				if (scene->transformDirty) {
+					viewport.renderPipeline->genMegaBuffer(*scene, m_resourceManager);
+					scene->transformDirty = false;
+				}
 
 			}
 		}
@@ -85,7 +90,6 @@ namespace Aozora::Graphics {
 	uint32_t SceneRenderer::createViewport(ViewportType type)
 	{
 		uint32_t viewportID = nextViewportID;
-
 
 		m_viewports.emplace(std::piecewise_construct, std::forward_as_tuple(viewportID), std::forward_as_tuple(1920, 1080, std::make_unique<DeferredPipeline>(1920, 1080)));
 		Viewport& tempViewport = m_viewports.at(viewportID);

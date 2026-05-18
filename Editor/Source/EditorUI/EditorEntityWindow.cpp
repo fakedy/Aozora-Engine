@@ -42,12 +42,25 @@ void EditorEntityWindow::drawEntityNode(entt::entity entity, const Aozora::Conte
 		flags |= ImGuiTreeNodeFlags_Selected;
 	}
 
-
 	bool nodeOpen = ImGui::TreeNodeEx((void*)(uint64_t)entity, flags, "%s", entityName.c_str());
 
 	if (ImGui::IsItemClicked()) {
 		m_componentsView->setSelectedEntity(entity);
 	}
+
+	// right click menu
+	if (ImGui::BeginPopupContextItem("EntityContextMenu"))
+	{
+		if (ImGui::MenuItem("Delete")) {
+			// Handle delete
+			context.sceneManager->getCurrentActiveScene()->deleteEntity(entity);
+		}
+		if (ImGui::MenuItem("Rename")) {
+			// Handle rename
+		}
+		ImGui::EndPopup();
+	}
+
 	// add right click remove
 
 

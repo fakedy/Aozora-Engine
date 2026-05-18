@@ -104,94 +104,20 @@ namespace Aozora {
 			current_camera.m_viewPortHeight = height;
 
 
-			// submit render command
-			//draw commands can be generated on another thread
-			std::vector<DrawElementsIndirectCommand> commands;
-			std::vector<ObjectData> objectDataVector;
 
 			glDisable(GL_BLEND);
 			// use shader
 			glUseProgram(m_gBufferShader.ID);
-			// bind vao
-			glBindVertexArray(m_VAO);
-
-			// create commands
-			uint32_t i = 0;
-			uint32_t baseVertex = 0;
-			uint32_t firstIndex = 0;
-
 			m_gBufferShader.setMat4("view", current_camera.getView());
 			m_gBufferShader.setMat4("proj", current_camera.getProjection());
 
-			ResourceManager::ResourceContainer& map = resourceManager.m_containerMap[scene.hash];
-			// assume the EBO/VBO have the exact same order as this loop
-			// it can be wrong and screw things up
-			commands.resize(MeshTransformEntities.size_hint());
-			objectDataVector.resize(MeshTransformEntities.size_hint());
-			for (const auto entity : MeshTransformEntities) {
-				auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
-				Mesh::MeshData& data = map.m_loadedMeshes[meshComponent.meshID].meshData;
-				uint64_t verticesAmount = data.vertices.size();
-				uint64_t indicesAmount = data.indices.size();
+			// bind vao
+			glBindVertexArray(m_VAO);
 
-				// indirect draw command for glMultiDrawElementsIndirect
-				DrawElementsIndirectCommand command;
-				command.count = indicesAmount; 
-				command.instanceCount = 1; // draw 1 instance
-				command.firstIndex = firstIndex; // draw from index 0
-				command.baseVertex = baseVertex; // where the new "object" begins
-				command.baseInstance = i; // what object we are on?
-
-				commands[i] = command;
-				auto& transformComponent = MeshTransformEntities.get<TransformComponent>(entity);
-
-				// data to be uploaded to gpu so we can access variables inside the shaders
-				ObjectData objectData = {}; // set all to 0
-				objectData.model = transformComponent.model;
-
-
-				Material& mat = map.m_loadedmaterials[meshComponent.materialID];
-
-				uint64_t diffuseTextureID = mat.diffuseTexture;
-				objectData.diffuseTextureHandle = map.m_loadedTextures[diffuseTextureID].handle;
-				objectData.albedo = mat.baseColor;
-
-				uint64_t emissiveTextureID = mat.emissiveTexture;
-				objectData.emissiveTextureHandle = map.m_loadedTextures[emissiveTextureID].handle;
-				objectData.emissive = mat.emissive;
-
-				uint64_t aoTextureID = mat.aoTexture;
-				objectData.aoTextureHandle = map.m_loadedTextures[aoTextureID].handle;
-				objectData.ao = mat.ao;
-
-				uint64_t metallicTextureID = mat.metallicTexture;
-				objectData.metallicTextureHandle = map.m_loadedTextures[metallicTextureID].handle;
-				objectData.metallic = mat.metallic;
-
-				uint64_t roughnessTextureID = mat.roughnessTexture;
-				objectData.roughnessTextureHandle = map.m_loadedTextures[roughnessTextureID].handle;
-				objectData.roughness = mat.roughness;
-
-				uint64_t normalTextureID = mat.normalTexture;
-				objectData.normalTextureHandle = map.m_loadedTextures[normalTextureID].handle;
-
-				objectDataVector[i] = objectData;
-				firstIndex += indicesAmount;
-				baseVertex += verticesAmount; // add offset
-				i++;
-			}
-
-			// upload the data to the gpu
-			glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_indirectBuffer);
-			glBufferData(GL_DRAW_INDIRECT_BUFFER, commands.size() * sizeof(DrawElementsIndirectCommand), commands.data(), GL_DYNAMIC_DRAW);
-
-			glBindBuffer(GL_SHADER_STORAGE_BUFFER, objectSSBO);
-			glBufferData(GL_SHADER_STORAGE_BUFFER, objectDataVector.size() * sizeof(ObjectData), objectDataVector.data(), GL_DYNAMIC_DRAW);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, objectSSBO);
+			glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_indirectBuffer);
 
-
-
-			glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, (GLvoid*)0, commands.size(), 0);
+			glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, (GLvoid*)0, m_commands.size(), 0);
 
 			glBindVertexArray(0);
 			glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
@@ -205,7 +131,6 @@ namespace Aozora {
 			// copy the depth buffer to the lighting buffer
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer->framebufferID);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderBuffer->framebufferID);
-
 			glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -240,6 +165,8 @@ namespace Aozora {
 			glActiveTexture(GL_TEXTURE5);
 			glBindTexture(GL_TEXTURE_2D, gBuffer->m_depthTextureID);
 
+			ResourceManager::ResourceContainer& map = resourceManager.m_containerMap[scene.hash];
+
 			auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
 			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skyboxes.front()); // hack (crash if we dont have a skybox entity)
 			Skybox& skyboxObject = map.m_loadedSkyboxes[skyboxComponent.id];
@@ -257,7 +184,6 @@ namespace Aozora {
 			glDepthMask(GL_FALSE);
 			renderLights(scene);
 			glDepthMask(GL_TRUE);
-
 
 			// render skybox
 			glDepthFunc(GL_LEQUAL);
@@ -278,33 +204,13 @@ namespace Aozora {
 			}
 			glBindVertexArray(0);
 			glDepthFunc(GL_LESS);
-
-			// editor grid
-			if (isEditor) {
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				glEnable(GL_DEPTH_TEST);
-				glDepthMask(GL_FALSE);
-
-				glUseProgram(m_gridShader.ID);
-				m_gridShader.setMat4("view", current_camera.getView());
-				m_gridShader.setMat4("proj", current_camera.getProjection());
-				m_gridShader.setVec3fv("cameraPos", camera_transform.pos);
-
-				const GLint screenSizeLoc = glGetUniformLocation(m_gridShader.ID, "screenSize");
-				glUniform2f(screenSizeLoc, static_cast<float>(width), static_cast<float>(height));
-
-				glBindVertexArray(skybox.VAO);
-				glDrawArrays(GL_TRIANGLES, 0, 6);
-				glBindVertexArray(0);
-
-				glDepthMask(GL_TRUE);
-				glDisable(GL_BLEND);
-			}
 			glEnable(GL_CULL_FACE);
 
-			renderBuffer->unbind();
+			drawGrid(isEditor, current_camera, camera_transform.pos, width, height);
 
+			glEnable(GL_CULL_FACE);
+			 
+			renderBuffer->unbind();
 
 			postfxBuffer->bind();
 			postfxPass();
@@ -312,6 +218,33 @@ namespace Aozora {
 			
 		}
 
+	}
+
+	void DeferredPipeline::drawGrid(bool isEditor, const Aozora::CameraComponent& camera, const glm::vec3& cameraPos, uint32_t width, uint32_t height) {
+		// editor grid
+		if (isEditor) {
+			glDisable(GL_CULL_FACE);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glEnable(GL_DEPTH_TEST);
+			glDepthMask(GL_FALSE);
+
+			glUseProgram(m_gridShader.ID);
+			m_gridShader.setMat4("view", camera.getView());
+			m_gridShader.setMat4("proj", camera.getProjection());
+			m_gridShader.setVec3fv("cameraPos", cameraPos);
+
+			const GLint screenSizeLoc = glGetUniformLocation(m_gridShader.ID, "screenSize");
+			glUniform2f(screenSizeLoc, static_cast<float>(width), static_cast<float>(height));
+
+			glBindVertexArray(skybox.VAO);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glBindVertexArray(0);
+
+			glDepthMask(GL_TRUE);
+			glDisable(GL_BLEND);
+			glEnable(GL_CULL_FACE);
+		}
 	}
 
 	uint32_t DeferredPipeline::getFinalImage()
@@ -495,7 +428,8 @@ namespace Aozora {
 
 		auto MeshTransformEntities = scene.getRegistry().view<const MeshComponent, TransformComponent>(); // register of all mesh components
 
-		// bind vao
+		// step 1
+		// calculate the total size needed and allocate buffers
 		glBindVertexArray(m_VAO);
 
 		uint32_t verticesSize = 0;
@@ -504,39 +438,103 @@ namespace Aozora {
 			auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
 			Mesh::MeshData& data = resourceManager.m_containerMap[scene.hash].m_loadedMeshes[meshComponent.meshID].meshData;
 			verticesSize += data.vertices.size() * sizeof(Mesh::Vertex);
-			indexSize += data.indices.size() * sizeof(uint64_t);
+			indexSize += data.indices.size() * sizeof(uint32_t);
 
 		}
 
-
 		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-		glBufferData(GL_ARRAY_BUFFER, verticesSize, nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, verticesSize, nullptr, GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize, nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize, nullptr, GL_STATIC_DRAW);
 
+		m_commands.resize(MeshTransformEntities.size_hint());
+		m_objectDataVector.resize(MeshTransformEntities.size_hint());
+
+		// step 2
+		// create commands
+		uint32_t i = 0;
 		uint32_t baseVertex = 0;
 		uint32_t firstIndex = 0;
 		uint32_t currentVertexOffsetBytes = 0;
 		uint32_t currentIndicesOffsetBytes = 0;
+
+		ResourceManager::ResourceContainer& map = resourceManager.m_containerMap[scene.hash];
+
 		for (const auto entity : MeshTransformEntities) {
 			auto& meshComponent = MeshTransformEntities.get<MeshComponent>(entity);
+			Mesh::MeshData& data = map.m_loadedMeshes[meshComponent.meshID].meshData;
+			uint64_t verticesAmount = data.vertices.size();
+			uint64_t indicesAmount = data.indices.size();
 
-			Mesh::MeshData& data = resourceManager.m_containerMap[scene.hash].m_loadedMeshes[meshComponent.meshID].meshData;
-			uint32_t verticesAmount = data.vertices.size();
-			uint32_t indicesAmount = data.indices.size();
 			glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 			glBufferSubData(GL_ARRAY_BUFFER, currentVertexOffsetBytes, verticesAmount * sizeof(Mesh::Vertex), data.vertices.data());
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, currentIndicesOffsetBytes, indicesAmount * sizeof(unsigned int), data.indices.data());
+			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, currentIndicesOffsetBytes, indicesAmount * sizeof(uint32_t), data.indices.data());
+
+			// indirect draw command for glMultiDrawElementsIndirect
+			DrawElementsIndirectCommand command;
+			command.count = indicesAmount;
+			command.instanceCount = 1; // draw 1 instance
+			command.firstIndex = firstIndex; // draw from index 0
+			command.baseVertex = baseVertex; // where the new "object" begins
+			command.baseInstance = i; // what object we are on?
+			m_commands[i] = command;
+
+			auto& transformComponent = MeshTransformEntities.get<TransformComponent>(entity);
+
+			// data to be uploaded to gpu so we can access variables inside the shaders
+			ObjectData objectData = {}; // set all to 0
+			{
+				objectData.model = transformComponent.model;
+				Material& mat = map.m_loadedmaterials[meshComponent.materialID];
+
+				uint64_t diffuseTextureID = mat.diffuseTexture;
+				objectData.diffuseTextureHandle = map.m_loadedTextures[diffuseTextureID].handle;
+				objectData.albedo = mat.baseColor;
+
+				uint64_t emissiveTextureID = mat.emissiveTexture;
+				objectData.emissiveTextureHandle = map.m_loadedTextures[emissiveTextureID].handle;
+				objectData.emissive = mat.emissive;
+
+				uint64_t aoTextureID = mat.aoTexture;
+				objectData.aoTextureHandle = map.m_loadedTextures[aoTextureID].handle;
+				objectData.ao = mat.ao;
+
+				uint64_t metallicTextureID = mat.metallicTexture;
+				objectData.metallicTextureHandle = map.m_loadedTextures[metallicTextureID].handle;
+				objectData.metallic = mat.metallic;
+
+				uint64_t roughnessTextureID = mat.roughnessTexture;
+				objectData.roughnessTextureHandle = map.m_loadedTextures[roughnessTextureID].handle;
+				objectData.roughness = mat.roughness;
+
+				uint64_t normalTextureID = mat.normalTexture;
+				objectData.normalTextureHandle = map.m_loadedTextures[normalTextureID].handle;
+
+			}
+
+			m_objectDataVector[i] = objectData;
 
 			firstIndex += indicesAmount;
 			baseVertex += verticesAmount; // add offset
 			currentVertexOffsetBytes += verticesAmount * sizeof(Mesh::Vertex);
-			currentIndicesOffsetBytes += indicesAmount * sizeof(unsigned int);
+			currentIndicesOffsetBytes += indicesAmount * sizeof(uint32_t);
+			i++;
 		}
 		glBindVertexArray(0);
+
+		m_commands.resize(i);
+		m_objectDataVector.resize(i);
+
+
+		// upload the data to the gpu
+		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_indirectBuffer);
+		glBufferData(GL_DRAW_INDIRECT_BUFFER, m_commands.size() * sizeof(DrawElementsIndirectCommand), m_commands.data(), GL_DYNAMIC_DRAW);
+
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, objectSSBO);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, m_objectDataVector.size() * sizeof(ObjectData), m_objectDataVector.data(), GL_DYNAMIC_DRAW);
 	}
 	void DeferredPipeline::updateMegaBuffer(Scene& scene, ResourceManager& resourceManager)
 	{

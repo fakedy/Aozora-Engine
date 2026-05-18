@@ -100,6 +100,7 @@ namespace Aozora {
         
     }
 
+    // Load textures that wont be cleared
     uint64_t ResourceManager::loadTexturePersistent(uint64_t hash)
     {
         unsigned int texture = 0;
@@ -162,6 +163,13 @@ namespace Aozora {
         Log::info(std::format("Created texture with ID: {}", texture));
 
         return texture;
+    }
+
+    uint64_t ResourceManager::loadTexturePersistent(const std::string& path)
+    {
+        uint64_t hash = m_assetManager.createTexture(path);
+        hash = loadTexturePersistent(hash);
+        return hash;
     }
 
     uint64_t ResourceManager::loadMaterial(uint64_t hash, uint64_t sceneID)

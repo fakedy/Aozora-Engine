@@ -25,6 +25,8 @@ namespace Aozora {
 
 		std::string m_snapshotData;
 
+		bool transformDirty{ false };
+
 		uint64_t hash{ 0 };
 
 		std::string m_sceneName{ "New Scene" };

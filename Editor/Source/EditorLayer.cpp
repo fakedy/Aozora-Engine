@@ -44,7 +44,6 @@ void EditorLayer::changeState(EditorState state)
 		break;
 	case EditorState::PLAY:
 		m_sceneManager.getCurrentActiveScene()->takeSnapshot();
-
 		break;
 	default:
 		break;

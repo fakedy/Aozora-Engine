@@ -10,10 +10,11 @@
 
 Workspace::Workspace(Aozora::Context& context) : m_context(context)
 {
-	m_file_3d_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/file-3d.png"));
-	m_image_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/image.png"));
-	m_folder_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/folder.png"));
-	m_script_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent(context.assetManager->createTexture("Resources/editor/folder.png"));
+	// load icons for different asset types
+	m_file_3d_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent("Resources/editor/file-3d.png");
+	m_image_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent("Resources/editor/image.png");
+	m_folder_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent("Resources/editor/folder.png");
+	m_script_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent("Resources/editor/script.png");
 }
 
 void Workspace::draw(const Aozora::Context& context)
@@ -25,20 +26,19 @@ void Workspace::draw(const Aozora::Context& context)
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::BeginMenu("New")) {
 				if (ImGui::MenuItem("Scene")) {
-					// create asset of scene not a live scene in scenemanager
-					//context.sceneManager->createScene();
+
 				}
 				if (ImGui::MenuItem("Folder")) {
-					// create new asset folder or something idk
+
 				}
 				if (ImGui::MenuItem("Material")) {
-					// create new asset folder or something idk
+
 				}
 				if (ImGui::MenuItem("Script")) {
-					// create new asset folder or something idk
+
 				}
 				if (ImGui::MenuItem("Skybox")) {
-					// create new asset folder or something idk
+
 				}
 				ImGui::EndMenu();
 			}

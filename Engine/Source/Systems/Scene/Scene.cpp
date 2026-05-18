@@ -29,6 +29,7 @@ namespace Aozora {
 
 			if (transform.isDirty && getEntityParent(entity) == entt::null) {
 				updateTransform(entity, glm::mat4(1.0f));
+				transformDirty = true;
 			}
 		}
 
@@ -178,6 +179,20 @@ namespace Aozora {
 
 	void Scene::deleteEntity(const entt::entity entity) {
 
+		// handle children
+		auto& children = getEntityChildren(entity);
+
+		for (auto child : children) {
+			deleteEntity(child);
+		}
+
+		auto& parent = getEntityParent(entity);
+		// handle parent relationship
+		if (parent != entt::null) {
+			auto& parentChildren = m_registry->get<RelationComponent>(parent).children;
+			std::erase(parentChildren, entity);
+		}
+
 		m_registry->destroy(entity);
 
 	}
@@ -209,12 +224,8 @@ namespace Aozora {
 
 	entt::entity& Scene::getEntityParent(entt::entity entity)
 	{
-
-		
 		auto& relationComponent = m_registry->get<RelationComponent>(entity);
-
 		return relationComponent.parent;
-
 	}
 	void Scene::makeTransformDirty(entt::entity entity)
 	{

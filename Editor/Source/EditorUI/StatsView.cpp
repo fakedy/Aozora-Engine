@@ -13,12 +13,6 @@ void StatsView::draw(const Aozora::Context& context) {
     frameTimeGraph();
 	ImGui::Text("Frame rate: %f fps", io.Framerate);
 	ImGui::End();
-
-
-    
-
-
-
 }
 
 

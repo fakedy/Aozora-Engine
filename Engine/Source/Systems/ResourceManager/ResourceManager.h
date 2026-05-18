@@ -38,6 +38,7 @@ namespace Aozora {
 
 		uint64_t loadTexture(uint64_t hash, uint64_t sceneID);
 		uint64_t loadTexturePersistent(uint64_t hash);
+		uint64_t loadTexturePersistent(const std::string& path);
 		uint64_t loadMaterial(uint64_t hash, uint64_t sceneID);
 		uint64_t loadCubemap(uint64_t hash, uint64_t sceneID);
 		
