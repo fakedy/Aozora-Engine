@@ -21,8 +21,8 @@ namespace Aozora {
 
 		virtual void resize(uint32_t width, uint32_t height) = 0;
 
-		virtual void genMegaBuffer(Scene& scene, ResourceManager& resourceManager) = 0;
-		virtual void updateMegaBuffer(Scene& scene, ResourceManager& resourceManager) = 0;
+		virtual void updateInstanceData(Scene& scene, ResourceManager& resourceManager) = 0;
+		virtual void updateDrawCommands(Scene& scene, ResourceManager& resourceManager) = 0;
 
 
 		struct PSO {

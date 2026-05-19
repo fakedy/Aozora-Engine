@@ -42,7 +42,9 @@ namespace Aozora::Graphics {
 			for (auto& [ID, viewport] : m_viewports) {
 				if (viewport.sceneID == scene->hash) {
 					Log::info("Regenerating megabuffer for scene with new mesh");
-					viewport.renderPipeline->genMegaBuffer(*scene, m_resourceManager);
+					//viewport.renderPipeline->genMegaBuffer(*scene, m_resourceManager);
+					viewport.renderPipeline->updateDrawCommands(*scene, m_resourceManager);
+					viewport.renderPipeline->updateInstanceData(*scene, m_resourceManager);
 				}
 			}
 			break;
@@ -75,10 +77,12 @@ namespace Aozora::Graphics {
 						*scene, cameraEntity, viewport.width, viewport.height, viewport.isEditorViewport());
 					}
 				}
+				// good for later if we do specific updates. But no use right now.
 				if (scene->transformDirty) {
-					viewport.renderPipeline->genMegaBuffer(*scene, m_resourceManager);
+					//viewport.renderPipeline->updateInstanceData(*scene, m_resourceManager);
 					scene->transformDirty = false;
 				}
+				viewport.renderPipeline->updateInstanceData(*scene, m_resourceManager);
 
 			}
 		}

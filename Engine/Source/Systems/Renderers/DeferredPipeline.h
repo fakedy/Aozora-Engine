@@ -21,9 +21,8 @@ namespace Aozora {
 		uint32_t getFinalImage() override;
 		std::unique_ptr<FrameBuffer> renderBuffer;
 
-		void genMegaBuffer(Scene& scene, ResourceManager& resourceManager);
-		void updateMegaBuffer(Scene& scene, ResourceManager& resourceManager);
-
+		void updateInstanceData(Scene& scene, ResourceManager& resourceManager);
+		void updateDrawCommands(Scene& scene, ResourceManager& resourceManager);
 
 	private:
 		std::unique_ptr<FrameBuffer> gBuffer;
@@ -73,7 +72,7 @@ namespace Aozora {
 		void setupRenderBuffer();
 
 		void renderLights(Scene& scene);
-		void drawGrid(bool isEditor, const Aozora::CameraComponent& camera, const glm::vec3& cameraPos, uint32_t width, uint32_t height);
+		void drawGrid(const Aozora::CameraComponent& camera, const glm::vec3& cameraPos, uint32_t width, uint32_t height);
 		void postfxPass();
 
 		uint32_t m_outputAttachment{ 0 };
