@@ -23,7 +23,7 @@ namespace Aozora::Resources {
         
 
         if (scene == nullptr) {
-            std::cerr << "Error importing file: " << m_importer.GetErrorString() << std::endl;
+            Log::error(std::format("Error importing file: {}", m_importer.GetErrorString()));
         }
 
         return scene;
@@ -50,9 +50,7 @@ namespace Aozora::Resources {
             std::string key = file + "|" + std::to_string(meshIndex) + aiMesh->mName.C_Str();
 
             // check if mesh i already loaded
-            if (m_importRegistry.count(key)) {
-            }
-            else {
+            if (!m_importRegistry.count(key)) {
                 // create the mesh
                 Mesh mesh = processMesh(aiMesh, scene, iModel, file);
                 mesh.name = aiMesh->mName.C_Str();
@@ -130,7 +128,7 @@ namespace Aozora::Resources {
             iModel.materials.push_back(material);
         }
 
-
+        createdmesh.meshData.vertices.reserve(mesh->mNumVertices);
         for (uint32_t v = 0; v < mesh->mNumVertices; v++) {
 
             Mesh::Vertex vertex;
@@ -172,7 +170,9 @@ namespace Aozora::Resources {
 
 
         }
+
         // fix indices
+        createdmesh.meshData.indices.reserve(mesh->mNumFaces*3);
         for (unsigned int f = 0; f < mesh->mNumFaces; f++) { // for every face in mesh i
 
             aiFace face = mesh->mFaces[f]; // grab the face f in mesh i

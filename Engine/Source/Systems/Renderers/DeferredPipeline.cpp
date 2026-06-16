@@ -102,8 +102,6 @@ namespace Aozora {
 		// check if viewport have a camera
 		if (camera != entt::null) {
 
-
-
 			// gBuffer pass
 			gBuffer->bind();
 

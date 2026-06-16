@@ -13,7 +13,8 @@ ComponentsView::ComponentsView()
 void ComponentsView::draw(const Aozora::Context& context) {
 
 	uint64_t sceneID = context.sceneManager->getCurrentActiveScene()->hash;
-	entt::registry& registry = context.sceneManager->getCurrentActiveScene()->getRegistry();
+	Aozora::Scene& scene = *context.sceneManager->getCurrentActiveScene();
+	entt::registry& registry = scene.getRegistry();
 
 	auto view = registry.view<Aozora::NameComponent>();
 	ImGui::Begin("Components View", NULL, ImGuiWindowFlags_MenuBar); // will display components
@@ -74,6 +75,8 @@ void ComponentsView::draw(const Aozora::Context& context) {
 			}
 		}
 
+		Aozora::ResourceManager::ResourceContainer& sceneContainer = context.resourcemanager->m_containerMap[scene.hash];
+
 		// check if entity got mesh
 		if (registry.all_of<Aozora::MeshComponent>(m_selectedEntity)) {
 			if (ImGui::CollapsingHeader("MeshComponent", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -88,10 +91,50 @@ void ComponentsView::draw(const Aozora::Context& context) {
 				// not sure this is correct but lets see
 				// I need to check how i actually did my refCount
 
-				ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Roughness", &mat.roughness, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Metallic", &mat.metallic, 0.01f, 0.0f, 1.0f);
+
+
+
+				int thumbnailSize = ImGui::GetContentRegionAvail().x;
+
+				if (mat.diffuseTexture) {
+					if (ImGui::CollapsingHeader("DiffuseTexture", ImGuiTreeNodeFlags_DefaultOpen)) {
+						auto gpuHandle = sceneContainer.m_loadedTextures[mat.diffuseTexture].id;
+						ImGui::Image((ImTextureID)gpuHandle, ImVec2((float)thumbnailSize, (float)thumbnailSize));
+					}
+				}
+				else {
+					ImGui::DragFloat4("Albedo", glm::value_ptr(mat.baseColor), 0.01f, 0.0f, 1.0f);
+				}
+
+				if (mat.roughnessTexture) {
+					if (ImGui::CollapsingHeader("Roughness Texture", ImGuiTreeNodeFlags_DefaultOpen)) {
+						auto gpuHandle = sceneContainer.m_loadedTextures[mat.roughnessTexture].id;
+						ImGui::Image((ImTextureID)gpuHandle, ImVec2((float)thumbnailSize, (float)thumbnailSize));
+					}
+				}
+				else {
+					ImGui::DragFloat("Roughness", &mat.roughness, 0.01f, 0.0f, 1.0f);
+				}
+
+				if (mat.metallicTexture) {
+					if (ImGui::CollapsingHeader("Metallic Texture", ImGuiTreeNodeFlags_DefaultOpen)) {
+						auto gpuHandle = sceneContainer.m_loadedTextures[mat.metallicTexture].id;
+						ImGui::Image((ImTextureID)gpuHandle, ImVec2((float)thumbnailSize, (float)thumbnailSize));
+					}
+				}
+				else {
+					ImGui::DragFloat("Metallic", &mat.metallic, 0.01f, 0.0f, 1.0f);
+				}
+
+				if (mat.emissiveTexture) {
+					if (ImGui::CollapsingHeader("Emissive Texture", ImGuiTreeNodeFlags_DefaultOpen)) {
+						auto gpuHandle = sceneContainer.m_loadedTextures[mat.emissiveTexture].id;
+						ImGui::Image((ImTextureID)gpuHandle, ImVec2((float)thumbnailSize, (float)thumbnailSize));
+					}
+				}
+				else {
+					ImGui::DragFloat4("Emissive", glm::value_ptr(mat.emissive), 0.01f, 0.0f, 1.0f);
+				}
 
 			}
 		}

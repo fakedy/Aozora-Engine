@@ -16,7 +16,6 @@ namespace Aozora {
            for (const auto& node : model.allNodes) {
                if (node.hasMesh) {
 
-                   
                    uint64_t meshID = loadMesh(node.meshID, sceneID);
                    uint64_t matID = m_containerMap[sceneID].m_loadedMeshes[meshID].materialID;
                    loadMaterial(matID, sceneID);
@@ -93,6 +92,7 @@ namespace Aozora {
         uint64_t handle = glGetTextureHandleARB(texture);
         glMakeTextureHandleResidentARB(handle);
         tex.handle = handle;
+        tex.id = texture;
         m_containerMap[sceneID].m_loadedTextures[hash] = tex;
         Log::info(std::format("Created texture with ID: {}", texture));
 
@@ -225,7 +225,7 @@ namespace Aozora {
 
         glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -253,17 +253,16 @@ namespace Aozora {
 
 
         internalFormat = GL_R11F_G11F_B10F;
-        sourceFormat = GL_RGBA;
+        sourceFormat = GL_RGB;
         sourceType = GL_FLOAT;
         for (int i = 0; i < 6; i++) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, sourceFormat, sourceType, nullptr);
         }
 
-        glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -283,7 +282,7 @@ namespace Aozora {
     uint64_t ResourceManager::loadSkybox(uint64_t hash, uint64_t sceneID)
     {
             // yes its confusing, yes its temporary, said the guy who now dont remember what is confusing about this
-            // must be because of how messy this is to read
+            // must be because of how messy this is
             Skybox skybox = m_assetManager.loadSkyboxFromDisk(hash);
             loadCubemap(skybox.cubeMapTexture, sceneID);
 

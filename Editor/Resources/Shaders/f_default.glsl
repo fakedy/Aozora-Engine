@@ -65,11 +65,13 @@ vec3 calcIndirectLighting(){
     fresnel = mix(fresnel, albedo.rgb, metallic);
 
 
-    vec3 F = fresnel + (1.0 - fresnel) * pow(1.0 - dot(wo,wh), 5.0);
+    vec3 F = fresnel + (1.0 - fresnel) * pow(1.0 - max(dot(wo,wh), 0.0), 5.0);
 
     vec3 dialectric_term = F*Li + (1 - F) * diffuse_term;
     vec3 metal_term = F * Li;
     return metallic * metal_term + (1.0 - metallic) * dialectric_term;
+
+    //return diffuse_term;
 }
 
 
@@ -85,14 +87,8 @@ void main(){
     roughness = texture(gProperties, textureCoord).g;
     ao = texture(gProperties, textureCoord).r;
 
-    if(albedo.a < 0.05f) {
-        discard;
-    }
-
 
     vec3 light = calcIndirectLighting() + emissive;
     
-    vec3 testcolor = texture(skybox, normal).rgb;
-
-    finalColor = vec4(light, albedo.a);
+    finalColor = vec4(light, 1.0);
 }

@@ -57,6 +57,7 @@ namespace Aozora::Resources {
 		Skybox loadSkyboxFromDisk(uint64_t hash);
 		Scene loadSceneFromDisk(uint64_t hash);
 		uint64_t saveSceneToDisk(Scene& scene);
+		
 
 		void saveManifest();
 		void saveProject();

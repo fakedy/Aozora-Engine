@@ -22,6 +22,7 @@ namespace Aozora {
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 		glGenVertexArrays(1, &VAO);
 	}

@@ -15,7 +15,7 @@ void main(){
     vec3 N = normalize(TexCoords);
     vec3 up = vec3(0.0, 1.0, 0.0);
     vec3 right = normalize(cross(up, N));
-    up = cross(N, right);
+    up = normalize(cross(N, right));
 
     // lower value = more detailed
     float sampleDelta = 0.025;
@@ -27,13 +27,13 @@ void main(){
             
             // Convert from tangent space to world space.
             vec3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * N; 
-            irradiance += texture(environmentMap, sampleVec).rgb * cos(theta) * sin(theta);;
+            irradiance += texture(environmentMap, sampleVec).rgb * cos(theta) * sin(theta);
             samples++;
         }
     }
 
 
     irradiance = PI * irradiance / samples;
-    finalColor = vec4(irradiance, 1.0); // fake atm
+    finalColor = vec4(irradiance, 1.0);
 
 }

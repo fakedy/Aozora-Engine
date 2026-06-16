@@ -52,8 +52,12 @@ namespace Aozora::Resources {
 
 		// TODO This does not belong here, move it out
 		loadAsset("Resources/testcube/testcube.obj");
-		//loadAsset("Resources/sponza2/sponza.obj");
+		loadAsset("Resources/sponza2/sponza.obj");
+		loadAsset("Resources/gpmesh/scene.gltf");
+		//loadAsset("Resources/clank/hero_clank_ps4.obj");
 		loadAsset("Resources/DamagedHelmet/DamagedHelmet.gltf");
+		loadAsset("Resources/NieRReincarnation_Chr_2B/2b.fbx");
+		//loadAsset("Resources/sibenik/sibenik.obj");
 		return true;
 	}
 
@@ -312,19 +316,18 @@ namespace Aozora::Resources {
 		skybox.cubeMapTexture = cubeMapTexture.id;
 
 		{
-
 			std::ofstream os(m_workingDirectory + std::to_string(skybox.id) + ".skybox", std::ios::binary);
 			cereal::BinaryOutputArchive archive(os);
 			archive(skybox);
 		}
 		{
-
 			std::ofstream os(m_workingDirectory + std::to_string(cubeMapTexture.id) + ".texture", std::ios::binary);
 			cereal::BinaryOutputArchive archive(os);
 			archive(cubeMapTexture);
 		}
 
 		saveManifest();
+
 
 		return skybox.id;
 	}

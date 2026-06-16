@@ -14,8 +14,6 @@ namespace Aozora {
 	class Material {
 	public:
 
-		// storing textures like this is not efficient and its expensive
-		// the Texture files contain the raw data for that texture
 		uint64_t diffuseTexture{ 0 };
 		uint64_t normalTexture{ 0 };
 		uint64_t heightTexture{ 0 };
