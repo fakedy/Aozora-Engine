@@ -152,6 +152,7 @@ namespace Aozora {
 
 			auto& camera_transform = MeshTransformEntities.get<TransformComponent>(camera);
 			m_defaultShader.setVec3fv("cameraPos", camera_transform.pos);
+			m_defaultShader.setMat4("invView", glm::inverse(current_camera.getView()));
 
 			GLuint gBufferTextures[] = {
 				gBuffer->m_colorAttachments[0],
@@ -397,12 +398,14 @@ namespace Aozora {
 			std::string lightQuadraticVar = "lights[" + std::to_string(index) + "].quadratic";
 			std::string lightRadiusVar = "lights[" + std::to_string(index) + "].radius";
 			std::string lightPowerVar = "lights[" + std::to_string(index) + "].power";
+			std::string lightTypeVar = "lights[" + std::to_string(index) + "].type";
 			m_defaultShader.setVec3fv(lightPosVar, transformComponent.pos);
 			m_defaultShader.setVec3fv(lightColorVar, lightComponent.color);
 			m_defaultShader.setFloat(lightLinearVar, lightComponent.linear);
 			m_defaultShader.setFloat(lightQuadraticVar, lightComponent.quadratic);
 			m_defaultShader.setFloat(lightRadiusVar, lightComponent.radius);
 			m_defaultShader.setFloat(lightPowerVar, lightComponent.power);
+			m_defaultShader.setInt(lightTypeVar, lightComponent.type);
 			index++;
 		}
 		m_defaultShader.setInt("activeLights", index);

@@ -52,16 +52,16 @@ void main() {
 	ObjectData data = objects[gl_DrawIDARB];
 	drawID = gl_DrawIDARB;
 	textureCoord = aTextureCoord;
-	fragPos = vec3(data.model * vec4(aPos, 1.0));
+	fragPos = vec3(view * data.model * vec4(aPos, 1.0));
 
 
-	mat3 normalMatrix = mat3(transpose(inverse(data.model)));
+	mat3 normalMatrix = mat3(transpose(inverse(view * data.model)));
 	vec3 N = normalize(normalMatrix * aNormal);
     vec3 T = normalize(normalMatrix * aTangent);
     T = normalize(T - dot(T, N) * N); 
     vec3 B = cross(N, T);
     TBN = mat3(T, B, N);
 	testNormal = aNormal;
-	gl_Position = proj * view * vec4(fragPos, 1.0);
+	gl_Position = proj * view * data.model * vec4(aPos, 1.0);
 
 }

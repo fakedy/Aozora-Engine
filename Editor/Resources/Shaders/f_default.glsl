@@ -9,6 +9,7 @@ in vec2 textureCoord;
 
 // --- UNIFORMS & STRUCTS ---
 uniform vec3 cameraPos;
+uniform mat4 invView;
 layout(binding = 0) uniform sampler2D gPosition;
 layout(binding = 1) uniform sampler2D gNormal;
 layout(binding = 2) uniform sampler2D gAlbedo;
@@ -24,10 +25,16 @@ struct Light {
     float quadratic;
     float radius;
     float power;
+    int type;
 };
+
+const int LIGHT_DIRECTIONAL = 0;
+const int LIGHT_POINT = 1;
+const int LIGHT_SPOT = 2;
+
 const int maxLights = 32;
 uniform Light lights[maxLights];
-uniform int activeLights;
+uniform int activeLight;
 
 
 const float PI = 3.14159265359;
@@ -50,11 +57,14 @@ vec3 calcIndirectLighting(){
 
 
     // specular part of indirect lighting
-    vec3 wo = normalize(cameraPos - fragPos);
-    vec3 wi = normalize(reflect(-wo, normal));
+    vec3 wo = normalize(-fragPos);
     vec3 wh = normal; // or normalize(wi + wo)
 
     vec3 R = reflect(-wo, normal);
+    R = normalize(mat3(invView) * R);
+
+
+
     // quick hack for testing, should use Importance Sampling Convolution.
     float lod = roughness * 10.0;
     vec3 Li = textureLod(skybox, R, lod).rgb;
@@ -71,7 +81,12 @@ vec3 calcIndirectLighting(){
     vec3 metal_term = F * Li;
     return metallic * metal_term + (1.0 - metallic) * dialectric_term;
 
-    //return diffuse_term;
+}
+
+vec3 calculateDirectIllumination(){
+
+    return vec3(0,0,0);
+
 }
 
 
@@ -88,7 +103,7 @@ void main(){
     ao = texture(gProperties, textureCoord).r;
 
 
-    vec3 light = calcIndirectLighting() + emissive;
+    vec3 light = calculateDirectIllumination() + calcIndirectLighting() + emissive;
     
     finalColor = vec4(light, 1.0);
 }
