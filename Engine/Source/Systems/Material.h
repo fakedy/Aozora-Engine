@@ -23,7 +23,7 @@ namespace Aozora {
 		uint64_t roughnessTexture{ 0 };
 
 		
-		std::vector<uint64_t> textureIDs;
+		std::vector<uint64_t> textureHashes;
 		
 		// Default values incase we render without texture
 		glm::fvec4 baseColor{ glm::fvec4(1.0f, 1.0f, 1.0f , 1.0f) };
@@ -45,7 +45,7 @@ namespace Aozora {
 				CEREAL_NVP(aoTexture),
 				CEREAL_NVP(metallicTexture),
 				CEREAL_NVP(roughnessTexture),
-				CEREAL_NVP(textureIDs),
+				CEREAL_NVP(textureHashes),
 				CEREAL_NVP(baseColor),
 				CEREAL_NVP(metallic),
 				CEREAL_NVP(specular),

@@ -19,6 +19,7 @@ namespace Aozora {
 		uint64_t id{};
 		std::string name{};
 		uint64_t handle{}; // for bindless textures
+		uint64_t hash{};
 		uint32_t refCount{};
 		TextureType type{};
 		std::string path{};
@@ -32,6 +33,7 @@ namespace Aozora {
 		template<class Archive>
 		void serialize(Archive& archive) {
 			archive(CEREAL_NVP(id),
+				CEREAL_NVP(hash),
 				CEREAL_NVP(refCount),
 				CEREAL_NVP(type),
 				CEREAL_NVP(path),

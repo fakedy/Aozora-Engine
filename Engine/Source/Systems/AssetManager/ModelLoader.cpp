@@ -259,12 +259,12 @@ namespace Aozora::Resources {
             }
 
             Texture targetTexture = m_textureLoader.loadTexture(str.C_Str(), m_directory, isSrgb);
-            *targetID = targetTexture.id;
+            *targetID = targetTexture.hash;
 
             if (targetTexture.hasData) {
                 targetTexture.type = typeName;
                 targetTexture.path = str.C_Str();
-                material.textureIDs.push_back(targetTexture.id);
+                material.textureHashes.push_back(targetTexture.hash);
                 iModel.textures.push_back(targetTexture);
             }
 

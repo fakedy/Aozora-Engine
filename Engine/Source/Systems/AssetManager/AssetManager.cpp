@@ -30,33 +30,41 @@ namespace Aozora::Resources {
 		m_workingDirectory = (exedir / "Projects" / name / "Assets/").string();
 		m_projectDir = (exedir / "Projects" / name).string();
 
-		std::error_code errorC;
-		std::filesystem::create_directories(m_workingDirectory, errorC);
-		// if we get an error
-		if (errorC) {
-			Log::error(std::format("Failed to create project directory. Reason: {}", errorC.message()));
-			return false;
-		}
+		if (std::filesystem::exists(m_projectDir)) {
 
-
-		Log::info(std::format("Successfully created project folder at: {} ", m_projectDir));
-
-		if (std::filesystem::exists((exedir / "Projects" / name / "Assets" / "project.project"))) {
-			loadProject();
-			std::ifstream os(m_workingDirectory + "manifest.manifest", std::ios::binary);
-			if (os) {
-				cereal::BinaryInputArchive archive(os);
-				archive(m_importRegistry);
+			if (std::filesystem::exists((exedir / "Projects" / name / "Assets" / "project.project"))) {
+				loadProject();
+				std::ifstream is(m_workingDirectory + "manifest.manifest", std::ios::binary);
+				if (is) {
+					cereal::BinaryInputArchive archive(is);
+					archive(m_importRegistry);
+				}
+				Log::info(std::format("Imported manifest"));
 			}
 		}
+		else {
+
+			std::error_code errorC;
+			std::filesystem::create_directories(m_workingDirectory, errorC);
+			// if we get an error
+			if (errorC) {
+				Log::error(std::format("Failed to create project directory. Reason: {}", errorC.message()));
+				return false;
+			}
+
+
+			Log::info(std::format("Successfully created project folder at: {} ", m_projectDir));
+
+			saveProject();
+		}
+
 
 		// TODO This does not belong here, move it out
 		loadAsset("Resources/testcube/testcube.obj");
-		loadAsset("Resources/sponza2/sponza.obj");
-		loadAsset("Resources/gpmesh/scene.gltf");
-		//loadAsset("Resources/clank/hero_clank_ps4.obj");
+		loadAsset("Resources/main_sponza/NewSponza_Main_Yup_003.fbx");
+		//loadAsset("Resources/survival-guitar-backpack/source/Survival_BackPack_2.fbx");
 		loadAsset("Resources/DamagedHelmet/DamagedHelmet.gltf");
-		loadAsset("Resources/NieRReincarnation_Chr_2B/2b.fbx");
+		//loadAsset("Resources/NieRReincarnation_Chr_2B/2b.fbx");
 		//loadAsset("Resources/sibenik/sibenik.obj");
 		return true;
 	}
@@ -75,12 +83,33 @@ namespace Aozora::Resources {
 	{
 		// This is for prototyping and getting a grasp around the system im designing
 		// temp hack before i introduce the filedialogue
-		uint32_t extensionIndex = path.find_last_of('.') + 1; // if a file doesnt have an extension we explode like the KUOW Mazda incident
+		uint32_t extensionIndex = path.find_last_of('.') + 1;
 		std::string e = path.substr(extensionIndex);
 		std::string filename = path.substr(path.find_last_of('/')+1, path.find_last_of('.'));
 
-		if (e == "obj" || e == "gltf" || e == "fbx") {
+		// if it's already cached
+		if (m_importRegistry.find(path) != m_importRegistry.end()) {
+			uint64_t hash = m_importRegistry[path];
+			
+			if (std::filesystem::exists(m_workingDirectory + std::to_string(hash) + ".model")) {
+				Log::info(std::format("Asset already cached. Loading: {} from disk", hash));
 
+				Asset asset;
+				asset.type = AssetType::Model;
+				asset.parentDir = "";
+				asset.icon = 0;
+				asset.name = filename;
+				asset.hash = hash;
+				m_assets[asset.hash] = asset;
+				return;
+			}
+
+		}
+
+
+		if (e == "obj" || e == "gltf" || e == "fbx" || e == "FBX") {
+
+			Log::info(std::format("Importing new asset: {}", path));
 			IntermediateModel iModel = m_modelLoader.loadModel(path);
 			Model& model = iModel.model;
 
@@ -143,10 +172,10 @@ namespace Aozora::Resources {
 				asset.parentDir = "";
 				asset.icon = 0;
 				asset.name = filename;
-				asset.hash = tex.id;
+				asset.hash = tex.hash;
 				asset.hidden = true;
 
-				std::ofstream os(m_workingDirectory + std::to_string(tex.id) + ".texture", std::ios::binary);
+				std::ofstream os(m_workingDirectory + std::to_string(tex.hash) + ".texture", std::ios::binary);
 				cereal::BinaryOutputArchive archive(os);
 				archive(tex);
 
@@ -170,6 +199,7 @@ namespace Aozora::Resources {
 
 	Model AssetManager::loadModelFromDisk(uint64_t hash)
 	{
+
 		Log::info(std::format("Loading model: {} from disk", hash));
 		Model model; // parse the file with the hash
 		model.hash = hash;
@@ -282,7 +312,7 @@ namespace Aozora::Resources {
 
 	void AssetManager::loadProject()
 	{
-		Log::info(std::format("Reading scene from disk"));
+		Log::info(std::format("Loading project from disk"));
 		std::ifstream is(m_workingDirectory + "project.project", std::ios::binary);
 		cereal::BinaryInputArchive archive(is);
 		archive(m_assets);
@@ -335,15 +365,18 @@ namespace Aozora::Resources {
 	uint64_t AssetManager::createTexture(const std::string& filePath)
 	{
 
-		Texture tex = m_textureLoader.loadTexture(filePath);
-		// load from disk
-		if (tex.id == 0) {
-			// if its already loaded return the hash
-			return m_importRegistry[filePath];
+
+		auto it = m_importRegistry.find(filePath);
+		if (it != m_importRegistry.end()) {
+			Log::info("Texture already exists in cache: " + filePath);
+			return it->second;
 		}
 
+		Texture tex = m_textureLoader.loadTexture(filePath);
+		m_importRegistry[filePath] = tex.hash;
+
 		// save to disk
-		std::ofstream os(m_workingDirectory + std::to_string(tex.id) + ".texture", std::ios::binary);
+		std::ofstream os(m_workingDirectory + std::to_string(tex.hash) + ".texture", std::ios::binary);
 		cereal::BinaryOutputArchive archive(os);
 		archive(tex);
 
@@ -354,7 +387,7 @@ namespace Aozora::Resources {
 			archive(m_importRegistry);
 		}
 	
-		return tex.id;
+		return tex.hash;
 	}
 
 	uint64_t AssetManager::getUniqueID()

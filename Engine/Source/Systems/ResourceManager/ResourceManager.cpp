@@ -20,7 +20,7 @@ namespace Aozora {
                    uint64_t matID = m_containerMap[sceneID].m_loadedMeshes[meshID].materialID;
                    loadMaterial(matID, sceneID);
 
-                   for (uint64_t texID : m_containerMap[sceneID].m_loadedmaterials[matID].textureIDs) {
+                   for (uint64_t texID : m_containerMap[sceneID].m_loadedmaterials[matID].textureHashes) {
                        loadTexture(texID, sceneID);
                    }
                }
@@ -39,7 +39,6 @@ namespace Aozora {
         
         unsigned int texture = 0;
         if (textureLoaded(hash, sceneID)) {
-
             return hash;
         }
 
@@ -53,11 +52,20 @@ namespace Aozora {
 
         std::visit([&](auto&& data) {
 
+            if (data.empty()) {
+                Log::error("Texture data vector is empty!");
+                return;
+            }
+            if (data[0].empty()) {
+                Log::error("Texture pixel buffer data[0] is empty!");
+                return;
+            }
+
             using VecType = std::decay_t<decltype(data[0])>;
             using PixelType = typename VecType::value_type;
 
             // if the image is HDR we assume its also in linear space
-            if (std::is_same_v<PixelType, float>) {
+            if constexpr (std::is_same_v<PixelType, float>) {
                 internalFormat = GL_R11F_G11F_B10F;
                 sourceFormat = GL_RGB;
                 sourceType = GL_FLOAT;
@@ -75,7 +83,6 @@ namespace Aozora {
                 }
                 sourceFormat = (tex.nrChannels == 4) ? GL_RGBA : GL_RGB;
                 sourceType = GL_UNSIGNED_BYTE;
-
                 glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, tex.width, tex.height, 0, sourceFormat, sourceType, data[0].data());
                 data[0].clear();
                 data[0].shrink_to_fit();
@@ -93,10 +100,10 @@ namespace Aozora {
         glMakeTextureHandleResidentARB(handle);
         tex.handle = handle;
         tex.id = texture;
-        m_containerMap[sceneID].m_loadedTextures[hash] = tex;
+        m_containerMap[sceneID].m_loadedTextures[hash] = std::move(tex);
         Log::info(std::format("Created texture with ID: {}", texture));
 
-        return texture;
+        return hash;
         
     }
 
@@ -104,12 +111,6 @@ namespace Aozora {
     uint64_t ResourceManager::loadTexturePersistent(uint64_t hash)
     {
         unsigned int texture = 0;
-        /*
-        if (textureLoaded(hash, sceneID)) {
-
-            return hash;
-        }
-        */
         Texture tex = m_assetManager.loadTextureFromDisk(hash);
 
         glGenTextures(1, &texture);
@@ -119,6 +120,15 @@ namespace Aozora {
         GLenum sourceType;
 
         std::visit([&](auto&& data) {
+
+            if (data.empty()) {
+                Log::error("Texture data vector is empty!");
+                return;
+            }
+            if (data[0].empty()) {
+                Log::error("Texture pixel buffer data[0] is empty!");
+                return;
+            }
 
             using VecType = std::decay_t<decltype(data[0])>;
             using PixelType = typename VecType::value_type;
@@ -159,16 +169,17 @@ namespace Aozora {
         uint64_t handle = glGetTextureHandleARB(texture);
         glMakeTextureHandleResidentARB(handle);
         tex.handle = handle;
-        m_loadedPersistentTextures[hash] = tex;
+        tex.id = texture;
+        m_loadedPersistentTextures[hash] = std::move(tex);
         Log::info(std::format("Created texture with ID: {}", texture));
 
-        return texture;
+        return hash;
     }
 
     uint64_t ResourceManager::loadTexturePersistent(const std::string& path)
     {
         uint64_t hash = m_assetManager.createTexture(path);
-        hash = loadTexturePersistent(hash);
+        loadTexturePersistent(hash);
         return hash;
     }
 
@@ -335,7 +346,7 @@ namespace Aozora {
             Log::info("Texture in RAM, using cached version");
             return true;
         }
-        return false;;
+        return false;
     }
 
     // return the index of the loaded mesh or 0 if its not loaded

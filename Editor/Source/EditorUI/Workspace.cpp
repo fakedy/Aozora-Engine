@@ -11,10 +11,21 @@
 Workspace::Workspace(Aozora::Context& context) : m_context(context)
 {
 	// load icons for different asset types
-	m_file_3d_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent("Resources/editor/file-3d.png");
-	m_image_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent("Resources/editor/image.png");
-	m_folder_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent("Resources/editor/folder.png");
-	m_script_texture = (ImTextureID)context.resourcemanager->loadTexturePersistent("Resources/editor/script.png");
+
+	auto hash = 0;
+
+	hash = context.resourcemanager->loadTexturePersistent("Resources/editor/file-3d.png");
+	m_file_3d_texture = (ImTextureID)context.resourcemanager->m_loadedPersistentTextures[hash].id;
+
+	hash = context.resourcemanager->loadTexturePersistent("Resources/editor/image.png");
+	m_file_3d_texture = (ImTextureID)context.resourcemanager->m_loadedPersistentTextures[hash].id;
+
+	hash = context.resourcemanager->loadTexturePersistent("Resources/editor/folder.png");
+	m_file_3d_texture = (ImTextureID)context.resourcemanager->m_loadedPersistentTextures[hash].id;
+
+	hash = context.resourcemanager->loadTexturePersistent("Resources/editor/script.png");
+	m_file_3d_texture = (ImTextureID)context.resourcemanager->m_loadedPersistentTextures[hash].id;
+
 }
 
 void Workspace::draw(const Aozora::Context& context)
@@ -73,6 +84,7 @@ void Workspace::draw(const Aozora::Context& context)
 		switch (asset.type)
 		{
 		case(Aozora::Resources::AssetType::Model):
+
 			if (ImGui::ImageButton("##btn", m_file_3d_texture, ImVec2(thumbnailSize, thumbnailSize))) {
 				context.sceneManager->getCurrentActiveScene()->instantiateEntity(asset.hash, *context.resourcemanager);
 			}
