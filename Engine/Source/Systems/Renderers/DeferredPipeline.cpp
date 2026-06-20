@@ -182,7 +182,7 @@ namespace Aozora {
 			m_defaultShader.setInt("skybox", 7); // temp for calculations
 
 			glDepthMask(GL_FALSE);
-			renderLights(scene);
+			renderLights(scene, current_camera.getView());
 			glDepthMask(GL_TRUE);
 
 			// render skybox
@@ -305,7 +305,7 @@ namespace Aozora {
 		albedoAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
 
 		emissiveAttachment.textureTarget = FrameBuffer::TextureTarget::TEXTURE_2D;
-		emissiveAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA8;
+		emissiveAttachment.textureFormat = FrameBuffer::TextureFormat::RGBA16F;
 		emissiveAttachment.textureFilter = FrameBuffer::TextureFilter::Nearest;
 		emissiveAttachment.dataType = FrameBuffer::DataType::UNSIGNED_BYTE;
 		emissiveAttachment.dataFormat = FrameBuffer::DataFormat::RGBA;
@@ -382,7 +382,7 @@ namespace Aozora {
 		renderBuffer = std::make_unique<OpenglFrameBuffer>(renderBufferSpecs);
 		renderBuffer->buffer();
 	}
-	void DeferredPipeline::renderLights(Scene& scene)
+	void DeferredPipeline::renderLights(Scene& scene, const glm::mat4& view)
 	{
 		// render lightss
 		auto lightView = scene.getRegistry().view<const LightComponent, TransformComponent>();
@@ -393,13 +393,17 @@ namespace Aozora {
 			auto& transformComponent = lightView.get<TransformComponent>(entity);
 			// kinda whack ngl
 			std::string lightPosVar = "lights[" + std::to_string(index) + "].position";
+			std::string lightRotVar = "lights[" + std::to_string(index) + "].direction";
 			std::string lightColorVar = "lights[" + std::to_string(index) + "].color";
 			std::string lightLinearVar = "lights[" + std::to_string(index) + "].linear";
 			std::string lightQuadraticVar = "lights[" + std::to_string(index) + "].quadratic";
 			std::string lightRadiusVar = "lights[" + std::to_string(index) + "].radius";
 			std::string lightPowerVar = "lights[" + std::to_string(index) + "].power";
 			std::string lightTypeVar = "lights[" + std::to_string(index) + "].type";
-			m_defaultShader.setVec3fv(lightPosVar, transformComponent.pos);
+
+
+			m_defaultShader.setVec3fv(lightPosVar, glm::mat3(view)*transformComponent.pos); // make this view space
+			m_defaultShader.setVec3fv(lightRotVar, glm::mat3(view)*transformComponent.rot); // make this view space
 			m_defaultShader.setVec3fv(lightColorVar, lightComponent.color);
 			m_defaultShader.setFloat(lightLinearVar, lightComponent.linear);
 			m_defaultShader.setFloat(lightQuadraticVar, lightComponent.quadratic);

@@ -1,13 +1,10 @@
 #version 450 core
 
-// remake this entire file
-
 
 layout (location = 0) out vec4 finalColor;
 
 in vec2 textureCoord;
 
-// --- UNIFORMS & STRUCTS ---
 uniform vec3 cameraPos;
 uniform mat4 invView;
 layout(binding = 0) uniform sampler2D gPosition;
@@ -20,6 +17,7 @@ layout(binding = 7) uniform samplerCube skybox;
 
 struct Light {
     vec3 position;
+    vec3 direction;
     vec3 color;
     float linear;
     float quadratic;
@@ -29,12 +27,13 @@ struct Light {
 };
 
 const int LIGHT_DIRECTIONAL = 0;
-const int LIGHT_POINT = 1;
-const int LIGHT_SPOT = 2;
+const int LIGHT_AREA = 1;
+const int LIGHT_POINT = 2;
+const int LIGHT_SPOT = 3;
 
 const int maxLights = 32;
 uniform Light lights[maxLights];
-uniform int activeLight;
+uniform int activeLights;
 
 
 const float PI = 3.14159265359;
@@ -49,12 +48,63 @@ const float PI = 3.14159265359;
 
 
 
+    // Approximate relative surface area of microfacets aligned to halfway vector
+float D(vec3 halfwayVector){ // Normal distribution function
+    // Trowbridge-Reitz GGX
+    float a2 = roughness*roughness;
+    float nDotH = max(dot(normal, halfwayVector), 0.0);
+    float nDotH2 = nDotH * nDotH;
+
+    return  a2 / (PI * (nDotH2 * (a2 - 1.0) + 1) * (nDotH2 * (a2 - 1.0) + 1));
+}
+
+    // Ratio of light refracted vs reflected
+vec3 F( vec3 h, vec3 wi){ // Fresnel equation
+
+    vec3 F0 = vec3(0.04);
+    F0 = mix(F0, albedo.rgb, metallic);
+    // Fresnel-Schlick
+    return F0 + (1.0 - F0) * pow(1.0 - max(dot(h,wi), 0.0), 5.0);
+}
+
+
+float schlickGGX(vec3 l, float k){
+    return max(dot(normal, l), 0.0) / (max(dot(normal, l), 0.0)*(1 - k) + k);
+}
+    // approximate relative surface area where micro surface details overshadow each other.
+float G(vec3 wi, vec3 wo, float k){ // Geometry function, Smith's method
+    // Schlick-GGX
+    float ggx1 = schlickGGX(wi, k);
+    float ggx2 = schlickGGX(wo, k);
+
+    return ggx1 * ggx2;
+}
+
+vec3 BRDF(vec3 wi, vec3 wo, float k){
+
+    // our halfway vector
+    vec3 hVec = normalize(wi + wo);
+
+    vec3 lambert = albedo.rgb / PI;
+    float D = D(hVec);
+    vec3 F = F(hVec, wi);
+    float G = G(wi, wo, k);
+
+    vec3 cookTorrance = D*F*G / max((4*dot(wo, normal)*dot(wi, normal)), 0.001);
+
+    vec3 Ks = F;
+    vec3 Kd = (vec3(1.0) - Ks) * (1.0 - metallic); // conversion of energy and factoring in metallic
+
+    // omit Ks, already factored into cookTorrance by F
+    return Kd*lambert + cookTorrance;
+}
+
+
 vec3 calcIndirectLighting(){
 
     // diffuse part of indirect lighting
-    vec3 irradiance = texture(irradianceMap, normal).rgb;
-    vec3 diffuse_term = albedo.rgb * irradiance;
-
+    vec3 ambient = texture(irradianceMap, normal).rgb;
+    vec3 diffuse_term = albedo.rgb;
 
     // specular part of indirect lighting
     vec3 wo = normalize(-fragPos);
@@ -63,29 +113,50 @@ vec3 calcIndirectLighting(){
     vec3 R = reflect(-wo, normal);
     R = normalize(mat3(invView) * R);
 
+    //vec3 Li = textureLod(skybox, R, lod).rgb;
 
-
-    // quick hack for testing, should use Importance Sampling Convolution.
-    float lod = roughness * 10.0;
-    vec3 Li = textureLod(skybox, R, lod).rgb;
-
-
-    // if plastic fresnel is 0.04, otherwise mixed by metallic
-    vec3 fresnel = vec3(0.04);
-    fresnel = mix(fresnel, albedo.rgb, metallic);
-
-
-    vec3 F = fresnel + (1.0 - fresnel) * pow(1.0 - max(dot(wo,wh), 0.0), 5.0);
-
-    vec3 dialectric_term = F*Li + (1 - F) * diffuse_term;
-    vec3 metal_term = F * Li;
-    return metallic * metal_term + (1.0 - metallic) * dialectric_term;
+    return vec3(0,0,0);
 
 }
 
+
 vec3 calculateDirectIllumination(){
 
-    return vec3(0,0,0);
+    vec3 Lo = vec3(0,0,0);
+    for(int i = 0; i < activeLights; i++){
+        Light light = lights[i];
+
+        switch(light.type){
+            case LIGHT_DIRECTIONAL:
+                break;
+            case LIGHT_AREA:
+                break;
+            case LIGHT_POINT:
+                break;
+            case LIGHT_SPOT:
+                break;
+            default:
+                break;
+        }
+
+        vec3 lightDir = normalize(light.direction);
+        vec3 lightColor = light.color;
+
+        float lightPower = light.power; // lux
+        vec3 lightIntensity = lightColor * lightPower;
+
+        // viewspace direction
+        vec3 viewDir = normalize(-fragPos);
+
+        float k = (roughness + 1)*(roughness + 1) / 8.0;
+        // following rendering equation from one light direction
+        Lo += BRDF(lightDir, viewDir, k) * lightIntensity * max(dot(normal, lightDir), 0.0);
+        
+    }
+
+
+
+    return Lo;
 
 }
 
@@ -103,7 +174,7 @@ void main(){
     ao = texture(gProperties, textureCoord).r;
 
 
-    vec3 light = calculateDirectIllumination() + calcIndirectLighting() + emissive;
+    vec3 reflectance = calculateDirectIllumination() + calcIndirectLighting() + emissive.rgb;
     
-    finalColor = vec4(light, 1.0);
+    finalColor = vec4(reflectance, 1.0);
 }

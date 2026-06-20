@@ -9,7 +9,8 @@ namespace Aozora {
 	enum LightType {
 		Direction,
 		Area,
-		Point
+		Point,
+		Spot
 	};
 
 	struct LightComponent {

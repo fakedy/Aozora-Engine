@@ -71,7 +71,7 @@ namespace Aozora {
 		void setupPostfxBuffer();
 		void setupRenderBuffer();
 
-		void renderLights(Scene& scene);
+		void renderLights(Scene& scene, const glm::mat4& view);
 		void drawGrid(const Aozora::CameraComponent& camera, const glm::vec3& cameraPos, uint32_t width, uint32_t height);
 		void postfxPass();
 

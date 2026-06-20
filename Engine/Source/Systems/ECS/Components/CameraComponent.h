@@ -7,7 +7,7 @@ namespace Aozora {
 	struct CameraComponent {
 
 
-		glm::mat4 getProjection() const {
+		const glm::mat4& getProjection() const {
 			return m_proj;
 		}
 
@@ -15,7 +15,7 @@ namespace Aozora {
 			m_proj = proj;
 		}
 
-		glm::mat4 getView() const {
+		const glm::mat4& getView() const {
 			return m_view;
 		}
 

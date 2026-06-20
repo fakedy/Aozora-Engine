@@ -94,7 +94,7 @@ namespace Aozora::Resources {
                 texture.hasData = true;
             }
             else {
-                Log::error("ResourceManager::loadCubemap failed");
+                Log::error("TextureLoader::loadCubemap failed");
                 stbi_image_free(data);
             }
             i++;

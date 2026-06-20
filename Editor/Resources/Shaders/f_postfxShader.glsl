@@ -20,14 +20,13 @@ vec3 ACESFilm(vec3 x) {
 
 void main(){
 
-    float exposure = 1.0;
     vec3 color = texture(colorTexture, textureCoord).rgb;
-	const float gamma = 2.2;
-	vec3 mapped = vec3(1.0) - exp(-color * exposure);
-	mapped = pow(mapped, vec3(1.0 / gamma));
+    const float exposure = 1;
+    vec3 exposedColor = color * exposure;
+    vec3 ldrColor = ACESFilm(exposedColor);
 
+    const float gamma = 2.2;
+    ldrColor = pow(ldrColor, vec3(1.0 / gamma));
 
-
-	//finalColor = vec4(mapped, 1.0);
-	finalColor = vec4(ACESFilm(color), 1.0);
+	finalColor = vec4(ldrColor, 1.0);
 }
