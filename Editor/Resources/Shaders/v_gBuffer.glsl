@@ -17,7 +17,7 @@ out vec3 fragPos;
 out mat3 TBN;
 flat out uint drawID;
 
-out vec3 testNormal;
+out vec3 meshNormal;
 
 
 uniform mat4 view;
@@ -57,11 +57,16 @@ void main() {
 
 	mat3 normalMatrix = mat3(transpose(inverse(view * data.model)));
 	vec3 N = normalize(normalMatrix * aNormal);
-    vec3 T = normalize(normalMatrix * aTangent);
-    T = normalize(T - dot(T, N) * N); 
-    vec3 B = cross(N, T);
+
+	vec3 T = vec3(0.0);
+	vec3 B = vec3(0.0);
+	if(dot(aTangent, aTangent) > 0.0001){
+		T = normalize(normalMatrix * aTangent);
+		T = normalize(T - dot(T, N) * N); 
+		B = cross(N, T);
+	}
     TBN = mat3(T, B, N);
-	testNormal = aNormal;
+	meshNormal = aNormal;
 	gl_Position = proj * view * data.model * vec4(aPos, 1.0);
 
 }

@@ -62,10 +62,10 @@ namespace Aozora::Resources {
 		// TODO This does not belong here, move it out
 		loadAsset("Resources/testcube/testcube.obj");
 		loadAsset("Resources/main_sponza/NewSponza_Main_Yup_003.fbx");
-		//loadAsset("Resources/survival-guitar-backpack/source/Survival_BackPack_2.fbx");
+		loadAsset("Resources/rubberTiles/rubber_tiles_4k.gltf");
 		loadAsset("Resources/DamagedHelmet/DamagedHelmet.gltf");
-		//loadAsset("Resources/NieRReincarnation_Chr_2B/2b.fbx");
-		//loadAsset("Resources/sibenik/sibenik.obj");
+		loadAsset("Resources/gpmesh/scene.gltf");
+		loadAsset("Resources/sibenik/sibenik.obj");
 		return true;
 	}
 

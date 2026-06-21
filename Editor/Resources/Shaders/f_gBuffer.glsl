@@ -17,7 +17,7 @@ in vec3 fragPos;
 flat in uint drawID;
 
 in mat3 TBN;
-in vec3 testNormal;
+in vec3 meshNormal;
 
 
 

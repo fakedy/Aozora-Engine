@@ -154,8 +154,6 @@ vec3 calculateDirectIllumination(){
         
     }
 
-
-
     return Lo;
 
 }
