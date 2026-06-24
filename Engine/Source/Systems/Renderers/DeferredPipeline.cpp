@@ -170,8 +170,9 @@ namespace Aozora {
 			auto skyboxes = scene.getRegistry().view<const SkyboxComponent>();
 			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skyboxes.front()); // hack (crash if we dont have a skybox entity)
 			Skybox& skyboxObject = map.m_loadedSkyboxes[skyboxComponent.id];
-			Texture& cubeMapTexture = map.m_loadedTextures[skyboxObject.cubeMapTexture];
-			Texture& irradienceMapTexture = map.m_loadedTextures[skyboxObject.irradienceMapTexture];
+			Texture& cubeMapTexture = map.m_loadedTextures[skyboxObject.cubeMapHash];
+			Texture& irradienceMapTexture = map.m_loadedTextures[skyboxObject.irradienceMapHash];
+			Texture& prefilterMapTexture = map.m_loadedTextures[skyboxObject.prefilterMapHash];
 
 			glActiveTexture(GL_TEXTURE6);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, irradienceMapTexture.gpuID);
@@ -180,6 +181,10 @@ namespace Aozora {
 			glActiveTexture(GL_TEXTURE7);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture.gpuID);
 			m_defaultShader.setInt("skybox", 7); // temp for calculations
+
+			glActiveTexture(GL_TEXTURE8);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMapTexture.gpuID);
+			m_defaultShader.setInt("prefilterMap", 8); // temp for calculations
 
 			glDepthMask(GL_FALSE);
 			renderLights(scene, current_camera.getView());
@@ -215,7 +220,7 @@ namespace Aozora {
 			renderBuffer->unbind();
 
 			postfxBuffer->bind();
-			postfxPass();
+			postfxPass(width, height);
 			postfxBuffer->unbind();
 			
 		}
@@ -417,7 +422,7 @@ namespace Aozora {
 		screenQuad.drawGeometry();
 
 	}
-	void DeferredPipeline::postfxPass()
+	void DeferredPipeline::postfxPass(uint32_t width, uint32_t height)
 	{
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -425,6 +430,9 @@ namespace Aozora {
 
 		glActiveTexture(GL_TEXTURE0);
 		m_postfxShader.setInt("colorTexture", 0);
+		m_postfxShader.setInt("width", width);
+		m_postfxShader.setInt("height", height);
+		m_postfxShader.setFloat("time", glfwGetTime());
 		glBindTexture(GL_TEXTURE_2D, renderBuffer->m_colorAttachments[0]);
 		screenQuad.drawGeometry();
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -469,6 +477,9 @@ namespace Aozora {
 				uint64_t roughnessTextureID = mat.roughnessTexture;
 				objectData.roughnessTextureHandle = map.m_loadedTextures[roughnessTextureID].handle;
 				objectData.roughness = mat.roughness;
+
+				uint64_t opacityTextureID = mat.opacityTexture;
+				objectData.opacityTextureHandle = map.m_loadedTextures[opacityTextureID].handle;
 
 				uint64_t normalTextureID = mat.normalTexture;
 				objectData.normalTextureHandle = map.m_loadedTextures[normalTextureID].handle;

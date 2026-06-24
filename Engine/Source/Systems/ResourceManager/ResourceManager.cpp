@@ -99,7 +99,7 @@ namespace Aozora {
         uint64_t handle = glGetTextureHandleARB(texture);
         glMakeTextureHandleResidentARB(handle);
         tex.handle = handle;
-        tex.id = texture;
+        tex.gpuID = texture;
         m_containerMap[sceneID].m_loadedTextures[hash] = std::move(tex);
         Log::info(std::format("Created texture with ID: {}", texture));
 
@@ -169,7 +169,7 @@ namespace Aozora {
         uint64_t handle = glGetTextureHandleARB(texture);
         glMakeTextureHandleResidentARB(handle);
         tex.handle = handle;
-        tex.id = texture;
+        tex.hash = texture; // should use real hash lol.
         m_loadedPersistentTextures[hash] = std::move(tex);
         Log::info(std::format("Created texture with ID: {}", texture));
 
@@ -244,65 +244,65 @@ namespace Aozora {
 
         texture.gpuID = textureID;
 
-        m_containerMap[sceneID].m_loadedTextures[texture.id] = texture;
+        m_containerMap[sceneID].m_loadedTextures[texture.hash] = texture;
         return textureID;
     }
 
-    uint64_t ResourceManager::createEmptyCubeMap(uint32_t width, uint32_t height, uint64_t sceneID)
+    uint64_t ResourceManager::createEmptyCubeMap(Texture::TextureSpecification spec, uint64_t sceneID)
     {
 
-        Texture tex;
-        uint32_t textureID;
+        Texture tex = m_renderAPI.loadEmptyCubemap(spec);
 
-        glGenTextures(1, &textureID);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-        GLenum internalFormat;
-        GLenum sourceFormat;
-        GLenum sourceType;
-
-
-
-        internalFormat = GL_R11F_G11F_B10F;
-        sourceFormat = GL_RGB;
-        sourceType = GL_FLOAT;
-        for (int i = 0; i < 6; i++) {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, sourceFormat, sourceType, nullptr);
-        }
-
-
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-        tex.gpuID = textureID;
-
-        // to get a "unique" id, however we dont check wether the id is unique, this can and will cause problems
         std::random_device rd;
         std::mt19937_64 gen(rd());
         std::uniform_int_distribution<uint64_t> dis;
-        tex.id = dis(gen);
-        m_containerMap[sceneID].m_loadedTextures[tex.id] = tex;
-        return tex.id;
+        tex.hash = dis(gen);
+        m_containerMap[sceneID].m_loadedTextures[tex.hash] = tex;
+        return tex.hash;
 
     }
 
     uint64_t ResourceManager::loadSkybox(uint64_t hash, uint64_t sceneID)
     {
-            // yes its confusing, yes its temporary, said the guy who now dont remember what is confusing about this
-            // must be because of how messy this is
+
             Skybox skybox = m_assetManager.loadSkyboxFromDisk(hash);
-            loadCubemap(skybox.cubeMapTexture, sceneID);
+            int environmentMap = loadCubemap(skybox.cubeMapHash, sceneID);
 
-            skybox.irradienceMapTexture = createEmptyCubeMap(32, 32, sceneID);
-            m_renderAPI.bakeCubemapIrradiance(m_containerMap[sceneID].m_loadedTextures[skybox.cubeMapTexture].gpuID,
-            m_containerMap[sceneID].m_loadedTextures[skybox.irradienceMapTexture].gpuID);
 
-            m_containerMap[sceneID].m_loadedSkyboxes[skybox.id] = skybox;
-            return skybox.id;
+            Texture::TextureSpecification irradianceSpec;
+            irradianceSpec.width = 32;
+            irradianceSpec.height = 32;
+            irradianceSpec.mipmaps = false;
+            irradianceSpec.config.target = Texture::TextureTarget::TEXTURE_CUBE_MAP;
+            irradianceSpec.config.internalFormat = Texture::TextureFormat::RGB16F;
+            irradianceSpec.config.dataFormat = Texture::DataFormat::RGB;
+            irradianceSpec.config.magFilter = Texture::TextureFilter::LINEAR;
+            irradianceSpec.config.minFilter = Texture::TextureFilter::LINEAR;
+            irradianceSpec.config.wrap = Texture::TextureWrap::CLAMP_TO_EDGE;
+
+            Texture::TextureSpecification prefilterSpec;
+            prefilterSpec.width = 128;
+            prefilterSpec.height = 128;
+            prefilterSpec.mipmaps = true;
+            prefilterSpec.config.target = Texture::TextureTarget::TEXTURE_CUBE_MAP;
+            prefilterSpec.config.internalFormat = Texture::TextureFormat::RGB16F;
+            prefilterSpec.config.dataFormat = Texture::DataFormat::RGB;
+            prefilterSpec.config.magFilter = Texture::TextureFilter::LINEAR;
+            prefilterSpec.config.minFilter = Texture::TextureFilter::LINEAR_MIPMAP_LINEAR;
+            prefilterSpec.config.wrap = Texture::TextureWrap::CLAMP_TO_EDGE;
+
+
+            skybox.irradienceMapHash = createEmptyCubeMap(irradianceSpec, sceneID);
+            skybox.prefilterMapHash = createEmptyCubeMap(prefilterSpec, sceneID);
+
+            m_renderAPI.bakeCubemapIrradiance(environmentMap,
+                m_containerMap[sceneID].m_loadedTextures[skybox.irradienceMapHash].gpuID, 32, 32);
+
+            m_renderAPI.bakeCubemapPrefilter(environmentMap,
+                m_containerMap[sceneID].m_loadedTextures[skybox.irradienceMapHash].gpuID, 128, 128);
+
+            m_containerMap[sceneID].m_loadedSkyboxes[skybox.hash] = skybox;
+            return skybox.hash;
     }
 
     uint64_t ResourceManager::loadMesh(uint64_t hash, uint64_t sceneID)
@@ -380,7 +380,7 @@ namespace Aozora {
 
         // because we cant get a clean internal datastructure of an unordered map
         for (auto& texture : m_containerMap[sceneID].m_loadedTextures) {
-            texturesToDelete.push_back(texture.second.id);
+            texturesToDelete.push_back(texture.second.hash);
         }
         
         if (!texturesToDelete.empty()) {

@@ -15,16 +15,16 @@ Workspace::Workspace(Aozora::Context& context) : m_context(context)
 	auto hash = 0;
 
 	hash = context.resourcemanager->loadTexturePersistent("Resources/editor/file-3d.png");
-	m_file_3d_texture = (ImTextureID)context.resourcemanager->m_loadedPersistentTextures[hash].id;
+	m_file_3d_texture = (ImTextureID)context.resourcemanager->m_loadedPersistentTextures[hash].gpuID;
 
 	hash = context.resourcemanager->loadTexturePersistent("Resources/editor/image.png");
-	m_file_3d_texture = (ImTextureID)context.resourcemanager->m_loadedPersistentTextures[hash].id;
+	m_file_3d_texture = (ImTextureID)context.resourcemanager->m_loadedPersistentTextures[hash].gpuID;
 
 	hash = context.resourcemanager->loadTexturePersistent("Resources/editor/folder.png");
-	m_file_3d_texture = (ImTextureID)context.resourcemanager->m_loadedPersistentTextures[hash].id;
+	m_file_3d_texture = (ImTextureID)context.resourcemanager->m_loadedPersistentTextures[hash].gpuID;
 
 	hash = context.resourcemanager->loadTexturePersistent("Resources/editor/script.png");
-	m_file_3d_texture = (ImTextureID)context.resourcemanager->m_loadedPersistentTextures[hash].id;
+	m_file_3d_texture = (ImTextureID)context.resourcemanager->m_loadedPersistentTextures[hash].gpuID;
 
 }
 

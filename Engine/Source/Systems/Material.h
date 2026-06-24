@@ -21,6 +21,7 @@ namespace Aozora {
 		uint64_t aoTexture{ 0 };
 		uint64_t metallicTexture{ 0 };
 		uint64_t roughnessTexture{ 0 };
+		uint64_t opacityTexture{ 0 };
 
 		
 		std::vector<uint64_t> textureHashes;
@@ -45,6 +46,7 @@ namespace Aozora {
 				CEREAL_NVP(aoTexture),
 				CEREAL_NVP(metallicTexture),
 				CEREAL_NVP(roughnessTexture),
+				CEREAL_NVP(opacityTexture),
 				CEREAL_NVP(textureHashes),
 				CEREAL_NVP(baseColor),
 				CEREAL_NVP(metallic),

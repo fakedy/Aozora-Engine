@@ -381,3 +381,5 @@ FodyWeavers.xsd
 /Editor/Resources/bedroom
 /Editor/Resources/Bistro_v5_2
 /Editor/Resources/rubberTiles
+/Editor/Resources/cubemap/space cubemap
+/Editor/Resources/skybox

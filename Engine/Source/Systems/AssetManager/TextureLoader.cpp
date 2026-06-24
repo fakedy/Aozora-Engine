@@ -75,7 +75,7 @@ namespace Aozora::Resources {
 
         // should handle non hdr too but im so lazy atm
         Texture texture;
-        texture.type = Texture::TextureType::Cubemap;
+        texture.specification.config.target = Texture::TextureTarget::TEXTURE_CUBE_MAP;
         int width, height, nrChannels;
 
         std::vector<std::vector<float>> dataV(6);
@@ -102,7 +102,7 @@ namespace Aozora::Resources {
 
         texture.dataVector = dataV;
         m_importRegistry[faces[0]] = XXH64(faces[0].c_str(), faces[0].length(), 0);
-        texture.id = m_importRegistry[faces[0]];
+        texture.hash = m_importRegistry[faces[0]];
         Log::info("Successfully loaded cubemap texture");
         return texture;
 

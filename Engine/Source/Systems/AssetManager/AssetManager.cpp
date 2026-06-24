@@ -61,7 +61,7 @@ namespace Aozora::Resources {
 
 		// TODO This does not belong here, move it out
 		loadAsset("Resources/testcube/testcube.obj");
-		loadAsset("Resources/main_sponza/NewSponza_Main_Yup_003.fbx");
+		loadAsset("Resources/main_sponza/NewSponza_Main_glTF_003.gltf");
 		loadAsset("Resources/rubberTiles/rubber_tiles_4k.gltf");
 		loadAsset("Resources/DamagedHelmet/DamagedHelmet.gltf");
 		loadAsset("Resources/gpmesh/scene.gltf");
@@ -329,7 +329,7 @@ namespace Aozora::Resources {
 		asset.hash = getUniqueID();
 
 		Skybox skybox;
-		skybox.id = asset.hash;
+		skybox.hash = asset.hash;
 		m_assets[asset.hash] = asset;
 
 		// default skybox textures
@@ -343,15 +343,15 @@ namespace Aozora::Resources {
 		};
 
 		Texture cubeMapTexture = m_textureLoader.loadCubemap(paths);
-		skybox.cubeMapTexture = cubeMapTexture.id;
+		skybox.cubeMapHash = cubeMapTexture.hash;
 
 		{
-			std::ofstream os(m_workingDirectory + std::to_string(skybox.id) + ".skybox", std::ios::binary);
+			std::ofstream os(m_workingDirectory + std::to_string(skybox.hash) + ".skybox", std::ios::binary);
 			cereal::BinaryOutputArchive archive(os);
 			archive(skybox);
 		}
 		{
-			std::ofstream os(m_workingDirectory + std::to_string(cubeMapTexture.id) + ".texture", std::ios::binary);
+			std::ofstream os(m_workingDirectory + std::to_string(cubeMapTexture.hash) + ".texture", std::ios::binary);
 			cereal::BinaryOutputArchive archive(os);
 			archive(cubeMapTexture);
 		}
@@ -359,7 +359,7 @@ namespace Aozora::Resources {
 		saveManifest();
 
 
-		return skybox.id;
+		return skybox.hash;
 	}
 
 	uint64_t AssetManager::createTexture(const std::string& filePath)

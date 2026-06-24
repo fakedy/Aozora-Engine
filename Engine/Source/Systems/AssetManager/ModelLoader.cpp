@@ -107,22 +107,24 @@ namespace Aozora::Resources {
 
             aiMaterial* aimaterial = scene->mMaterials[mMaterialIndex];
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE, Texture::TextureType::Texture2D, iModel);
+            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE, Texture::TextureTarget::TEXTURE_2D, iModel);
 
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_NORMALS, Texture::TextureType::Texture2D, iModel);
+            loadMaterialTextures(material, aimaterial, aiTextureType_NORMALS, Texture::TextureTarget::TEXTURE_2D, iModel);
             /* // will crash because its not finished
             else if (aimaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
                 loadMaterialTextures(material, aimaterial, aiTextureType_HEIGHT, Texture::TextureType::Texture2D, iModel);
             }
             */
-            loadMaterialTextures(material, aimaterial, aiTextureType_EMISSIVE, Texture::TextureType::Texture2D, iModel);
+            loadMaterialTextures(material, aimaterial, aiTextureType_EMISSIVE, Texture::TextureTarget::TEXTURE_2D, iModel);
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_AMBIENT_OCCLUSION, Texture::TextureType::Texture2D, iModel);
+            loadMaterialTextures(material, aimaterial, aiTextureType_AMBIENT_OCCLUSION, Texture::TextureTarget::TEXTURE_2D, iModel);
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_METALNESS, Texture::TextureType::Texture2D, iModel);
+            loadMaterialTextures(material, aimaterial, aiTextureType_METALNESS, Texture::TextureTarget::TEXTURE_2D, iModel);
 
-            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE_ROUGHNESS, Texture::TextureType::Texture2D, iModel);
+            loadMaterialTextures(material, aimaterial, aiTextureType_DIFFUSE_ROUGHNESS, Texture::TextureTarget::TEXTURE_2D, iModel);
+
+            loadMaterialTextures(material, aimaterial, aiTextureType_OPACITY, Texture::TextureTarget::TEXTURE_2D, iModel);
 
             m_importRegistry[key] = materialID;
             iModel.materials.push_back(material);
@@ -186,7 +188,7 @@ namespace Aozora::Resources {
 
 
 
-    void ModelLoader::loadMaterialTextures(Material &material, aiMaterial* mat, aiTextureType type, Texture::TextureType typeName, IntermediateModel& iModel) {
+    void ModelLoader::loadMaterialTextures(Material &material, aiMaterial* mat, aiTextureType type, Texture::TextureTarget typeName, IntermediateModel& iModel) {
 
         // if there are no textures we will grab the colors from the materials and create our own material
         if (mat->GetTextureCount(type) == 0) {
@@ -254,6 +256,9 @@ namespace Aozora::Resources {
             case aiTextureType_DIFFUSE_ROUGHNESS:
                 targetID = &material.roughnessTexture;
                 break;
+            case aiTextureType_OPACITY:
+                targetID = &material.opacityTexture;
+                break;
             default:
                 break;
             }
@@ -262,7 +267,7 @@ namespace Aozora::Resources {
             *targetID = targetTexture.hash;
 
             if (targetTexture.hasData) {
-                targetTexture.type = typeName;
+                targetTexture.specification.config.target = typeName;
                 targetTexture.path = str.C_Str();
                 material.textureHashes.push_back(targetTexture.hash);
                 iModel.textures.push_back(targetTexture);

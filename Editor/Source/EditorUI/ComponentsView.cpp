@@ -98,7 +98,7 @@ void ComponentsView::draw(const Aozora::Context& context) {
 
 				if (mat.diffuseTexture) {
 					if (ImGui::CollapsingHeader("DiffuseTexture", ImGuiTreeNodeFlags_DefaultOpen)) {
-						auto gpuHandle = sceneContainer.m_loadedTextures[mat.diffuseTexture].id;
+						auto gpuHandle = sceneContainer.m_loadedTextures[mat.diffuseTexture].hash;
 						ImGui::Image((ImTextureID)gpuHandle, ImVec2((float)thumbnailSize, (float)thumbnailSize));
 					}
 				}
@@ -108,7 +108,7 @@ void ComponentsView::draw(const Aozora::Context& context) {
 
 				if (mat.roughnessTexture) {
 					if (ImGui::CollapsingHeader("Roughness Texture", ImGuiTreeNodeFlags_DefaultOpen)) {
-						auto gpuHandle = sceneContainer.m_loadedTextures[mat.roughnessTexture].id;
+						auto gpuHandle = sceneContainer.m_loadedTextures[mat.roughnessTexture].hash;
 						ImGui::Image((ImTextureID)gpuHandle, ImVec2((float)thumbnailSize, (float)thumbnailSize));
 					}
 				}
@@ -118,7 +118,7 @@ void ComponentsView::draw(const Aozora::Context& context) {
 
 				if (mat.metallicTexture) {
 					if (ImGui::CollapsingHeader("Metallic Texture", ImGuiTreeNodeFlags_DefaultOpen)) {
-						auto gpuHandle = sceneContainer.m_loadedTextures[mat.metallicTexture].id;
+						auto gpuHandle = sceneContainer.m_loadedTextures[mat.metallicTexture].hash;
 						ImGui::Image((ImTextureID)gpuHandle, ImVec2((float)thumbnailSize, (float)thumbnailSize));
 					}
 				}
@@ -128,7 +128,7 @@ void ComponentsView::draw(const Aozora::Context& context) {
 
 				if (mat.emissiveTexture) {
 					if (ImGui::CollapsingHeader("Emissive Texture", ImGuiTreeNodeFlags_DefaultOpen)) {
-						auto gpuHandle = sceneContainer.m_loadedTextures[mat.emissiveTexture].id;
+						auto gpuHandle = sceneContainer.m_loadedTextures[mat.emissiveTexture].hash;
 						ImGui::Image((ImTextureID)gpuHandle, ImVec2((float)thumbnailSize, (float)thumbnailSize));
 					}
 				}

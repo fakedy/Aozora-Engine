@@ -45,7 +45,9 @@ namespace Aozora {
 			uint64_t aoTextureHandle;
 			uint64_t metallicTextureHandle;
 			uint64_t roughnessTextureHandle;
+			uint64_t opacityTextureHandle;
 			uint64_t normalTextureHandle;
+			uint64_t pad;
 			glm::vec4 albedo;
 			glm::vec4 emissive;
 			glm::vec3 normal;
@@ -73,7 +75,7 @@ namespace Aozora {
 
 		void renderLights(Scene& scene, const glm::mat4& view);
 		void drawGrid(const Aozora::CameraComponent& camera, const glm::vec3& cameraPos, uint32_t width, uint32_t height);
-		void postfxPass();
+		void postfxPass(uint32_t width, uint32_t height);
 
 		uint32_t m_outputAttachment{ 0 };
 

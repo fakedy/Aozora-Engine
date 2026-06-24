@@ -10,7 +10,6 @@ void main(){
     
     vec3 irradiance = vec3(0.0);
 
-    int samples = 0;
     // coordinate system
     vec3 N = normalize(TexCoords);
     vec3 up = vec3(0.0, 1.0, 0.0);
@@ -19,8 +18,9 @@ void main(){
 
     // lower value = more detailed
     float sampleDelta = 0.025;
-    for(float phi = 0.0; phi < 2.0*PI; phi += sampleDelta){
-        for(float theta = 0.0; theta < 0.5*PI; theta += sampleDelta){
+    int samples = 0;
+    for(float phi = 0.0; phi < 2.0 * PI; phi += sampleDelta){
+        for(float theta = 0.0; theta < 0.5 * PI; theta += sampleDelta){
 
             // Convert spherical coordinates to a sample vector in tangent space.
             vec3 tangentSample = vec3(sin(theta) * cos(phi),  sin(theta) * sin(phi), cos(theta));
@@ -33,7 +33,7 @@ void main(){
     }
 
 
-    irradiance = PI * irradiance / samples;
+    irradiance = PI * irradiance * (1.0 / float(samples));
     finalColor = vec4(irradiance, 1.0);
 
 }

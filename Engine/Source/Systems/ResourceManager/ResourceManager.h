@@ -42,7 +42,7 @@ namespace Aozora {
 		uint64_t loadMaterial(uint64_t hash, uint64_t sceneID);
 		uint64_t loadCubemap(uint64_t hash, uint64_t sceneID);
 		
-		uint64_t createEmptyCubeMap(uint32_t width, uint32_t height, uint64_t sceneID);
+		uint64_t createEmptyCubeMap(Texture::TextureSpecification spec, uint64_t sceneID);
 		uint64_t loadSkybox(uint64_t hash, uint64_t sceneID);
 		uint64_t loadMesh(uint64_t hash, uint64_t sceneID);
 		uint64_t createMaterial(Material* material);

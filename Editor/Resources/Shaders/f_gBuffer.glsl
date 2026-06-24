@@ -44,6 +44,7 @@ struct ObjectData {
 	uint64_t   aoTextureHandle;
 	uint64_t   metallicTextureHandle;
 	uint64_t   roughnessTextureHandle;
+	uint64_t   opacityTextureHandle;
 	uint64_t   normalTextureHandle;
 	vec4 albedo;
 	vec4 emissive;
@@ -67,11 +68,8 @@ void main() {
 	ObjectData data = objects[drawID];
 
 	
-/*
-	if(usedMaterial.albedo.a < 0.05f){
-		discard;
-	}
-*/
+
+
 
 	// if we have a diffusetexture it will return true and then we take the float of that value and it returns 1
 	// Albedo
@@ -81,6 +79,15 @@ void main() {
 	}
 	usedMaterial.albedo = diffuseSample * data.albedo;
 
+	if(data.opacityTextureHandle != 0){
+		float opacity = texture(sampler2D(data.diffuseTextureHandle), textureCoord).r;
+		if(opacity < 0.99){
+			discard;
+		}
+	}
+	if(usedMaterial.albedo.a < 0.9){
+		discard;
+	}
 	// Metallic
 	float metallicSample = 1.0;
 	if(data.metallicTextureHandle != 0){
@@ -117,9 +124,6 @@ void main() {
 	}
 	usedMaterial.normal = normalize(TBN * tangentNormal);
 
-	if(usedMaterial.albedo.a < 0.05f){
-		discard;
-	}
 
 	gPosition = fragPos;
 	gNormal = vec4(usedMaterial.normal* 0.5 + 0.5, 1.0);

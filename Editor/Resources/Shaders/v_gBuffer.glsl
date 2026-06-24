@@ -31,6 +31,7 @@ struct ObjectData {
 	uint64_t  aoTextureHandle;
 	uint64_t  metallicTextureHandle;
 	uint64_t  roughnessTextureHandle;
+	uint64_t   opacityTextureHandle;
 	uint64_t  normalTextureHandle;
 	vec4 albedo;
 	vec4 emissive;

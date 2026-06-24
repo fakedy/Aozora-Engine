@@ -14,6 +14,7 @@ layout(binding = 3) uniform sampler2D gEmissive;
 layout(binding = 4) uniform sampler2D gProperties;
 layout(binding = 6) uniform samplerCube irradianceMap;
 layout(binding = 7) uniform samplerCube skybox;
+layout(binding = 8) uniform samplerCube prefilterMap;
 
 struct Light {
     vec3 position;
@@ -59,17 +60,15 @@ float D(vec3 halfwayVector){ // Normal distribution function
 }
 
     // Ratio of light refracted vs reflected
-vec3 F( vec3 h, vec3 wi){ // Fresnel equation
+vec3 F( vec3 h, vec3 wi, vec3 F0){ // Fresnel equation
 
-    vec3 F0 = vec3(0.04);
-    F0 = mix(F0, albedo.rgb, metallic);
     // Fresnel-Schlick
     return F0 + (1.0 - F0) * pow(1.0 - max(dot(h,wi), 0.0), 5.0);
 }
 
 
 float schlickGGX(vec3 l, float k){
-    return max(dot(normal, l), 0.0) / (max(dot(normal, l), 0.0)*(1 - k) + k);
+    return max(dot(normal, l), 0.001) / (max(dot(normal, l), 0.001)*(1 - k) + k);
 }
     // approximate relative surface area where micro surface details overshadow each other.
 float G(vec3 wi, vec3 wo, float k){ // Geometry function, Smith's method
@@ -87,10 +86,13 @@ vec3 BRDF(vec3 wi, vec3 wo, float k){
 
     vec3 lambert = albedo.rgb / PI;
     float D = D(hVec);
-    vec3 F = F(hVec, wi);
+
+    vec3 F0 = vec3(0.04);
+    F0 = mix(F0, albedo.rgb, metallic);
+    vec3 F = F(hVec, wi, F0);
     float G = G(wi, wo, k);
 
-    vec3 cookTorrance = D*F*G / max((4*dot(wo, normal)*dot(wi, normal)), 0.001);
+    vec3 cookTorrance = D*F*G / (4*max(dot(wo, normal), 0.0) * max(dot(wi, normal), 0.0) + 0.001);
 
     vec3 Ks = F;
     vec3 Kd = (vec3(1.0) - Ks) * (1.0 - metallic); // conversion of energy and factoring in metallic
@@ -103,19 +105,21 @@ vec3 BRDF(vec3 wi, vec3 wo, float k){
 vec3 calcIndirectLighting(){
 
     // diffuse part of indirect lighting
-    vec3 ambient = texture(irradianceMap, normal).rgb;
-    vec3 diffuse_term = albedo.rgb;
+    vec3 irradiance = texture(irradianceMap, mat3(invView) * normal).rgb;
+    vec3 viewDir = normalize(-fragPos);
 
-    // specular part of indirect lighting
-    vec3 wo = normalize(-fragPos);
-    vec3 wh = normal; // or normalize(wi + wo)
+    vec3 F0 = vec3(0.04);
+    F0 = mix(F0, albedo.rgb, metallic);
 
-    vec3 R = reflect(-wo, normal);
-    R = normalize(mat3(invView) * R);
+    vec3 Ks = F(normal, viewDir, F0);
+    vec3 Kd = (vec3(1.0) - Ks) * (1.0 - metallic);
+    vec3 diffuse_term = (Kd * (albedo.rgb * irradiance));
 
-    //vec3 Li = textureLod(skybox, R, lod).rgb;
+    // specular part...
 
-    return vec3(0,0,0);
+
+
+    return diffuse_term;
 
 }
 
@@ -139,7 +143,7 @@ vec3 calculateDirectIllumination(){
                 break;
         }
 
-        vec3 lightDir = normalize(light.direction);
+        vec3 lightDir = normalize(-light.direction);
         vec3 lightColor = light.color;
 
         float lightPower = light.power; // lux
@@ -153,6 +157,8 @@ vec3 calculateDirectIllumination(){
         Lo += BRDF(lightDir, viewDir, k) * lightIntensity * max(dot(normal, lightDir), 0.0);
         
     }
+
+    
 
     return Lo;
 
@@ -173,6 +179,8 @@ void main(){
 
 
     vec3 reflectance = calculateDirectIllumination() + calcIndirectLighting() + emissive.rgb;
+    //vec3 reflectance = calcIndirectLighting() + emissive.rgb;
+    //vec3 reflectance = calculateDirectIllumination() + emissive.rgb;
     
     finalColor = vec4(reflectance, 1.0);
 }
